@@ -20,10 +20,10 @@
 * More powerups
 
 ### Team ###
-Daniel Detlefsen<br />
-Lars Andersson<br />
-Oskar Lenschow<br />
-Aron Bengtsson<br />
+Daniel Detlefsen  
+Lars Andersson  
+Oskar Lenschow  
+Aron Bengtsson  
 André Höjmark
 
 ### Pictures ###
