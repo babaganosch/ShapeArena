@@ -30,11 +30,11 @@ Extra:
 * Lars Andersson
 * Oskar Lenschow
 * Aron Bengtsson
-* AndrÃ© HÃ¶jmark
+* André Höjmark
 
 ### Pictures ###
 
-(https://i.gyazo.com/8e593c0b8689ee7fd4fd853f14142931.png "Menu")
-(https://i.gyazo.com/c151203f22a25068a7177fa37ac90713.png "Projectiles")
-(https://i.gyazo.com/e30c7dde7511c55d656aef630dbd5c1e.png "Ouch!")
-(https://i.gyazo.com/7f08e27ff344f7df226b3d940da84af7.png "Death")
+![alt text](https://i.gyazo.com/8e593c0b8689ee7fd4fd853f14142931.png "Menu")
+![alt text](https://i.gyazo.com/c151203f22a25068a7177fa37ac90713.png "Projectiles")
+![alt text](https://i.gyazo.com/e30c7dde7511c55d656aef630dbd5c1e.png "Ouch!")
+![alt text](https://i.gyazo.com/7f08e27ff344f7df226b3d940da84af7.png "Death")
