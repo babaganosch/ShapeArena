@@ -1,6 +1,6 @@
 # Shape Arena #
-* This is a project to make a game in Java for our course in DAT055, Chalmers, spring 2018.
-* ~~Version 0.0.1~~
+This is a project to make a game in Java for our course in DAT055, Chalmers, spring 2018.  
+~~Version 0.0.1~~
 
 ## Timetable ##
 1. First stage UML diagram covering the basics
