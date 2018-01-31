@@ -14,7 +14,7 @@
 6. Gameplay - deepen the gameplay with more shapes and their traits, also add powerups such as 'food'
 7. Availability to shoot, projectiles collision
 
-Extra:
+### Extra ###
 
 * Teams
 * Sprites or special shapes
