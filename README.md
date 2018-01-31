@@ -3,7 +3,7 @@ This is a project to make a game in Java for our course in DAT055, Chalmers, spr
 ~~Version 0.0.1~~
 
 ## Timetable ##
-1. First stage UML diagram covering the basics
+1. UML diagram covering the basics
 2. Communication - availability to control two player objects in a room over internet - server and a client
 4. GUI and highscore saving to harddrive
 5. Collision
