@@ -8,9 +8,7 @@
 ### Timetable ###
 
 1. First stage UML diagram covering the basics
-2. Communication - availability to control two player objects in a room over internet
-* server
-* client
+2. Communication - availability to control two player objects in a room over internet - server and a client
 4. GUI and highscore saving to harddrive
 5. Collision
 6. Gameplay - deepen the gameplay with more shapes and their traits, also add powerups such as 'food'
