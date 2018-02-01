@@ -8,7 +8,6 @@ This is a project to make a game in Java for our course in DAT055, Chalmers, spr
 4. GUI and highscore saving to harddrive
 5. Collision
 6. Gameplay - deepen the gameplay with more shapes and their traits, also add powerups such as 'food'
-7. Availability to shoot, projectiles collision
 
 ## Extra ##
 * Teams
