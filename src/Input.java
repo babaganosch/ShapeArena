@@ -4,17 +4,20 @@ import java.io.IOException;
 public class Input implements Runnable {
 
 	DataInputStream in;
-
-	public Input(DataInputStream in) {
+	Client client;
+	
+	public Input(DataInputStream in, Client c) {
 		this.in = in;
+		this.client = c;
 	}
 
 	public void run() {
 		while (true) {
-			String message;
 			try {
-				message = in.readUTF();
-				System.out.println(message);
+				int playerid = in.readInt();
+				int x = in.readInt();
+				int y = in.readInt();
+				client.updateCoordinates(playerid, x, y);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
