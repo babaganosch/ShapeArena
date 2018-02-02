@@ -1,18 +1,19 @@
+import java.applet.Applet;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.Random;
 
-import javax.swing.JApplet;
+public class Client extends Applet implements Runnable, KeyListener {
 
-public class Client extends JApplet implements Runnable, KeyListener {
-
-	private static final long serialVersionUID = -2417368876751817589L;
+	private static final long serialVersionUID = -2729828280030658589L;
 	static Socket socket;
 	static DataInputStream in;
 	static DataOutputStream out;
+	Random r = new Random();
 
 	int playerid;
 	int[] x = new int[10]; // 10 = number of clients? I DUNNO
@@ -20,8 +21,8 @@ public class Client extends JApplet implements Runnable, KeyListener {
 
 	boolean left, right, down, up;
 
-	int playerx;
-	int playery;
+	int playerx; //= 50 + r.nextInt(250);
+	int playery; //= 50 + r.nextInt(250);
 
 	public void init() {
 		setSize(400, 400);
@@ -50,12 +51,11 @@ public class Client extends JApplet implements Runnable, KeyListener {
 
 	public void paint(Graphics g) {
 		for (int i = 0; i < 10; i++) {
-			g.drawOval(x[i], y[i], 25, 25);
+			g.fillOval(x[i], y[i], 25, 25);
 		}
 	}
 
 	public void run() {
-		this.requestFocus();
 		while (true) {
 
 			if (right == true) {
@@ -83,10 +83,10 @@ public class Client extends JApplet implements Runnable, KeyListener {
 			
 			// Update
 			repaint();
-
+			
 			// Loop with this delay
 			try {
-				Thread.sleep(400);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
