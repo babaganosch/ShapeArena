@@ -59,16 +59,16 @@ public class Client extends Applet implements Runnable, KeyListener {
 		while (true) {
 
 			if (right == true) {
-				playerx += 10;
+				playerx += 5;
 			}
 			if (left == true) {
-				playerx -= 10;
+				playerx -= 5;
 			}
 			if (down == true) {
-				playery += 10;
+				playery += 5;
 			}
 			if (up == true) {
-				playery -= 10;
+				playery -= 5;
 			}
 
 			if (right || left || up || down) {
@@ -86,7 +86,7 @@ public class Client extends Applet implements Runnable, KeyListener {
 			
 			// Loop with this delay
 			try {
-				Thread.sleep(100);
+				Thread.sleep(25);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
