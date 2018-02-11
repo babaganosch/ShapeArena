@@ -3,9 +3,9 @@ import java.net.*;
 
 public class Server {
 
-	static ServerSocket serverSocket;
-	static Socket socket;
-	static Users[] user = new Users[10];
+	private static ServerSocket serverSocket;
+	private static Socket socket;
+	private static Users[] user = new Users[10];
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("Starting server...");

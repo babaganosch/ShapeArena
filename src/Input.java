@@ -3,8 +3,8 @@ import java.io.IOException;
 
 public class Input implements Runnable {
 
-	DataInputStream in;
-	Client client;
+	private DataInputStream in;
+	private Client client;
 	
 	public Input(DataInputStream in, Client c) {
 		this.in = in;

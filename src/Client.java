@@ -130,5 +130,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public void keyTyped(KeyEvent e) {}
 	
+	public static void main (String[] args) {
+		Client client = new Client();
+	}
 	
 }

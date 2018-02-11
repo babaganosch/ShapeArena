@@ -5,13 +5,13 @@ import java.io.IOException;
 
 public class Users implements Runnable {
 
-	DataOutputStream out;
-	DataInputStream in;
-	Users[] user = new Users[10];
-	int playerid;
-	int playeridin;
-	int xin;
-	int yin;
+	private DataOutputStream out;
+	private DataInputStream in;
+	private Users[] user = new Users[10];
+	private int playerid;
+	private int playeridin;
+	private int xin;
+	private int yin;
 	
 	public Users(DataOutputStream out, DataInputStream in, Users[] user, int pid) {
 		this.out = out;
