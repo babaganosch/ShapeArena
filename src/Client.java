@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 public class Client extends JFrame implements Runnable, KeyListener{
 	
+	private static final long serialVersionUID = 5058081065501838682L;
 	private int playerID;
 	private int playerx;
 	private int playery;
@@ -42,17 +43,14 @@ public class Client extends JFrame implements Runnable, KeyListener{
 			Socket socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
 			
-			// Skapar strömmar till clienten och servern samt får playerID från servern.
 			in = new DataInputStream(socket.getInputStream());
 			out = new DataOutputStream(socket.getOutputStream());
 			playerID = in.readInt();
 			
-			// Skapar en tråd som kontinuerligt läser det som skickas till clienten.
 			InputReader input = new InputReader(in, this);
 			Thread readsInput = new Thread(input);
 			readsInput.start();
-			
-			// Client tråd
+
 			Thread thread = new Thread(this);
 			thread.start();
 
@@ -139,6 +137,8 @@ public class Client extends JFrame implements Runnable, KeyListener{
 }
 
 class Canvas extends JPanel{
+	
+	private static final long serialVersionUID = 756982496934224900L;
 	private int[] x = new int[10];
 	private int[] y = new int[10];
 	
@@ -159,7 +159,6 @@ class Canvas extends JPanel{
 	}
 }
 
-// Tänkte att det var smidigare att ha den såhär d.v.s klassen i client grejset eftersom det bara är en tråd som bara läser in värden till client.
 class InputReader implements Runnable{
 	
 	public DataInputStream in;
