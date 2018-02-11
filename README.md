@@ -1,6 +1,6 @@
 # Shape Arena #
 This is a project to make a game in Java for our course in DAT055, Chalmers, spring 2018.  
-~~Version 0.0.1~~
+Version 0.0.1
 
 ## Timetable ##
 1. ~~UML diagram covering the basics~~
@@ -21,7 +21,7 @@ Daniel Detlefsen
 Lars Andersson  
 Oskar Lenschow  
 Aron Bengtsson  
-André Höjmark
+Andrï¿½ Hï¿½jmark
 
 ## Pictures ##
 ![alt text](https://i.gyazo.com/8e593c0b8689ee7fd4fd853f14142931.png "Menu")
