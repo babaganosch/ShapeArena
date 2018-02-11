@@ -14,12 +14,16 @@ public class Server {
 		while(true){
 			
 			Socket userSocket = serverSocket.accept();
-			System.out.println(userSocket.getInetAddress().getHostName() + " connected");
 			
 			for(int i = 0; i<10; i++){
 				if(user[i] == null){
 					user[i] = new User(userSocket, user, i);
+					System.out.println("Connection from: " + userSocket.getInetAddress() + " With a PID: " + i);
 					break;
+					/**
+					 * Break the loop. After we created the client we want to go back to the
+					 * while-loop and wait for a new connection.
+					 */
 				}
 			}
 		}

@@ -17,6 +17,7 @@ public class Client extends JFrame implements Runnable, KeyListener{
 	private int playerID;
 	private int playerx;
 	private int playery;
+	private int speed = 5;
 	
 	private int[] x = new int[10];
 	private int[] y = new int[10];
@@ -101,16 +102,16 @@ public class Client extends JFrame implements Runnable, KeyListener{
 		while (true) {
 
 			if (right == true) {
-				playerx += 10;
+				playerx += speed;
 			}
 			if (left == true) {
-				playerx -= 10;
+				playerx -= speed;
 			}
 			if (down == true) {
-				playery += 10;
+				playery += speed;
 			}
 			if (up == true) {
-				playery -= 10;
+				playery -= speed;
 			}
 
 			if (right || left || up || down) {
@@ -128,7 +129,7 @@ public class Client extends JFrame implements Runnable, KeyListener{
 			
 			// Loop with this delay
 			try {
-				Thread.sleep(100);
+				Thread.sleep(16); //60 FPS
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

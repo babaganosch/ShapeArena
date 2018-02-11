@@ -3,17 +3,17 @@ import java.net.*;
 
 public class User implements Runnable{
 
-	Thread activity = new Thread(this);
+	private Thread activity = new Thread(this);
 	
-	Socket socket;
-	DataInputStream in;
-	DataOutputStream out;
-	User[] user;
+	private Socket socket;
+	private DataInputStream in;
+	private DataOutputStream out;
+	private User[] user;
 	
-	int inX;
-	int inY;
-	int inPlayerID;
-	int playerID;
+	private int inX;
+	private int inY;
+	private int inPlayerID;
+	private int playerID;
 	
 	public User(Socket socket, User[] user, int pid) throws Exception{
 		
@@ -48,7 +48,7 @@ public class User implements Runnable{
 			
 			} 
 			catch (IOException e) { 
-				user[playerID] = null; 
+				user[playerID] = null;
 				break;
 			}
 		}
