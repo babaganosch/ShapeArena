@@ -21,7 +21,7 @@ Daniel Detlefsen
 Lars Andersson  
 Oskar Lenschow  
 Aron Bengtsson  
-Andrï¿½ Hï¿½jmark
+André Höjmark
 
 ## Pictures ##
 ![alt text](https://i.gyazo.com/8e593c0b8689ee7fd4fd853f14142931.png "Menu")
