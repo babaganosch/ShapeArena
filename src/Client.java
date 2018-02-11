@@ -29,7 +29,7 @@ public class Client extends JFrame implements Runnable, KeyListener{
 	private Canvas canvas;
 	public Client(){
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(1920, 1080);
+		setSize(400, 400);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		addKeyListener(this);
