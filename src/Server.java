@@ -2,18 +2,20 @@ import java.net.*;
 
 public class Server {
 	
-	static User[] user = new User[10];
+	private static User[] user = new User[10];
+	private static Socket userSocket;
+	private static ServerSocket serverSocket;
+	private static int serverPort = Integer.parseInt("7777");
 	
 	public static void main(String arg[]) throws Exception{
 		
 		System.out.println("Starting server...");
-		int serverPort = Integer.parseInt("7777");
-		ServerSocket serverSocket = new ServerSocket(serverPort);	
+		serverSocket = new ServerSocket(serverPort);	
 		System.out.println("Server started... listens on port " + serverPort);
 		
 		while(true){
 			
-			Socket userSocket = serverSocket.accept();
+			userSocket = serverSocket.accept();
 			
 			for(int i = 0; i<10; i++){
 				if(user[i] == null){
@@ -26,6 +28,7 @@ public class Server {
 					 */
 				}
 			}
+			
 		}
 	}
 }

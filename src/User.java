@@ -47,8 +47,10 @@ public class User implements Runnable{
 				}
 			
 			} 
-			catch (IOException e) { 
+			catch (IOException e) {
+				// Disconnect
 				user[playerID] = null;
+				System.out.println("PID: " + playerID + " With IP: " + socket.getInetAddress() + " Disconnected.");
 				break;
 			}
 		}
