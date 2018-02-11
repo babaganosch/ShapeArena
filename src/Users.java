@@ -21,16 +21,19 @@ public class Users implements Runnable {
 	}
 	
 	public void run() {
+		try {
+			out.writeInt(playerid);
+		} catch (IOException e1) {
+			System.out.println("Failed to send PlayerID");
+		}
+		/**
+		 * If we get a message from a client, we want to
+		 * send that message to all the users
+		 */
+		
 		while (true) {
-			try {
-				out.writeInt(playerid);
-			} catch (IOException e1) {
-				System.out.println("Failed to send PlayerID");
-			}
-			/**
-			 * If we get a message from a client, we want to
-			 * send that message to all the users
-			 */
+			
+			
 			try {
 				playeridin = in.readInt();
 				xin = in.readInt();

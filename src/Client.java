@@ -1,19 +1,19 @@
-import java.applet.Applet;
+
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
-import java.util.Random;
 
-public class Client extends Applet implements Runnable, KeyListener {
+import javax.swing.JFrame;
+
+public class Client extends JFrame implements Runnable, KeyListener {
 
 	private static final long serialVersionUID = -2729828280030658589L;
-	static Socket socket;
-	static DataInputStream in;
-	static DataOutputStream out;
-	Random r = new Random();
+	private static Socket socket;
+	private static DataInputStream in;
+	private static DataOutputStream out;
 
 	int playerid;
 	int[] x = new int[10]; // 10 = number of clients? I DUNNO
@@ -24,8 +24,12 @@ public class Client extends Applet implements Runnable, KeyListener {
 	int playerx; //= 50 + r.nextInt(250);
 	int playery; //= 50 + r.nextInt(250);
 
-	public void init() {
-		setSize(400, 400);
+	public Client() {
+		this.setSize(400, 400);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+		this.setLayout(null);
+		this.setVisible(true);
 		addKeyListener(this);
 		try {
 			System.out.println("Connecting...");
@@ -50,6 +54,7 @@ public class Client extends Applet implements Runnable, KeyListener {
 	}
 
 	public void paint(Graphics g) {
+		super.repaint();
 		for (int i = 0; i < 10; i++) {
 			g.fillOval(x[i], y[i], 25, 25);
 		}
@@ -94,36 +99,36 @@ public class Client extends Applet implements Runnable, KeyListener {
 	}
 
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			left = true;
 		}
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
+		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 			up = true;
 		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 			right = true;
 		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			down = true;
 		}
 	}
 
 	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			left = false;
 		}
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
+		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 			up = false;
 		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 			right = false;
 		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			down = false;
 		}
 	}
 
-	public void keyTyped(KeyEvent e) {
-		
-	}
+	public void keyTyped(KeyEvent e) {}
+	
+	
 }
