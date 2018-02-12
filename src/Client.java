@@ -29,6 +29,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private int speed = 5;
 	private int score = 20 + random.nextInt(5);
 
+	private int room_size = 400;
+
 	private boolean left, right, down, up;
 
 	public Client() {
@@ -59,6 +61,16 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			thread.start();
 		} catch (Exception e) {
 			System.out.println("Unable to start client");
+		}
+	}
+
+	public int clamp(int value, int max, int min) {
+		if (value <= min) {
+			return min;
+		} else if (value >= max) {
+			return max;
+		} else {
+			return value;
 		}
 	}
 
@@ -107,16 +119,16 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		while (true) {
 
 			if (right == true) {
-				playerx += speed;
+				playerx = clamp(playerx + speed, room_size - score, 0);
 			}
 			if (left == true) {
-				playerx -= speed;
+				playerx = clamp(playerx - speed, room_size - score, 0);
 			}
 			if (down == true) {
-				playery += speed;
+				playery = clamp(playery + speed, room_size - score, 0);
 			}
 			if (up == true) {
-				playery -= speed;
+				playery = clamp(playery - speed, room_size - score, 0);
 			}
 
 			if (right || left || up || down) {
@@ -159,7 +171,7 @@ class Canvas extends JPanel {
 		setVisible(true);
 		setBackground(Color.WHITE);
 	}
-	
+
 	public void setPlayerID(int playerID) {
 		this.playerID = playerID;
 	}
@@ -201,12 +213,15 @@ class Canvas extends JPanel {
 			}
 			g.fillOval(x[i], y[i], size[i], size[i]);
 		}
-		Graphics2D g2 = (Graphics2D)g;
+
+		Graphics2D g2 = (Graphics2D) g;
 		Font currentFont = g2.getFont();
 		Font newFont = currentFont.deriveFont(currentFont.getSize() * 5.0F);
 		g2.setFont(newFont);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.drawString("" + size[playerID], 70, 200);
+
+		// Foods
 		g.setColor(Color.red);
 		for (int i = 0; i < 20; i++) {
 			g.fillOval(foodX[i], foodY[i], 5, 5);
@@ -219,6 +234,7 @@ class InputReader implements Runnable {
 	public DataInputStream in;
 	Client client;
 	private char inPacketType;
+	private boolean debug = true;
 
 	public InputReader(DataInputStream in, Client client) {
 		this.in = in;
@@ -235,11 +251,24 @@ class InputReader implements Runnable {
 					int x = in.readInt();
 					int y = in.readInt();
 					int score = in.readInt();
+					if (debug == true) {
+						System.out.println("Packet Recieved: PLAYER");
+						System.out.println("playerID: " + playerID);
+						System.out.println("x: " + x);
+						System.out.println("y: " + y);
+						System.out.println("score: " + score + "\n");
+					}
 					client.updateCordinates(playerID, x, y, score);
 				} else if (inPacketType == 1) {
 					int foodIndex = in.readInt();
 					int foodX = in.readInt();
 					int foodY = in.readInt();
+					if (debug == true) {
+						System.out.println("Packet Recieved: FOOD");
+						System.out.println("Index: " + foodIndex);
+						System.out.println("x: " + foodX);
+						System.out.println("y: " + foodY + "\n");
+					}
 					client.paintFood(foodIndex, foodX, foodY);
 				}
 			} catch (IOException e) {
