@@ -90,6 +90,7 @@ class FoodHandler extends Thread {
 					out.writeInt(i);
 					out.writeInt(foodX[i]);
 					out.writeInt(foodY[i]);
+					
 				} catch (Exception e) {
 					System.out.println("Error sending: Food coords.");
 				}

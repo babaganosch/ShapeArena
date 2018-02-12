@@ -44,7 +44,6 @@ public class User implements Runnable{
 				 * 1: Food Information
 				 */
 				inPacketType = in.readChar();
-				
 				if (inPacketType == 0) {
 					inPlayerID = in.readInt();
 					inX = in.readInt();

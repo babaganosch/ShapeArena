@@ -234,7 +234,7 @@ class InputReader implements Runnable {
 	public DataInputStream in;
 	Client client;
 	private char inPacketType;
-	private boolean debug = true;
+	private boolean debug = false;
 
 	public InputReader(DataInputStream in, Client client) {
 		this.in = in;
@@ -258,7 +258,17 @@ class InputReader implements Runnable {
 						System.out.println("y: " + y);
 						System.out.println("score: " + score + "\n");
 					}
-					client.updateCordinates(playerID, x, y, score);
+					
+					// Horrible.. horrible.. horrible code
+					if (playerID >= 0 && playerID <= 10) {
+						if (x >= 0 && x <= 400) {
+							if (y >= 0 && y <= 400) {
+								if (score >= 20 && score <= 70) {
+									client.updateCordinates(playerID, x, y, score);
+								}
+							}
+						}
+					}
 				} else if (inPacketType == 1) {
 					int foodIndex = in.readInt();
 					int foodX = in.readInt();
@@ -269,7 +279,14 @@ class InputReader implements Runnable {
 						System.out.println("x: " + foodX);
 						System.out.println("y: " + foodY + "\n");
 					}
-					client.paintFood(foodIndex, foodX, foodY);
+					// Horrible.. horrible.. horrible code
+					if (foodIndex >= 0 && foodIndex <= 20) {
+						if (foodX >= 0 && foodX <= 400) {
+							if (foodY >= 0 && foodY <= 400) {
+								client.paintFood(foodIndex, foodX, foodY);
+							}
+						}
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
