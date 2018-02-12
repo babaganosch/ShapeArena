@@ -1,6 +1,9 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.DataInputStream;
@@ -38,7 +41,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		canvas = new Canvas();
 		add(canvas, BorderLayout.CENTER);
 		try {
-
 			String serverIP = "127.0.0.1";
 			int serverPort = Integer.parseInt("7777");
 			Socket socket = new Socket(serverIP, serverPort);
@@ -47,6 +49,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			in = new DataInputStream(socket.getInputStream());
 			out = new DataOutputStream(socket.getOutputStream());
 			playerID = in.readInt();
+			canvas.setPlayerID(playerID);
 
 			InputReader input = new InputReader(in, this);
 			Thread readsInput = new Thread(input);
@@ -54,14 +57,12 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 			Thread thread = new Thread(this);
 			thread.start();
-
 		} catch (Exception e) {
 			System.out.println("Unable to start client");
 		}
 	}
 
 	public void updateCordinates(int pid, int x, int y, int score) {
-
 		canvas.updateCordinates(pid, x, y, score);
 	}
 
@@ -149,6 +150,7 @@ class Canvas extends JPanel {
 	private int[] x = new int[10];
 	private int[] y = new int[10];
 	private int[] size = new int[10];
+	private int playerID;
 	// Food related
 	private int[] foodX = new int[20];
 	private int[] foodY = new int[20];
@@ -156,6 +158,10 @@ class Canvas extends JPanel {
 	public Canvas() {
 		setVisible(true);
 		setBackground(Color.WHITE);
+	}
+	
+	public void setPlayerID(int playerID) {
+		this.playerID = playerID;
 	}
 
 	public void updateCordinates(int pid, int x, int y, int score) {
@@ -172,7 +178,6 @@ class Canvas extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		for (int i = 0; i < 10; i++) {
-
 			// Player colors:
 			switch (i) {
 			case 0:
@@ -194,9 +199,14 @@ class Canvas extends JPanel {
 				g.setColor(Color.black);
 				break;
 			}
-
 			g.fillOval(x[i], y[i], size[i], size[i]);
 		}
+		Graphics2D g2 = (Graphics2D)g;
+		Font currentFont = g2.getFont();
+		Font newFont = currentFont.deriveFont(currentFont.getSize() * 5.0F);
+		g2.setFont(newFont);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.drawString("" + size[playerID], 70, 200);
 		g.setColor(Color.red);
 		for (int i = 0; i < 20; i++) {
 			g.fillOval(foodX[i], foodY[i], 5, 5);

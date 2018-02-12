@@ -37,7 +37,7 @@ public class User implements Runnable{
 		
 		try {out.writeInt(playerID);} catch(IOException e) { System.out.println("Failed to send playerID");}
 		
-		while(true){
+		while(true) {
 			try { 
 				/* inPacketType
 				 * 0: Player Information
