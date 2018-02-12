@@ -5,6 +5,7 @@ Version 0.0.1
 ## Timetable ##
 1. ~~UML diagram covering the basics~~
 2. ~~Communication - ability to control two player objects in a room over internet - server and a client~~
+3. Server GUI
 4. GUI and highscore saving to harddrive
 5. Collision
 6. Gameplay - deepen the gameplay with more shapes and their traits, also add powerups such as 'food'
