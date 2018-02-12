@@ -65,6 +65,10 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		canvas.updateCordinates(pid, x, y, score);
 	}
 
+	public void paintFood(int i, int foodX, int foodY) {
+		canvas.paintFood(i, foodX, foodY);
+	}
+
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			left = true;
@@ -116,6 +120,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 			if (right || left || up || down) {
 				try {
+					out.writeChar(0);
 					out.writeInt(playerID);
 					out.writeInt(playerx);
 					out.writeInt(playery);
@@ -144,6 +149,9 @@ class Canvas extends JPanel {
 	private int[] x = new int[10];
 	private int[] y = new int[10];
 	private int[] size = new int[10];
+	// Food related
+	private int[] foodX = new int[20];
+	private int[] foodY = new int[20];
 
 	public Canvas() {
 		setVisible(true);
@@ -156,10 +164,15 @@ class Canvas extends JPanel {
 		this.size[pid] = score;
 	}
 
+	public void paintFood(int i, int foodX, int foodY) {
+		this.foodX[i] = foodX;
+		this.foodY[i] = foodY;
+	}
+
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		for (int i = 0; i < 10; i++) {
-			
+
 			// Player colors:
 			switch (i) {
 			case 0:
@@ -184,6 +197,10 @@ class Canvas extends JPanel {
 
 			g.fillOval(x[i], y[i], size[i], size[i]);
 		}
+		g.setColor(Color.red);
+		for (int i = 0; i < 20; i++) {
+			g.fillOval(foodX[i], foodY[i], 5, 5);
+		}
 	}
 }
 
@@ -191,6 +208,7 @@ class InputReader implements Runnable {
 
 	public DataInputStream in;
 	Client client;
+	private char inPacketType;
 
 	public InputReader(DataInputStream in, Client client) {
 		this.in = in;
@@ -201,11 +219,19 @@ class InputReader implements Runnable {
 
 		while (true) {
 			try {
-				int playerID = in.readInt();
-				int x = in.readInt();
-				int y = in.readInt();
-				int score = in.readInt();
-				client.updateCordinates(playerID, x, y, score);
+				inPacketType = in.readChar();
+				if (inPacketType == 0) {
+					int playerID = in.readInt();
+					int x = in.readInt();
+					int y = in.readInt();
+					int score = in.readInt();
+					client.updateCordinates(playerID, x, y, score);
+				} else if (inPacketType == 1) {
+					int foodIndex = in.readInt();
+					int foodX = in.readInt();
+					int foodY = in.readInt();
+					client.paintFood(foodIndex, foodX, foodY);
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
