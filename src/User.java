@@ -12,6 +12,7 @@ public class User implements Runnable{
 	
 	private int inX;
 	private int inY;
+	private int inScore;
 	private int inPlayerID;
 	private int playerID;
 	
@@ -35,6 +36,7 @@ public class User implements Runnable{
 				inPlayerID = in.readInt();
 				inX = in.readInt();
 				inY = in.readInt();
+				inScore = in.readInt();
 				
 				for(int i = 0; i<10; i++)
 				{
@@ -43,6 +45,7 @@ public class User implements Runnable{
 						user[i].out.writeInt(inPlayerID);
 						user[i].out.writeInt(inX);
 						user[i].out.writeInt(inY);
+						user[i].out.writeInt(inScore);
 					}
 				}
 			

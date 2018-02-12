@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,13 +15,16 @@ import javax.swing.JPanel;
 public class Client extends JFrame implements Runnable, KeyListener{
 	
 	private static final long serialVersionUID = 5058081065501838682L;
+	private Random random = new Random();
 	private int playerID;
 	private int playerx;
 	private int playery;
 	private int speed = 5;
+	private int score = 20 + random.nextInt(5);
 	
 	private int[] x = new int[10];
 	private int[] y = new int[10];
+	private int[] size = new int[10];
 	
 	private boolean left, right, down, up;
 
@@ -58,11 +62,12 @@ public class Client extends JFrame implements Runnable, KeyListener{
 		}catch(Exception e) {System.out.println("Unable to start client");}
 	}
 	
-	public void updateCordinates(int pid, int x, int y){
+	public void updateCordinates(int pid, int x, int y, int score){
 		this.x[pid] = x;
 		this.y[pid] = y;
+		this.size[pid] = score;
 		
-		canvas.updateCordinates(pid, x, y);
+		canvas.updateCordinates(pid, x, y, score);
 	}
 		
 	public void keyPressed(KeyEvent e) {
@@ -119,6 +124,7 @@ public class Client extends JFrame implements Runnable, KeyListener{
 					out.writeInt(playerID);
 					out.writeInt(playerx);
 					out.writeInt(playery);
+					out.writeInt(score);
 				} catch (Exception e) {
 					System.out.println("Error sending Coordinates.");
 				}
@@ -142,20 +148,22 @@ class Canvas extends JPanel{
 	private static final long serialVersionUID = 756982496934224900L;
 	private int[] x = new int[10];
 	private int[] y = new int[10];
+	private int[] size = new int[10];
 	
 	public Canvas() {
 		setVisible(true);
 		setBackground(Color.WHITE);
 	}
 	
-	public void updateCordinates(int pid, int x, int y){
+	public void updateCordinates(int pid, int x, int y, int score){
 		this.x[pid] = x;
 		this.y[pid] = y;
+		this.size[pid] = score;
 	}
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		for (int i = 0; i < 10; i++) {
-			g.fillOval(x[i], y[i], 25, 25);
+			g.fillOval(x[i], y[i], size[i], size[i]);
 		}
 	}
 }
@@ -176,7 +184,8 @@ class InputReader implements Runnable{
 				int playerID = in.readInt();
 				int x = in.readInt();
 				int y = in.readInt();
-				client.updateCordinates(playerID, x, y);
+				int score = in.readInt();
+				client.updateCordinates(playerID, x, y, score);
 			} 
 			catch (IOException e) {e.printStackTrace();}
 		}
