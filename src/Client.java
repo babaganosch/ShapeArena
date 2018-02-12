@@ -133,7 +133,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 			if (right || left || up || down) {
 				try {
-					out.writeChar(0);
+					out.writeChar('P');
 					out.writeInt(playerID);
 					out.writeInt(playerx);
 					out.writeInt(playery);
@@ -234,7 +234,7 @@ class InputReader implements Runnable {
 	public DataInputStream in;
 	Client client;
 	private char inPacketType;
-	private boolean debug = false;
+	private boolean debug = true;
 
 	public InputReader(DataInputStream in, Client client) {
 		this.in = in;
@@ -246,7 +246,7 @@ class InputReader implements Runnable {
 		while (true) {
 			try {
 				inPacketType = in.readChar();
-				if (inPacketType == 0) {
+				if (inPacketType == 'P') {
 					int playerID = in.readInt();
 					int x = in.readInt();
 					int y = in.readInt();
@@ -269,7 +269,7 @@ class InputReader implements Runnable {
 							}
 						}
 					}
-				} else if (inPacketType == 1) {
+				} else if (inPacketType == 'F') {
 					int foodIndex = in.readInt();
 					int foodX = in.readInt();
 					int foodY = in.readInt();

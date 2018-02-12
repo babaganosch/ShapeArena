@@ -44,7 +44,7 @@ public class User implements Runnable{
 				 * 1: Food Information
 				 */
 				inPacketType = in.readChar();
-				if (inPacketType == 0) {
+				if (inPacketType == 'P') {
 					inPlayerID = in.readInt();
 					inX = in.readInt();
 					inY = in.readInt();
@@ -54,7 +54,7 @@ public class User implements Runnable{
 					{
 						if(user[i] != null)
 						{
-							user[i].out.writeChar(0);
+							user[i].out.writeChar('P');
 							user[i].out.writeInt(inPlayerID);
 							user[i].out.writeInt(inX);
 							user[i].out.writeInt(inY);
@@ -62,7 +62,7 @@ public class User implements Runnable{
 						}
 					}
 				
-				} else if (inPacketType == 1) {
+				} else if (inPacketType == 'F') {
 					inFoodIndex = in.readInt();
 					inFoodX = in.readInt();
 					inFoodY = in.readInt();
@@ -70,7 +70,7 @@ public class User implements Runnable{
 					{
 						if(user[i] != null)
 						{
-							user[i].out.writeChar(1);
+							user[i].out.writeChar('F');
 							user[i].out.writeInt(inFoodIndex);
 							user[i].out.writeInt(inFoodX);
 							user[i].out.writeInt(inFoodY);

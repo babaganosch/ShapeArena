@@ -86,7 +86,7 @@ class FoodHandler extends Thread {
 			*/
 			for (int i = 0; i < 20; i++) {
 				try {
-					out.writeChar(1);
+					out.writeChar('F');
 					out.writeInt(i);
 					out.writeInt(foodX[i]);
 					out.writeInt(foodY[i]);
@@ -97,7 +97,7 @@ class FoodHandler extends Thread {
 			}
 			
 			try {
-				Thread.sleep(2000); // Update each second
+				Thread.sleep(2000); // Update every other second
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
