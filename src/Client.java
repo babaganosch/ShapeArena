@@ -33,6 +33,12 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	private boolean left, right, down, up;
 
+	
+	public static void main(String arg[])
+	{
+		new Client();
+	}
+	
 	public Client() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(400, 400);
