@@ -74,16 +74,7 @@ class FoodHandler extends Thread {
 	public void run() {
 
 		while (true) {
-			/*
-			try {
-				out.writeChar(1);
-
-				out.writeInt(foodX[3]);
-				out.writeInt(foodY[3]);
-			} catch (Exception e) {
-				System.out.println("Error sending: Food coords.");
-			}
-			*/
+			
 			for (int i = 0; i < 20; i++) {
 				try {
 					out.writeChar('F');
