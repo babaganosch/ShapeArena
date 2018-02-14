@@ -29,19 +29,13 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private int speed = 5;
 	private int score = 20 + random.nextInt(5);
 
-	private int room_size = 400;
+	public static int room_size = 400;
 
 	private boolean left, right, down, up;
-
-	
-	public static void main(String arg[])
-	{
-		new Client();
-	}
 	
 	public Client() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(400, 400);
+		setSize(room_size, room_size);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		addKeyListener(this);
@@ -49,7 +43,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		canvas = new Canvas();
 		add(canvas, BorderLayout.CENTER);
 		try {
-			String serverIP = "127.0.0.1";
+			String serverIP = "192.158.1.32";
 			int serverPort = Integer.parseInt("7777");
 			Socket socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
@@ -68,6 +62,11 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		} catch (Exception e) {
 			System.out.println("Unable to start client");
 		}
+	}
+	
+	public static void main(String arg[])
+	{
+		new Client();
 	}
 
 	public int clamp(int value, int max, int min) {
@@ -267,8 +266,8 @@ class InputReader implements Runnable {
 					
 					// Horrible.. horrible.. horrible code
 					if (playerID >= 0 && playerID <= 10) {
-						if (x >= 0 && x <= 400) {
-							if (y >= 0 && y <= 400) {
+						if (x >= 0 && x <= Client.room_size) {
+							if (y >= 0 && y <= Client.room_size) {
 								if (score >= 20 && score <= 70) {
 									client.updateCordinates(playerID, x, y, score);
 								}
@@ -287,8 +286,8 @@ class InputReader implements Runnable {
 					}
 					// Horrible.. horrible.. horrible code
 					if (foodIndex >= 0 && foodIndex <= 20) {
-						if (foodX >= 0 && foodX <= 400) {
-							if (foodY >= 0 && foodY <= 400) {
+						if (foodX >= 0 && foodX <= Client.room_size) {
+							if (foodY >= 0 && foodY <= Client.room_size) {
 								client.paintFood(foodIndex, foodX, foodY);
 							}
 						}
