@@ -74,6 +74,7 @@ class FoodHandler extends Thread {
 			
 			for (int i = 0; i < 20; i++) {
 				try {
+					// SOUP
 					out.writeChar('F');
 					out.writeInt(i);
 					out.writeInt(foodX[i]);
