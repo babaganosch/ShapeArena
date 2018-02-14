@@ -29,7 +29,7 @@ public class Server {
 		for (int i = 0; i < 20; i++) {
 			tempX = random.nextInt(WorldSize);
 			tempY = random.nextInt(WorldSize);
-			new Food(tempX, tempY);
+			new Food(i, tempX, tempY);
 			foodX[i] = tempX;
 			foodY[i] = tempY;
 		}
