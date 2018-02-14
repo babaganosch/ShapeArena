@@ -6,9 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -49,12 +46,13 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			int serverPort = Integer.parseInt("7777");
 			Socket socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
-
-			in = new ObjectInputStream(socket.getInputStream());
+			
 			out = new ObjectOutputStream(socket.getOutputStream());
-			playerID = in.readInt();
+			out.flush();
+			in = new ObjectInputStream(socket.getInputStream());
+			
+			playerID = ((PlayerPacket) in.readObject()).getId();
 			canvas.setPlayerID(playerID);
-
 			InputReader input = new InputReader(in, this);
 			Thread readsInput = new Thread(input);
 			readsInput.start();
@@ -124,7 +122,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public void run() {
 		while (true) {
-
 			if (right == true) {
 				playerx = clamp(playerx + speed, room_size - score, 0);
 			}
@@ -141,7 +138,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			if (right || left || up || down) {
 				try {
 					// Send package!
+					//System.out.println("Sending PLAYER PACKET!");
 					out.writeObject(new PlayerPacket(playerID, playerx, playery, score));
+					out.flush();
 				} catch (Exception e) {
 					System.out.println("Error sending Coordinates.");
 				}
@@ -237,7 +236,7 @@ class InputReader implements Runnable {
 
 	public ObjectInputStream in;
 	Client client;
-	private boolean debug = true;
+	private boolean debug = false;
 
 	public InputReader(ObjectInputStream in, Client client) {
 		this.in = in;
@@ -251,7 +250,6 @@ class InputReader implements Runnable {
 			Packet packet = null;
 			try {
 				packet = (Packet) in.readObject();
-				System.out.println("Client recieved packet!");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -302,7 +300,6 @@ class InputReader implements Runnable {
 					}
 				}
 			}
-			
 		}
 	}
 }

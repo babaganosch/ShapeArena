@@ -1,4 +1,3 @@
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -10,17 +9,18 @@ public class Server {
 	private static int WorldSize = 400;
 	private static Random random = new Random();
 	private static User[] user = new User[10];
+	private static ServerSocket serverSocket;
+	private static Socket userSocket;
+	private static int serverPort = Integer.parseInt("7777");
 
 	// Food related
 	private static int[] foodX = new int[20];
 	private static int[] foodY = new int[20];
 
 	public static void main(String arg[]) throws Exception {
-		
-		int serverPort = Integer.parseInt("7777");
 
 		System.out.println("Starting server...");
-		ServerSocket serverSocket = new ServerSocket(serverPort);
+		serverSocket = new ServerSocket(serverPort);
 		System.out.println("Server started... listens on port " + serverPort);
 
 		// Food Handler
@@ -38,7 +38,7 @@ public class Server {
 		// Start listening
 		while (true) {
 
-			Socket userSocket = serverSocket.accept();
+			userSocket = serverSocket.accept();
 
 			for (int i = 0; i < 10; i++) {
 				if (user[i] == null) {
@@ -76,6 +76,7 @@ class FoodHandler extends Thread {
 				try {
 					// SOUP
 					out.writeObject(new FoodPacket(i, foodX[i], foodY[i]));
+					out.flush();
 					
 				} catch (Exception e) {
 					System.out.println("Error sending: Food coords.");
