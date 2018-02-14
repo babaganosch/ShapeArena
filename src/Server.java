@@ -9,26 +9,23 @@ public class Server {
 	private static int WorldSize = 400;
 	private static Random random = new Random();
 	private static User[] user = new User[10];
-	private static Socket userSocket;
-	static ServerSocket serverSocket;
-	private static int serverPort = Integer.parseInt("7777");
 
 	// Food related
 	private static int[] foodX = new int[20];
 	private static int[] foodY = new int[20];
-	private static int tempX;
-	private static int tempY;
 
 	public static void main(String arg[]) throws Exception {
+		
+		int serverPort = Integer.parseInt("7777");
 
 		System.out.println("Starting server...");
-		serverSocket = new ServerSocket(serverPort);
+		ServerSocket serverSocket = new ServerSocket(serverPort);
 		System.out.println("Server started... listens on port " + serverPort);
 
 		// Food Handler
 		for (int i = 0; i < 20; i++) {
-			tempX = random.nextInt(WorldSize);
-			tempY = random.nextInt(WorldSize);
+			int tempX = random.nextInt(WorldSize);
+			int tempY = random.nextInt(WorldSize);
 			new Food(i, tempX, tempY);
 			foodX[i] = tempX;
 			foodY[i] = tempY;
@@ -41,7 +38,7 @@ public class Server {
 		// Start listening
 		while (true) {
 
-			userSocket = serverSocket.accept();
+			Socket userSocket = serverSocket.accept();
 
 			for (int i = 0; i < 10; i++) {
 				if (user[i] == null) {
