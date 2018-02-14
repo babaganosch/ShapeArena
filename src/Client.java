@@ -9,6 +9,8 @@ import java.awt.event.KeyListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Random;
 
@@ -19,8 +21,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	private static final long serialVersionUID = 5058081065501838682L;
 	private Random random = new Random();
-	private DataInputStream in;
-	private DataOutputStream out;
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
 	private Canvas canvas;
 
 	private int playerID;
@@ -48,8 +50,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			Socket socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
 
-			in = new DataInputStream(socket.getInputStream());
-			out = new DataOutputStream(socket.getOutputStream());
+			in = new ObjectInputStream(socket.getInputStream());
+			out = new ObjectOutputStream(socket.getOutputStream());
 			playerID = in.readInt();
 			canvas.setPlayerID(playerID);
 
@@ -138,11 +140,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 			if (right || left || up || down) {
 				try {
-					out.writeChar('P');
-					out.writeInt(playerID);
-					out.writeInt(playerx);
-					out.writeInt(playery);
-					out.writeInt(score);
+					// Send package!
+					out.writeObject(new PlayerPacket(playerID, playerx, playery, score));
 				} catch (Exception e) {
 					System.out.println("Error sending Coordinates.");
 				}
@@ -236,12 +235,11 @@ class Canvas extends JPanel {
 
 class InputReader implements Runnable {
 
-	public DataInputStream in;
+	public ObjectInputStream in;
 	Client client;
-	private char inPacketType;
 	private boolean debug = true;
 
-	public InputReader(DataInputStream in, Client client) {
+	public InputReader(ObjectInputStream in, Client client) {
 		this.in = in;
 		this.client = client;
 	}
@@ -249,53 +247,61 @@ class InputReader implements Runnable {
 	public void run() {
 
 		while (true) {
+			
+			Packet packet = null;
 			try {
-				inPacketType = in.readChar();
-				if (inPacketType == 'P') {
-					int playerID = in.readInt();
-					int x = in.readInt();
-					int y = in.readInt();
-					int score = in.readInt();
-					if (debug == true) {
-						System.out.println("Packet Recieved: PLAYER");
-						System.out.println("playerID: " + playerID);
-						System.out.println("x: " + x);
-						System.out.println("y: " + y);
-						System.out.println("score: " + score + "\n");
-					}
-					
-					// Horrible.. horrible.. horrible code
-					if (playerID >= 0 && playerID <= 10) {
-						if (x >= 0 && x <= Client.room_size) {
-							if (y >= 0 && y <= Client.room_size) {
-								if (score >= 20 && score <= 70) {
-									client.updateCordinates(playerID, x, y, score);
-								}
-							}
-						}
-					}
-				} else if (inPacketType == 'F') {
-					int foodIndex = in.readInt();
-					int foodX = in.readInt();
-					int foodY = in.readInt();
-					if (debug == true) {
-						System.out.println("Packet Recieved: FOOD");
-						System.out.println("Index: " + foodIndex);
-						System.out.println("x: " + foodX);
-						System.out.println("y: " + foodY + "\n");
-					}
-					// Horrible.. horrible.. horrible code
-					if (foodIndex >= 0 && foodIndex <= 20) {
-						if (foodX >= 0 && foodX <= Client.room_size) {
-							if (foodY >= 0 && foodY <= Client.room_size) {
-								client.paintFood(foodIndex, foodX, foodY);
+				packet = (Packet) in.readObject();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			if (packet instanceof PlayerPacket) {
+				PlayerPacket temp = (PlayerPacket) packet;
+				int playerID = temp.getId();
+				int x = temp.getX();
+				int y = temp.getY();
+				int score = temp.getScore();
+				
+				if (debug == true) {
+					System.out.println("Packet Recieved: PLAYER");
+					System.out.println("playerID: " + playerID);
+					System.out.println("x: " + x);
+					System.out.println("y: " + y);
+					System.out.println("score: " + score + "\n");
+				}
+				
+				// Horrible.. horrible.. horrible code
+				if (playerID >= 0 && playerID <= 10) {
+					if (x >= 0 && x <= Client.room_size) {
+						if (y >= 0 && y <= Client.room_size) {
+							if (score >= 20 && score <= 70) {
+								client.updateCordinates(playerID, x, y, score);
 							}
 						}
 					}
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
+				
+			} else if (packet instanceof FoodPacket) {
+				FoodPacket temp = (FoodPacket) packet;
+				int foodIndex = temp.getId();
+				int foodX = temp.getX();
+				int foodY = temp.getY();
+				if (debug == true) {
+					System.out.println("Packet Recieved: FOOD");
+					System.out.println("Index: " + foodIndex);
+					System.out.println("x: " + foodX);
+					System.out.println("y: " + foodY + "\n");
+				}
+				// Horrible.. horrible.. horrible code
+				if (foodIndex >= 0 && foodIndex <= 20) {
+					if (foodX >= 0 && foodX <= Client.room_size) {
+						if (foodY >= 0 && foodY <= Client.room_size) {
+							client.paintFood(foodIndex, foodX, foodY);
+						}
+					}
+				}
 			}
+			
 		}
 	}
 }

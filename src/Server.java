@@ -1,5 +1,6 @@
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
@@ -26,7 +27,6 @@ public class Server {
 		for (int i = 0; i < 20; i++) {
 			int tempX = random.nextInt(WorldSize);
 			int tempY = random.nextInt(WorldSize);
-			new Food(i, tempX, tempY);
 			foodX[i] = tempX;
 			foodY[i] = tempY;
 		}
@@ -60,12 +60,12 @@ class FoodHandler extends Thread {
 
 	private int[] foodX = new int[20];
 	private int[] foodY = new int[20];
-	private DataOutputStream out;
+	private ObjectOutputStream out;
 
 	public FoodHandler(int[] foodX, int[] foodY, Socket socket) throws IOException {
 		this.foodX = foodX;
 		this.foodY = foodY;
-		this.out = new DataOutputStream(socket.getOutputStream());
+		this.out = new ObjectOutputStream(socket.getOutputStream());
 	}
 
 	public void run() {
@@ -75,10 +75,7 @@ class FoodHandler extends Thread {
 			for (int i = 0; i < 20; i++) {
 				try {
 					// SOUP
-					out.writeChar('F');
-					out.writeInt(i);
-					out.writeInt(foodX[i]);
-					out.writeInt(foodY[i]);
+					out.writeObject(new FoodPacket(i, foodX[i], foodY[i]));
 					
 				} catch (Exception e) {
 					System.out.println("Error sending: Food coords.");

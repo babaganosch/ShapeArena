@@ -6,11 +6,10 @@ public class User implements Runnable{
 	private Thread activity = new Thread(this);
 	
 	private Socket socket;
-	private DataInputStream in;
-	private DataOutputStream out;
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
 	private User[] user;
 	
-	private char inPacketType;
 	private int inX;
 	private int inY;
 	private int inScore;
@@ -25,8 +24,8 @@ public class User implements Runnable{
 		this.user = user;
 		this.playerID = pid;
 		this.socket = socket;
-		this.in = new DataInputStream(socket.getInputStream());
-		this.out = new DataOutputStream(socket.getOutputStream());
+		this.in = new ObjectInputStream(socket.getInputStream());
+		this.out = new ObjectOutputStream(socket.getOutputStream());
 		
 		activity.start();
 	}
@@ -41,42 +40,43 @@ public class User implements Runnable{
 				 * 'P': Player Information
 				 * 'F': Food Information
 				 */
-				inPacketType = in.readChar();
-				if (inPacketType == 'P') {
-					inPlayerID = in.readInt();
-					inX = in.readInt();
-					inY = in.readInt();
-					inScore = in.readInt();
+				Packet packet = null;
+				try {
+					packet = (Packet) in.readObject();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
 				
+				if (packet instanceof PlayerPacket) {
+					PlayerPacket temp = (PlayerPacket) packet;
+					inPlayerID = temp.getId();
+					inX = temp.getX();
+					inY = temp.getY();
+					inScore = temp.getScore();
+					
 					for(int i = 0; i<10; i++)
 					{
 						if(user[i] != null)
 						{
-							user[i].out.writeChar('P');
-							user[i].out.writeInt(inPlayerID);
-							user[i].out.writeInt(inX);
-							user[i].out.writeInt(inY);
-							user[i].out.writeInt(inScore);
-						}
-					}
-				
-				} else if (inPacketType == 'F') {
-					inFoodIndex = in.readInt();
-					inFoodX = in.readInt();
-					inFoodY = in.readInt();
-					for(int i = 0; i<10; i++)
-					{
-						if(user[i] != null)
-						{
-							user[i].out.writeChar('F');
-							user[i].out.writeInt(inFoodIndex);
-							user[i].out.writeInt(inFoodX);
-							user[i].out.writeInt(inFoodY);
+							user[i].out.writeObject(new PlayerPacket(inPlayerID, inX, inY, inScore));
 						}
 					}
 					
+				} else if (packet instanceof FoodPacket) {
+					FoodPacket temp = (FoodPacket) packet;
+					inFoodIndex = temp.getId();
+					inFoodX = temp.getX();
+					inFoodY = temp.getY();
+					
+					for(int i = 0; i<10; i++)
+					{
+						if(user[i] != null)
+						{
+							user[i].out.writeObject(new FoodPacket(inFoodIndex, inFoodX, inFoodY));
+						}
+					}
 				}
-			
+				
 			} 
 			catch (IOException e) {
 				// Disconnect
