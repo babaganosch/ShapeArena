@@ -18,8 +18,6 @@ public class User implements Runnable{
 	private int playerID;
 	
 	// Food related
-	//private int[] inFoodX = new int[20];
-	//private int[] inFoodY = new int[20];
 	private int inFoodX, inFoodY, inFoodIndex;
 	
 	public User(Socket socket, User[] user, int pid) throws Exception{
@@ -40,8 +38,8 @@ public class User implements Runnable{
 		while(true) {
 			try { 
 				/* inPacketType
-				 * 0: Player Information
-				 * 1: Food Information
+				 * 'P': Player Information
+				 * 'F': Food Information
 				 */
 				inPacketType = in.readChar();
 				if (inPacketType == 'P') {

@@ -43,7 +43,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		canvas = new Canvas();
 		add(canvas, BorderLayout.CENTER);
 		try {
-			String serverIP = "192.158.1.32";
+			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("7777");
 			Socket socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
