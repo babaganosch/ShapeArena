@@ -43,6 +43,7 @@ public class User implements Runnable{
 				Packet packet = null;
 				try {
 					packet = (Packet) in.readObject();
+					System.out.println("User recieved packet!");
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}

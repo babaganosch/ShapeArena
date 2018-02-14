@@ -1,7 +1,7 @@
 
 public class PlayerPacket extends Packet {
 
-	private static final long serialVersionUID = -7166969022156404657L;
+	private static final long serialVersionUID = 5058081065501838682L;
 	private int score;
 	
 	public PlayerPacket(int id, int x, int y, int score) {

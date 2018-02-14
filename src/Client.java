@@ -251,6 +251,7 @@ class InputReader implements Runnable {
 			Packet packet = null;
 			try {
 				packet = (Packet) in.readObject();
+				System.out.println("Client recieved packet!");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

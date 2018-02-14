@@ -2,7 +2,7 @@ import java.io.Serializable;
 
 public abstract class Packet implements Serializable {
 	
-	private static final long serialVersionUID = -8229001052268205876L;
+	private static final long serialVersionUID = 5058081065501838682L;
 	private int x, y, id;
 	
 	public Packet(int id, int x, int y) {
