@@ -4,19 +4,22 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class User implements Runnable {
-
+	
+	// Thread
 	private Thread activity = new Thread(this);
 
+	// Global
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private User[] user;
 
+	// Player related
+	private int playerID;
+	private int inPlayerID;
 	private int inX;
 	private int inY;
 	private int inScore;
-	private int inPlayerID;
-	private int playerID;
 
 	// Food related
 	private int inFoodX, inFoodY, inFoodIndex;

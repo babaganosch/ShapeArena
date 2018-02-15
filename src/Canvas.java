@@ -46,19 +46,19 @@ class Canvas extends JPanel {
 
 	public void setPlayerColor(Graphics g, int i) {
 		switch (i) {
-		case 0:
+		case 1:
 			g.setColor(Color.blue);
 			break;
-		case 1:
+		case 2:
 			g.setColor(Color.red);
 			break;
-		case 2:
+		case 3:
 			g.setColor(Color.green);
 			break;
-		case 3:
+		case 4:
 			g.setColor(Color.orange);
 			break;
-		case 4:
+		case 5:
 			g.setColor(Color.lightGray);
 			break;
 		default:
