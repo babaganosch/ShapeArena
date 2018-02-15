@@ -11,6 +11,7 @@ public class Server {
 	private static User[] user = new User[10];
 
 	// Food related
+	public static int maxFood = 20;
 	private static int[] foodX = new int[20];
 	private static int[] foodY = new int[20];
 
@@ -18,12 +19,12 @@ public class Server {
 
 		int serverPort = Integer.parseInt("7777");
 		System.out.println("Starting server...");
-		@SuppressWarnings("resource")
+		@SuppressWarnings("resource") // ---- TODO: Fix this ----
 		ServerSocket serverSocket = new ServerSocket(serverPort);
 		System.out.println("Server started... listens on port " + serverPort);
 
 		// Food Handler
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < maxFood; i++) {
 			int tempX = random.nextInt(WorldSize);
 			int tempY = random.nextInt(WorldSize);
 			foodX[i] = tempX;
@@ -57,8 +58,8 @@ public class Server {
 
 class FoodHandler extends Thread {
 
-	private int[] foodX = new int[20];
-	private int[] foodY = new int[20];
+	private int[] foodX = new int[Server.maxFood];
+	private int[] foodY = new int[Server.maxFood];
 	private ObjectOutputStream out;
 
 	public FoodHandler(int[] foodX, int[] foodY, Socket socket) throws IOException {
@@ -72,7 +73,7 @@ class FoodHandler extends Thread {
 
 		while (true) {
 			
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < Server.maxFood; i++) {
 				try {
 					// SOUP
 					out.writeObject(new FoodPacket(i, foodX[i], foodY[i]));

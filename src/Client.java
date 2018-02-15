@@ -14,6 +14,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	public static boolean debug = false;
 	// ----------------------------------
 		
+	// Global
 	private static final long serialVersionUID = -7317687704845378703L;
 	private Random random = new Random();
 	private ObjectInputStream in;
@@ -23,11 +24,12 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	public static int room_size = 400;
 	private boolean left, right, down, up;
 	
+	// Player related
 	private int playerID;
 	private int playerx;
 	private int playery;
 	private int speed = 5;
-	private int score = 20 + random.nextInt(5);
+	private int score = 20 + random.nextInt(5); // Score = size
 	
 	public Client() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -39,22 +41,28 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		canvas = new Canvas();
 		add(canvas, BorderLayout.CENTER);
 		try {
+			// Connect to the server
 			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("7777");
-			@SuppressWarnings("resource")
+			@SuppressWarnings("resource") // ---- TODO: Fix this ----
 			Socket socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
 			
+			// Initialize the Input/Output streams
 			out = new ObjectOutputStream(socket.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(socket.getInputStream());
 			
+			// Receive packet with playerID from User.
 			playerID = ((PlayerPacket) in.readObject()).getId();
 			canvas.setPlayerID(playerID);
+			
+			// Initialize InputReader and start its thread.
 			InputReader input = new InputReader(in, this);
 			Thread readsInput = new Thread(input);
 			readsInput.start();
 
+			// Start the Client thread.
 			Thread thread = new Thread(this);
 			thread.start();
 		} catch (Exception e) {
@@ -180,14 +188,6 @@ class InputReader implements Runnable {
 		this.in = in;
 		this.client = client;
 	}
-	
-	public void readPacket(Packet packet) {
-		try {
-			packet = (Packet) in.readObject();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public void handlePlayerPacket(Packet packet, Boolean showDebug) {
 		// Handle the packet
@@ -246,19 +246,24 @@ class InputReader implements Runnable {
 	public void run() {
 
 		while (true) {
-			
-			Packet packet = null;
-			readPacket(packet);
-			
-			if (packet instanceof PlayerPacket) {
+			try {
+				Packet packet = null;
+				try {
+					packet = (Packet) in.readObject();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				
-				handlePlayerPacket(packet, Client.debug);
-				
-			} else if (packet instanceof FoodPacket) {
-				
-				handleFoodPacket(packet, Client.debug);
-				
-			}
+				if (packet instanceof PlayerPacket) {
+					
+					handlePlayerPacket(packet, Client.debug);
+					
+				} else if (packet instanceof FoodPacket) {
+					
+					handleFoodPacket(packet, Client.debug);
+					
+				}
+			} catch (Exception e) {}
 		}
 	}
 }
