@@ -64,10 +64,10 @@ public class User implements Runnable {
 	public void handlePlayerPacket(Packet packet, Boolean showDebug) {
 		// Handle the packet
 		PlayerPacket temp = (PlayerPacket) packet;
-		int inPlayerID = temp.getId();
-		int inX = temp.getX();
-		int inY = temp.getY();
-		int inScore = temp.getScore();
+		inPlayerID = temp.getId();
+		inX = temp.getX();
+		inY = temp.getY();
+		inScore = temp.getScore();
 		
 		// Print out what's received
 		if (showDebug == true) {
