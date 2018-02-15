@@ -1,9 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.ObjectInputStream;
@@ -12,10 +7,10 @@ import java.net.Socket;
 import java.util.Random;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class Client extends JFrame implements Runnable, KeyListener {
 
+	private static final long serialVersionUID = -7317687704845378703L;
 	private Random random = new Random();
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
@@ -43,6 +38,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		try {
 			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("7777");
+			@SuppressWarnings("resource")
 			Socket socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
 			
@@ -134,7 +130,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 				playery = clamp(playery - speed, room_size - score, 0);
 			}
 
-			if (right || left || up || down) {
+			//if (right || left || up || down) {
 				try {
 					// Send package!
 					//System.out.println("Sending PLAYER PACKET!");
@@ -143,7 +139,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 				} catch (Exception e) {
 					System.out.println("Error sending Coordinates.");
 				}
-			}
+			//}
 
 			// Update
 			canvas.repaint();

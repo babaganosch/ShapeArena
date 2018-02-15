@@ -1,5 +1,7 @@
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 public class User implements Runnable {
 
@@ -35,6 +37,7 @@ public class User implements Runnable {
 
 		try {
 			out.writeObject(new PlayerPacket(playerID, 0, 0, 0));
+			out.flush();
 		} catch (IOException e) {
 			System.out.println("Failed to send playerID");
 		}

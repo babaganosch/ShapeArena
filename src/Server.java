@@ -18,6 +18,7 @@ public class Server {
 
 		int serverPort = Integer.parseInt("7777");
 		System.out.println("Starting server...");
+		@SuppressWarnings("resource")
 		ServerSocket serverSocket = new ServerSocket(serverPort);
 		System.out.println("Server started... listens on port " + serverPort);
 
@@ -64,6 +65,7 @@ class FoodHandler extends Thread {
 		this.foodX = foodX;
 		this.foodY = foodY;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
+		this.out.flush();
 	}
 
 	public void run() {
