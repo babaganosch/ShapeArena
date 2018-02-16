@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class User implements Runnable {
 
@@ -17,12 +18,16 @@ public class User implements Runnable {
 
 	// Player related
 	private int playerID;
+	
+	// Food related
+	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public User(Socket socket, User[] user, int pid) throws Exception {
+	public User(Socket socket, User[] user, int pid, HashMap<Integer, Food> foodList ) throws Exception {
 
 		this.user = user;
 		this.playerID = pid;
 		this.socket = socket;
+		this.foodList = foodList;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
 		this.in = new ObjectInputStream(socket.getInputStream());
@@ -57,11 +62,20 @@ public class User implements Runnable {
 					e.printStackTrace();
 				}
 				
-				// Forward the packet to the other Users
-				for (int i = 0; i < maxUsers; i++) {
-					if (user[i] != null) {
-						user[i].out.writeObject(packet);
-						user[i].out.flush();
+				if (packet instanceof FoodPacket) {
+					// Unpack the packet
+					FoodPacket temp = (FoodPacket) packet;
+					foodList = temp.getFoodList();
+				} else {
+				
+					// Forward the packet to the other Users
+					for (int i = 0; i < maxUsers; i++) {
+						if (user[i] != null) {
+							user[i].out.writeObject(packet);
+							user[i].out.flush();
+							user[i].out.writeObject(new FoodPacket(0, foodList));
+							user[i].out.flush();
+						}
 					}
 				}
 				

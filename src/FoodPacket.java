@@ -6,8 +6,8 @@ public class FoodPacket extends Packet{
 
 	private HashMap<Integer, Food> foodList;
 	
-	public FoodPacket(int id, int x, int y, HashMap<Integer, Food> foodList) {
-		super(id, x, y);
+	public FoodPacket(int id, HashMap<Integer, Food> foodList) {
+		super(id);
 		this.foodList = foodList;
 	}
 	

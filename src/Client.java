@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -22,7 +23,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private ObjectOutputStream out;
 	private Canvas canvas;
 
-	public static int room_size = 400;
+	public static int roomSize = 400;
 	public static int maxFoods = 20;
 	private boolean left, right, down, up;
 
@@ -32,10 +33,14 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private int playery;
 	private int speed = 5;
 	private int score = 20 + random.nextInt(5); // Score = size
+	
+	// Food related
+	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
+	private Food[] tempFood = new Food[20];
 
 	public Client() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(room_size, room_size);
+		setSize(roomSize, roomSize);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		addKeyListener(this);
@@ -113,16 +118,16 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public void move() {
 		if (right == true) {
-			playerx = clamp(playerx + speed, room_size - score, 0);
+			playerx = clamp(playerx + speed, roomSize - score, 0);
 		}
 		if (left == true) {
-			playerx = clamp(playerx - speed, room_size - score, 0);
+			playerx = clamp(playerx - speed, roomSize - score, 0);
 		}
 		if (down == true) {
-			playery = clamp(playery + speed, room_size - score, 0);
+			playery = clamp(playery + speed, roomSize - score, 0);
 		}
 		if (up == true) {
-			playery = clamp(playery - speed, room_size - score, 0);
+			playery = clamp(playery - speed, roomSize - score, 0);
 		}
 	}
 
@@ -170,12 +175,40 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			if (right || left || up || down) {
 				sendPlayerPackage();
 			}
+			
+			// Handle food
+			foodList = InputReader.tempFoodList;
+			Boolean collided = false;
+			for (int i = 0; i < maxFoods; i++) {
+				tempFood[i] = foodList.get(i);
+				if (tempFood[i] != null) {
+					int tempFoodX = tempFood[i].getX();
+					int tempFoodY = tempFood[i].getY();
+					
+					if (playerx <= tempFoodX && playerx >= (tempFoodX - score)) {
+						if (playery <= tempFoodY && playery >= (tempFoodY - score)) {
+							if (collided == false) {
+								System.out.println("Collision with food!!!");
+								collided = true;
+								score++;
+								foodList.put(i, new Food(i, random.nextInt(roomSize), random.nextInt(roomSize)));
+								try {
+									out.writeObject(new FoodPacket(0, foodList));
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+					collided = false;
+				}
+			}
 
 			// Update
 			canvas.repaint();
 
 			// Loop with this delay
-			sleep(16); // 16 = about 60 FPS
+			sleep(16); // 16ms = about 60 FPS
 		}
 	}
 }
@@ -183,6 +216,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 class InputReader implements Runnable {
 
 	public ObjectInputStream in;
+	public static HashMap<Integer, Food> tempFoodList = new HashMap<Integer, Food>();
 	Client client;
 
 	public InputReader(ObjectInputStream in, Client client) {
@@ -209,8 +243,8 @@ class InputReader implements Runnable {
 
 		// Only update player if the packet was intact
 		if (playerID >= 0 && playerID <= 10) {
-			if (x >= 0 && x <= Client.room_size) {
-				if (y >= 0 && y <= Client.room_size) {
+			if (x >= 0 && x <= Client.roomSize) {
+				if (y >= 0 && y <= Client.roomSize) {
 					if (score >= 20 && score <= 70) {
 						client.updateCoordinates(playerID, x, y, score);
 					}
@@ -222,7 +256,7 @@ class InputReader implements Runnable {
 	public void handleFoodPacket(Packet packet, Boolean showDebug) {
 		// Unpack the packet
 		FoodPacket temp = (FoodPacket) packet;
-		HashMap<Integer, Food> tempFoodList = temp.getFoodList();
+		tempFoodList = temp.getFoodList();
 
 		for (int i = 0; i < 20; i++) {
 			Food tempFood = tempFoodList.get(i);
@@ -240,8 +274,8 @@ class InputReader implements Runnable {
 
 			// Only update food if the packet was intact
 			if (tempFoodI >= 0 && tempFoodI <= Client.maxFoods) {
-				if (tempFoodX >= 0 && tempFoodX <= Client.room_size) {
-					if (tempFoodY >= 0 && tempFoodY <= Client.room_size) {
+				if (tempFoodX >= 0 && tempFoodX <= Client.roomSize) {
+					if (tempFoodY >= 0 && tempFoodY <= Client.roomSize) {
 						client.paintFood(tempFood.getId(), tempFood.getX(), tempFood.getY());
 					}
 				}
