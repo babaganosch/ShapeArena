@@ -274,6 +274,7 @@ class InputReader implements Runnable {
 				}
 
 			} catch (Exception e) {
+				System.out.println("Could not receive/forward packet.");
 			}
 		}
 	}
