@@ -4,33 +4,35 @@ import java.awt.event.KeyListener;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Random;
 
 import javax.swing.JFrame;
 
 public class Client extends JFrame implements Runnable, KeyListener {
-	
+
 	// ------------- DEBUG --------------
 	public static boolean debug = false;
 	// ----------------------------------
-		
+
 	// Global
 	private static final long serialVersionUID = -7317687704845378703L;
 	private Random random = new Random();
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Canvas canvas;
-	
+
 	public static int room_size = 400;
+	public static int maxFoods = 20;
 	private boolean left, right, down, up;
-	
+
 	// Player related
 	private int playerID;
 	private int playerx;
 	private int playery;
 	private int speed = 5;
 	private int score = 20 + random.nextInt(5); // Score = size
-	
+
 	public Client() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(room_size, room_size);
@@ -47,16 +49,16 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			@SuppressWarnings("resource") // ---- TODO: Fix this ----
 			Socket socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
-			
+
 			// Initialize the Input/Output streams
 			out = new ObjectOutputStream(socket.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(socket.getInputStream());
-			
+
 			// Receive packet with playerID from User.
 			playerID = ((PlayerPacket) in.readObject()).getId();
 			canvas.setPlayerID(playerID);
-			
+
 			// Initialize InputReader and start its thread.
 			InputReader input = new InputReader(in, this);
 			Thread readsInput = new Thread(input);
@@ -69,9 +71,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			System.out.println("Unable to start client");
 		}
 	}
-	
-	public static void main(String arg[])
-	{
+
+	public static void main(String arg[]) {
 		new Client();
 	}
 
@@ -92,7 +93,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	public void paintFood(int i, int foodX, int foodY) {
 		canvas.paintFood(i, foodX, foodY);
 	}
-	
+
 	public void sendPlayerPackage() {
 		try {
 			out.writeObject(new PlayerPacket(playerID, playerx, playery, score));
@@ -109,7 +110,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void move() {
 		if (right == true) {
 			playerx = clamp(playerx + speed, room_size - score, 0);
@@ -161,10 +162,10 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public void run() {
 		while (true) {
-			
+
 			// Movement
 			move();
-			
+
 			// Send package
 			if (right || left || up || down) {
 				sendPlayerPackage();
@@ -196,7 +197,7 @@ class InputReader implements Runnable {
 		int x = temp.getX();
 		int y = temp.getY();
 		int score = temp.getScore();
-		
+
 		// Print out what's received
 		if (showDebug == true) {
 			System.out.println("Packet Recieved: PLAYER");
@@ -205,7 +206,7 @@ class InputReader implements Runnable {
 			System.out.println("y: " + y);
 			System.out.println("score: " + score + "\n");
 		}
-		
+
 		// Only update player if the packet was intact
 		if (playerID >= 0 && playerID <= 10) {
 			if (x >= 0 && x <= Client.room_size) {
@@ -217,53 +218,63 @@ class InputReader implements Runnable {
 			}
 		}
 	}
-	
+
 	public void handleFoodPacket(Packet packet, Boolean showDebug) {
-		// Handle the packet
+		// Unpack the packet
 		FoodPacket temp = (FoodPacket) packet;
-		int foodIndex = temp.getId();
-		int foodX = temp.getX();
-		int foodY = temp.getY();
-		
-		// Print out what's received
-		if (showDebug == true) {
-			System.out.println("Packet Recieved: FOOD");
-			System.out.println("Index: " + foodIndex);
-			System.out.println("x: " + foodX);
-			System.out.println("y: " + foodY + "\n");
-		}
-		
-		// Only update food if the packet was intact
-		if (foodIndex >= 0 && foodIndex <= 20) {
-			if (foodX >= 0 && foodX <= Client.room_size) {
-				if (foodY >= 0 && foodY <= Client.room_size) {
-					client.paintFood(foodIndex, foodX, foodY);
+		HashMap<Integer, Food> tempFoodList = temp.getFoodList();
+
+		for (int i = 0; i < 20; i++) {
+			Food tempFood = tempFoodList.get(i);
+			int tempFoodI = tempFood.getId();
+			int tempFoodX = tempFood.getX();
+			int tempFoodY = tempFood.getY();
+
+			// Print out what's received
+			if (showDebug == true) {
+				System.out.println("Packet Recieved: FOOD");
+				System.out.println("Index: " + tempFoodI);
+				System.out.println("x: " + tempFoodX);
+				System.out.println("y: " + tempFoodY + "\n");
+			}
+
+			// Only update food if the packet was intact
+			if (tempFoodI >= 0 && tempFoodI <= Client.maxFoods) {
+				if (tempFoodX >= 0 && tempFoodX <= Client.room_size) {
+					if (tempFoodY >= 0 && tempFoodY <= Client.room_size) {
+						client.paintFood(tempFood.getId(), tempFood.getX(), tempFood.getY());
+					}
 				}
 			}
 		}
+
 	}
-	
+
 	public void run() {
 
 		while (true) {
 			try {
 				Packet packet = null;
+				// Receive packet and store it.
 				try {
 					packet = (Packet) in.readObject();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				
+				// Handle food packet.
 				if (packet instanceof PlayerPacket) {
-					
+
 					handlePlayerPacket(packet, Client.debug);
-					
+
 				} else if (packet instanceof FoodPacket) {
 					
 					handleFoodPacket(packet, Client.debug);
 					
 				}
-			} catch (Exception e) {}
+
+			} catch (Exception e) {
+			}
 		}
 	}
 }

@@ -1,6 +1,8 @@
+import java.io.Serializable;
 
-public class Food {
+public class Food implements Serializable {
 	
+	private static final long serialVersionUID = -8986608731006981204L;
 	private int id;
 	private int x;
 	private int y;

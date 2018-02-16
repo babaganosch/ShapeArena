@@ -1,10 +1,18 @@
+import java.util.HashMap;
 
 public class FoodPacket extends Packet{
 
-	private static final long serialVersionUID = 451770360210150027L;
+	private static final long serialVersionUID = 5424711620222586250L;
 
-	public FoodPacket(int id, int x, int y) {
+	private HashMap<Integer, Food> foodList;
+	
+	public FoodPacket(int id, int x, int y, HashMap<Integer, Food> foodList) {
 		super(id, x, y);
+		this.foodList = foodList;
+	}
+	
+	public HashMap<Integer, Food> getFoodList() {
+		return foodList;
 	}
 
 }

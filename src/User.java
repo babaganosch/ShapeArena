@@ -4,10 +4,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class User implements Runnable {
-	
-	// ------------- DEBUG --------------
-	private boolean debug = false;
-	// ----------------------------------
 
 	// Thread
 	private Thread activity = new Thread(this);
@@ -21,13 +17,6 @@ public class User implements Runnable {
 
 	// Player related
 	private int playerID;
-	private int inPlayerID;
-	private int inX;
-	private int inY;
-	private int inScore;
-
-	// Food related
-	private int inFoodX, inFoodY, inFoodIndex;
 
 	public User(Socket socket, User[] user, int pid) throws Exception {
 
@@ -50,50 +39,6 @@ public class User implements Runnable {
 			System.out.println("Failed to send playerID");
 		}
 	}
-
-	public Packet readPacket(Packet packet) {
-		try {
-			packet = (Packet) in.readObject();
-			return packet;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public void handlePlayerPacket(Packet packet, Boolean showDebug) {
-		// Handle the packet
-		PlayerPacket temp = (PlayerPacket) packet;
-		inPlayerID = temp.getId();
-		inX = temp.getX();
-		inY = temp.getY();
-		inScore = temp.getScore();
-		
-		// Print out what's received
-		if (showDebug == true) {
-			System.out.println("Packet Recieved: PLAYER");
-			System.out.println("playerID: " + inPlayerID);
-			System.out.println("x: " + inX);
-			System.out.println("y: " + inY);
-			System.out.println("score: " + inScore + "\n");
-		}
-	}
-
-	public void handleFoodPacket(Packet packet, Boolean showDebug) {
-		// Handle the packet
-		FoodPacket temp = (FoodPacket) packet;
-		inFoodIndex = temp.getId();
-		inFoodX = temp.getX();
-		inFoodY = temp.getY();
-		
-		// Print out what's received
-		if (showDebug == true) {
-			System.out.println("Packet Recieved: FOOD");
-			System.out.println("Index: " + inFoodIndex);
-			System.out.println("x: " + inFoodX);
-			System.out.println("y: " + inFoodY + "\n");
-		}
-	}
 	
 	public void run() {
 
@@ -111,34 +56,15 @@ public class User implements Runnable {
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
-
-				if (packet instanceof PlayerPacket) {
-					
-					// Unpack the packet
-					handlePlayerPacket(packet, debug);
-
-					// Forward the packet to the other Users
-					for (int i = 0; i < maxUsers; i++) {
-						if (user[i] != null) {
-							user[i].out.writeObject(new PlayerPacket(inPlayerID, inX, inY, inScore));
-							user[i].out.flush();
-						}
-					}
-
-				} else if (packet instanceof FoodPacket) {
-					
-					// Unpack the packet
-					handleFoodPacket(packet, debug);
-
-					// Forward the packet to the other Users
-					for (int i = 0; i < maxUsers; i++) {
-						if (user[i] != null) {
-							user[i].out.writeObject(new FoodPacket(inFoodIndex, inFoodX, inFoodY));
-							user[i].out.flush();
-						}
+				
+				// Forward the packet to the other Users
+				for (int i = 0; i < maxUsers; i++) {
+					if (user[i] != null) {
+						user[i].out.writeObject(packet);
+						user[i].out.flush();
 					}
 				}
-
+				
 			} catch (IOException e) {
 				// Disconnect
 				user[playerID] = null;

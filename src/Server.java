@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Server {
@@ -12,8 +13,7 @@ public class Server {
 
 	// Food related
 	public static int maxFood = 20;
-	private static int[] foodX = new int[20];
-	private static int[] foodY = new int[20];
+	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
 	public static void main(String arg[]) throws Exception {
 
@@ -27,12 +27,11 @@ public class Server {
 		for (int i = 0; i < maxFood; i++) {
 			int tempX = random.nextInt(WorldSize);
 			int tempY = random.nextInt(WorldSize);
-			foodX[i] = tempX;
-			foodY[i] = tempY;
+			foodList.put(i, new Food(i, tempX, tempY));
 		}
 
 		Socket foodSocket = new Socket("localhost", serverPort);
-		FoodHandler foodHandler = new FoodHandler(foodX, foodY, foodSocket);
+		FoodHandler foodHandler = new FoodHandler(foodSocket, foodList);
 		foodHandler.start();
 
 		// Start listening
@@ -43,7 +42,10 @@ public class Server {
 			for (int i = 0; i < 10; i++) {
 				if (user[i] == null) {
 					user[i] = new User(userSocket, user, i);
-					System.out.println("Connection from: " + userSocket.getInetAddress() + " With a PID: " + i);
+					// Don't print out FoodHandler
+					if (i != 0) {
+						System.out.println("Connection from: " + userSocket.getInetAddress() + " With a PID: " + i);
+					}
 					break;
 					/**
 					 * Break the loop. After we created the client we want to go back to the
@@ -58,13 +60,11 @@ public class Server {
 
 class FoodHandler extends Thread {
 
-	private int[] foodX = new int[Server.maxFood];
-	private int[] foodY = new int[Server.maxFood];
+	private HashMap<Integer, Food> foodList;
 	private ObjectOutputStream out;
 
-	public FoodHandler(int[] foodX, int[] foodY, Socket socket) throws IOException {
-		this.foodX = foodX;
-		this.foodY = foodY;
+	public FoodHandler(Socket socket, HashMap<Integer, Food> foodList) throws IOException {
+		this.foodList = foodList;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
 	}
@@ -73,15 +73,10 @@ class FoodHandler extends Thread {
 
 		while (true) {
 			
-			for (int i = 0; i < Server.maxFood; i++) {
-				try {
-					// SOUP
-					out.writeObject(new FoodPacket(i, foodX[i], foodY[i]));
-					out.flush();
-					
-				} catch (Exception e) {
-					System.out.println("Error sending: Food coords.");
-				}
+			try {
+				out.writeObject(new FoodPacket(0, 0, 0, foodList));
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 			
 			try {
