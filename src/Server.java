@@ -8,10 +8,12 @@ import java.util.Random;
 public class Server {
 
 	// Global
+	public static int tickRate = 200;
 	private static int worldSize = 600;
 	private static int maxUsers = 10;
 	private static Random random = new Random();
 	private static User[] user = new User[maxUsers];
+	private static boolean createFoodHandler = true;
 
 	// Food related
 	public static int maxFood = 20;
@@ -34,9 +36,11 @@ public class Server {
 		}
 
 		// Setup FoodHandler
-		Socket foodSocket = new Socket("localhost", serverPort);
-		FoodHandler foodHandler = new FoodHandler(foodSocket, foodList);
-		foodHandler.start();
+		if (createFoodHandler) {
+			Socket foodSocket = new Socket("localhost", serverPort);
+			FoodHandler foodHandler = new FoodHandler(foodSocket, foodList);
+			foodHandler.start();
+		}
 
 		// Start listening
 		while (true) {
@@ -51,9 +55,9 @@ public class Server {
 					if (i != 0) {
 						System.out.println("Connection from: " + userSocket.getInetAddress() + " With a PID: " + i);
 					}
-					
+
 					break;
-					
+
 					/**
 					 * Break the loop. After we created the client we want to go back to the
 					 * while-loop and wait for a new connection.
@@ -85,7 +89,7 @@ class FoodHandler extends Thread {
 
 		while (true) {
 			try {
-
+				// Send out a foodPacket with ID 1 (Receiver: Clients)
 				out.writeObject(new FoodPacket(1, foodList));
 				out.flush();
 
@@ -94,8 +98,8 @@ class FoodHandler extends Thread {
 			}
 
 			try {
-				// Server tick-rate
-				Thread.sleep(200);
+				// Sleep for a while
+				Thread.sleep(Server.tickRate);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

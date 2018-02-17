@@ -40,6 +40,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private Food[] tempFood = new Food[maxFoods];
 
 	public Client() {
+
+		// Setup the JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(roomSize, roomSize);
 		setLocationRelativeTo(null);
@@ -48,7 +50,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		setVisible(true);
 		canvas = new Canvas();
 		add(canvas, BorderLayout.CENTER);
+
 		try {
+
 			// Connect to the server
 			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("7777");
@@ -78,12 +82,12 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		}
 	}
 
-	public void setFoodList(HashMap<Integer, Food> foodList) {
-		this.foodList = foodList;
-	}
-
 	public static void main(String arg[]) {
 		new Client();
+	}
+
+	public void setFoodList(HashMap<Integer, Food> foodList) {
+		this.foodList = foodList;
 	}
 
 	public int clamp(int value, int max, int min) {
@@ -138,40 +142,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		}
 	}
 
-	// KeyHandler:
-	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-			left = true;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-			up = true;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-			right = true;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-			down = true;
-		}
-	}
-
-	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-			left = false;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-			up = false;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-			right = false;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-			down = false;
-		}
-	}
-
-	public void keyTyped(KeyEvent arg0) {
-	}
-
 	public void checkFoodCollision(Boolean showDebug) {
 		Boolean collided = false;
 		for (int i = 0; i < maxFoods; i++) {
@@ -222,6 +192,37 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		collided = false;
 	}
 
+	// KeyHandler:
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+			left = true;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+			up = true;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+			right = true;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+			down = true;
+		}
+	}
+	public void keyReleased(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+			left = false;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+			up = false;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+			right = false;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+			down = false;
+		}
+	}
+	public void keyTyped(KeyEvent arg0) {}
+
 	public void run() {
 		while (true) {
 
@@ -253,7 +254,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 class InputReader implements Runnable {
 
 	public ObjectInputStream in;
-	public static HashMap<Integer, Food> tempFoodList = new HashMap<Integer, Food>();
+	public HashMap<Integer, Food> tempFoodList = new HashMap<Integer, Food>();
 	Client client;
 
 	public InputReader(ObjectInputStream in, Client client) {
@@ -318,7 +319,7 @@ class InputReader implements Runnable {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
+				
 				// Handle packets.
 				if (packet instanceof PlayerPacket) {
 

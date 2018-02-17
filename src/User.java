@@ -18,7 +18,7 @@ public class User implements Runnable {
 
 	// Player related
 	private int playerID;
-	
+
 	// Food related
 	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
@@ -55,11 +55,13 @@ public class User implements Runnable {
 
 				Packet packet = null;
 
-				// Receive packet
-				try {
-					packet = (Packet) in.readObject();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+				synchronized (this) {
+					// Receive packet
+					try {
+						packet = (Packet) in.readObject();
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
 				}
 				
 				if (packet instanceof FoodPacket) {
@@ -71,7 +73,7 @@ public class User implements Runnable {
 						FoodHandler.setFoodList(foodList);
 					}
 				}
-				
+
 				// Forward the packet to the other Users
 				for (int i = 0; i < maxUsers; i++) {
 					if (user[i] != null) {
