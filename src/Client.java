@@ -198,23 +198,27 @@ public class Client extends JFrame implements Runnable, KeyListener {
 							// Spawn a new Food somewhere else and add it to the foodList
 							foodList.put(i, new Food(i, random.nextInt(roomSize), random.nextInt(roomSize)));
 
-							// Send out the new foodList
-							try {
-								// Print out debug message
-								if (showDebug) {
-									System.out.println("Client " + playerID + " sending out a FoodPacket with ID: 0");
-								}
-								// Send out the packet with ID 0 (Receiver: FoodHandler)
-								out.writeObject(new FoodPacket(0, foodList));
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-
 						}
 					}
 				}
 			}
 		}
+
+		if (collided == true) {
+			// Send out the new foodList
+			try {
+				// Print out debug message
+				if (showDebug) {
+					System.out.println("Client " + playerID + " sending out a FoodPacket with ID: 0");
+				}
+				// Send out the packet with ID 0 (Receiver: FoodHandler)
+				out.writeObject(new FoodPacket(0, foodList));
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 		collided = false;
 	}
 

@@ -94,7 +94,8 @@ class FoodHandler extends Thread {
 			}
 
 			try {
-				Thread.sleep(1000); // Update every second
+				// Server tick-rate
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
