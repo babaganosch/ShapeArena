@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,7 +8,7 @@ import java.util.Random;
 public class Server {
 
 	// Global
-	private static int worldSize = 400;
+	private static int worldSize = 600;
 	private static int maxUsers = 10;
 	private static Random random = new Random();
 	private static User[] user = new User[maxUsers];
@@ -20,22 +19,24 @@ public class Server {
 
 	public static void main(String arg[]) throws Exception {
 
+		// Setup the server
 		int serverPort = Integer.parseInt("7777");
 		System.out.println("Starting server...");
 		@SuppressWarnings("resource") // ---- TODO: Fix this ----
 		ServerSocket serverSocket = new ServerSocket(serverPort);
 		System.out.println("Server started... listens on port " + serverPort);
 
-		// Food Handler
+		// Create the Food
 		for (int i = 0; i < maxFood; i++) {
 			int tempX = random.nextInt(worldSize);
 			int tempY = random.nextInt(worldSize);
 			foodList.put(i, new Food(i, tempX, tempY));
 		}
 
-		//Socket foodSocket = new Socket("localhost", serverPort);
-		//FoodHandler foodHandler = new FoodHandler(foodSocket, foodList);
-		//foodHandler.start();
+		// Setup FoodHandler
+		Socket foodSocket = new Socket("localhost", serverPort);
+		FoodHandler foodHandler = new FoodHandler(foodSocket, foodList);
+		foodHandler.start();
 
 		// Start listening
 		while (true) {
@@ -44,13 +45,15 @@ public class Server {
 
 			for (int i = 0; i <= maxUsers; i++) {
 				if (user[i] == null) {
-					user[i] = new User(userSocket, user, i, foodList);
-					
+					user[i] = new User(userSocket, user, i, maxUsers);
+
 					// Don't print out FoodHandler
-					//if (i != 0) {
+					if (i != 0) {
 						System.out.println("Connection from: " + userSocket.getInetAddress() + " With a PID: " + i);
-					//}
+					}
+					
 					break;
+					
 					/**
 					 * Break the loop. After we created the client we want to go back to the
 					 * while-loop and wait for a new connection.
@@ -64,48 +67,34 @@ public class Server {
 
 class FoodHandler extends Thread {
 
-	private HashMap<Integer, Food> foodList;
+	private static HashMap<Integer, Food> foodList;
 	private ObjectOutputStream out;
-	private ObjectInputStream in;
 
-	public FoodHandler(Socket socket, HashMap<Integer, Food> foodList) throws IOException {
-		this.foodList = foodList;
+	public FoodHandler(Socket socket, HashMap<Integer, Food> inFoodList) throws IOException {
+		foodList = inFoodList;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
-		// ----- TODO: FIX THIS!!! -----
-		this.in = new ObjectInputStream(socket.getInputStream());
-		
+
+	}
+
+	public static void setFoodList(HashMap<Integer, Food> inFoodList) {
+		foodList = inFoodList;
 	}
 
 	public void run() {
 
 		while (true) {
 			try {
-				/*
-				try {
-					// Receive packet
-					Packet packet = null;
-					packet = (Packet) in.readObject();
-					// Handle food packet.
-					if (packet instanceof PlayerPacket) {
-						// Unpack the packet
-						FoodPacket temp = (FoodPacket) packet;
-						foodList = temp.getFoodList();
-					}
-					
-					
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				*/
-				out.writeObject(new FoodPacket(0, foodList));
+
+				out.writeObject(new FoodPacket(1, foodList));
+				out.flush();
 
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 
 			try {
-				Thread.sleep(2000); // Update every other second
+				Thread.sleep(1000); // Update every second
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -23,7 +23,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private ObjectOutputStream out;
 	private Canvas canvas;
 
-	public static int roomSize = 400;
+	public static int roomSize = 600;
 	public static int maxFoods = 20;
 	private boolean left, right, down, up;
 
@@ -33,10 +33,11 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private int playery;
 	private int speed = 5;
 	private int score = 20 + random.nextInt(5); // Score = size
-	
+	private int maxScore = 200;
+
 	// Food related
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
-	private Food[] tempFood = new Food[20];
+	private Food[] tempFood = new Food[maxFoods];
 
 	public Client() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -77,6 +78,10 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		}
 	}
 
+	public void setFoodList(HashMap<Integer, Food> foodList) {
+		this.foodList = foodList;
+	}
+
 	public static void main(String arg[]) {
 		new Client();
 	}
@@ -95,8 +100,10 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		canvas.updateCoordinates(pid, x, y, score);
 	}
 
-	public void paintFood(int i, int foodX, int foodY) {
-		canvas.paintFood(i, foodX, foodY);
+	public void paintFood(HashMap<Integer, Food> foodList) {
+		for (Integer i : foodList.keySet()) {
+			canvas.paintFood(foodList.get(i).getId(), foodList.get(i).getX(), foodList.get(i).getY());
+		}
 	}
 
 	public void sendPlayerPackage() {
@@ -165,6 +172,52 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	public void keyTyped(KeyEvent arg0) {
 	}
 
+	public void checkFoodCollision(Boolean showDebug) {
+		Boolean collided = false;
+		for (int i = 0; i < maxFoods; i++) {
+			tempFood[i] = foodList.get(i);
+			if (tempFood[i] != null) {
+				int tempFoodX = tempFood[i].getX();
+				int tempFoodY = tempFood[i].getY();
+
+				if (playerx <= tempFoodX && playerx >= (tempFoodX - score)) {
+					if (playery <= tempFoodY && playery >= (tempFoodY - score)) {
+						if (collided == false) {
+
+							// Print out debug message
+							if (showDebug) {
+								System.out.println("Client " + playerID + " collided with food index " + i);
+							}
+
+							// Make sure we don't collide again
+							collided = true;
+
+							// Increment score
+							score++;
+
+							// Spawn a new Food somewhere else and add it to the foodList
+							foodList.put(i, new Food(i, random.nextInt(roomSize), random.nextInt(roomSize)));
+
+							// Send out the new foodList
+							try {
+								// Print out debug message
+								if (showDebug) {
+									System.out.println("Client " + playerID + " sending out a FoodPacket with ID: 0");
+								}
+								// Send out the packet with ID 0 (Receiver: FoodHandler)
+								out.writeObject(new FoodPacket(0, foodList));
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+						}
+					}
+				}
+			}
+		}
+		collided = false;
+	}
+
 	public void run() {
 		while (true) {
 
@@ -175,34 +228,14 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			if (right || left || up || down) {
 				sendPlayerPackage();
 			}
-			
-			// Handle food
-			foodList = InputReader.tempFoodList;
-			Boolean collided = false;
-			for (int i = 0; i < maxFoods; i++) {
-				tempFood[i] = foodList.get(i);
-				if (tempFood[i] != null) {
-					int tempFoodX = tempFood[i].getX();
-					int tempFoodY = tempFood[i].getY();
-					
-					if (playerx <= tempFoodX && playerx >= (tempFoodX - score)) {
-						if (playery <= tempFoodY && playery >= (tempFoodY - score)) {
-							if (collided == false) {
-								System.out.println("Collision with food!!!");
-								collided = true;
-								score++;
-								foodList.put(i, new Food(i, random.nextInt(roomSize), random.nextInt(roomSize)));
-								try {
-									out.writeObject(new FoodPacket(0, foodList));
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					}
-					collided = false;
-				}
+
+			// Check for Food collision
+			if (score <= maxScore) {
+				checkFoodCollision(debug);
 			}
+
+			// Paint out Food
+			paintFood(foodList);
 
 			// Update
 			canvas.repaint();
@@ -225,6 +258,7 @@ class InputReader implements Runnable {
 	}
 
 	public void handlePlayerPacket(Packet packet, Boolean showDebug) {
+
 		// Handle the packet
 		PlayerPacket temp = (PlayerPacket) packet;
 		int playerID = temp.getId();
@@ -245,7 +279,7 @@ class InputReader implements Runnable {
 		if (playerID >= 0 && playerID <= 10) {
 			if (x >= 0 && x <= Client.roomSize) {
 				if (y >= 0 && y <= Client.roomSize) {
-					if (score >= 20 && score <= 70) {
+					if (score >= 20 && score <= 254) {
 						client.updateCoordinates(playerID, x, y, score);
 					}
 				}
@@ -254,32 +288,16 @@ class InputReader implements Runnable {
 	}
 
 	public void handleFoodPacket(Packet packet, Boolean showDebug) {
+
 		// Unpack the packet
 		FoodPacket temp = (FoodPacket) packet;
-		tempFoodList = temp.getFoodList();
 
-		for (int i = 0; i < 20; i++) {
-			Food tempFood = tempFoodList.get(i);
-			int tempFoodI = tempFood.getId();
-			int tempFoodX = tempFood.getX();
-			int tempFoodY = tempFood.getY();
+		// Only update foodList if ID is 1 (Receiver: Clients)
+		if (temp.getId() == 1) {
+			tempFoodList = temp.getFoodList();
 
-			// Print out what's received
-			if (showDebug == true) {
-				System.out.println("Packet Recieved: FOOD");
-				System.out.println("Index: " + tempFoodI);
-				System.out.println("x: " + tempFoodX);
-				System.out.println("y: " + tempFoodY + "\n");
-			}
+			client.setFoodList(tempFoodList);
 
-			// Only update food if the packet was intact
-			if (tempFoodI >= 0 && tempFoodI <= Client.maxFoods) {
-				if (tempFoodX >= 0 && tempFoodX <= Client.roomSize) {
-					if (tempFoodY >= 0 && tempFoodY <= Client.roomSize) {
-						client.paintFood(tempFood.getId(), tempFood.getX(), tempFood.getY());
-					}
-				}
-			}
 		}
 
 	}
@@ -288,23 +306,24 @@ class InputReader implements Runnable {
 
 		while (true) {
 			try {
-				Packet packet = null;
+
 				// Receive packet and store it.
+				Packet packet = null;
 				try {
 					packet = (Packet) in.readObject();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
-				// Handle food packet.
+
+				// Handle packets.
 				if (packet instanceof PlayerPacket) {
 
 					handlePlayerPacket(packet, Client.debug);
 
 				} else if (packet instanceof FoodPacket) {
-					
+
 					handleFoodPacket(packet, Client.debug);
-					
+
 				}
 
 			} catch (Exception e) {

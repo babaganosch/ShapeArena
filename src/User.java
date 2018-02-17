@@ -14,20 +14,20 @@ public class User implements Runnable {
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private User[] user;
-	private int maxUsers = 10;
+	private int maxUsers;
 
 	// Player related
 	private int playerID;
 	
 	// Food related
-	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
+	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public User(Socket socket, User[] user, int pid, HashMap<Integer, Food> foodList ) throws Exception {
+	public User(Socket socket, User[] user, int pid, int maxUsers) throws Exception {
 
 		this.user = user;
 		this.playerID = pid;
 		this.socket = socket;
-		this.foodList = foodList;
+		this.maxUsers = maxUsers;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
 		this.in = new ObjectInputStream(socket.getInputStream());
@@ -44,7 +44,7 @@ public class User implements Runnable {
 			System.out.println("Failed to send playerID");
 		}
 	}
-	
+
 	public void run() {
 
 		// Tell the client what playerID it is.
@@ -65,20 +65,21 @@ public class User implements Runnable {
 				if (packet instanceof FoodPacket) {
 					// Unpack the packet
 					FoodPacket temp = (FoodPacket) packet;
-					foodList = temp.getFoodList();
-				} else {
-				
-					// Forward the packet to the other Users
-					for (int i = 0; i < maxUsers; i++) {
-						if (user[i] != null) {
-							user[i].out.writeObject(packet);
-							user[i].out.flush();
-							user[i].out.writeObject(new FoodPacket(0, foodList));
-							user[i].out.flush();
-						}
+					// Update FoodHandlers foodList if ID: (Receiver: FoodHandler)
+					if (temp.getId() == 0) {
+						foodList = temp.getFoodList();
+						FoodHandler.setFoodList(foodList);
 					}
 				}
 				
+				// Forward the packet to the other Users
+				for (int i = 0; i < maxUsers; i++) {
+					if (user[i] != null) {
+						user[i].out.writeObject(packet);
+						user[i].out.flush();
+					}
+				}
+
 			} catch (IOException e) {
 				// Disconnect
 				user[playerID] = null;
