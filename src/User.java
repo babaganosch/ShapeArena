@@ -16,18 +16,23 @@ public class User implements Runnable {
 	private User[] user;
 	private int maxUsers;
 
+	// Score
+	HighscoreHandler highscoreHandler;
+	private int topScore;
+
 	// Player related
 	private int playerID;
 
 	// Food related
 	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public User(Socket socket, User[] user, int pid, int maxUsers) throws Exception {
+	public User(Socket socket, User[] user, int pid, int maxUsers, HighscoreHandler scorehandler) throws Exception {
 
 		this.user = user;
 		this.playerID = pid;
 		this.socket = socket;
 		this.maxUsers = maxUsers;
+		this.highscoreHandler = scorehandler;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
 		this.in = new ObjectInputStream(socket.getInputStream());
@@ -59,6 +64,10 @@ public class User implements Runnable {
 		initializeClient();
 
 		while (true) {
+
+			// Highscore handling
+			highscoreHandler.setTopScore(topScore);
+
 			try {
 
 				Packet packet = null;
@@ -70,12 +79,21 @@ public class User implements Runnable {
 					e.printStackTrace();
 				}
 
+				if (packet instanceof PlayerPacket) {
+					PlayerPacket temp = (PlayerPacket) packet;
+					int tempScore = temp.getScore();
+
+					if (tempScore > topScore) {
+						topScore = tempScore;
+					}
+				}
+
 				if (packet instanceof FoodPacket) {
 
 					// Unpack the packet
 					FoodPacket temp = (FoodPacket) packet;
 
-					// Update FoodHandlers foodList if ID: (Receiver: FoodHandler)
+					// Update FoodHandlers foodList if ID: 0 (Receiver: FoodHandler)
 					if (temp.getId() == 0) {
 						foodList = temp.getFoodList();
 						FoodHandler.setFoodList(foodList);
@@ -91,9 +109,8 @@ public class User implements Runnable {
 					}
 				}
 
-			} catch (
+			} catch (IOException e) {
 
-			IOException e) {
 				// Disconnect
 				user[playerID] = null;
 				System.out.println("Disconnection from: " + socket.getInetAddress() + ", with a PID: " + playerID);

@@ -57,7 +57,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			// Connect to the server
 			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("7777");
-			
+
 			this.socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
 
@@ -90,7 +90,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	public boolean getDebug() {
 		return debug;
 	}
-	
+
 	public int getRoomSize() {
 		return roomSize;
 	}
@@ -98,7 +98,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	public int getMaxFoods() {
 		return maxFoods;
 	}
-	
+
 	public void setFoodList(HashMap<Integer, Food> foodList) {
 		this.foodList = foodList;
 	}
@@ -221,6 +221,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			down = true;
 		}
 	}
+
 	public void keyReleased(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			left = false;
@@ -235,7 +236,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			down = false;
 		}
 	}
-	public void keyTyped(KeyEvent arg0) {}
+
+	public void keyTyped(KeyEvent arg0) {
+	}
 
 	public void run() {
 		while (true) {
@@ -331,7 +334,7 @@ class InputReader implements Runnable {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 				// Handle packets.
 				if (packet instanceof PlayerPacket) {
 

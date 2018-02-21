@@ -36,9 +36,12 @@ public class Server {
 
 		// Setup FoodHandler
 		if (createFoodHandler) {
+			@SuppressWarnings("unused")
 			FoodHandler foodHandler = new FoodHandler(foodList, user);
-			foodHandler.start();
 		}
+		
+		// Create Highscorehandler
+		HighscoreHandler highscoreHandler = new HighscoreHandler();
 
 		// Start listening
 		while (true) {
@@ -47,7 +50,7 @@ public class Server {
 
 			for (int i = 0; i < maxUsers; i++) {
 				if (user[i] == null) {
-					user[i] = new User(userSocket, user, i, maxUsers);
+					user[i] = new User(userSocket, user, i, maxUsers, highscoreHandler);
 
 					System.out.println("Connection from: " + userSocket.getInetAddress() + ", with a PID: " + i);
 
@@ -72,6 +75,7 @@ class FoodHandler extends Thread {
 	public FoodHandler(HashMap<Integer, Food> inFoodList, User[] users) throws IOException {
 		foodList = inFoodList;
 		this.users = users;
+		start();
 	}
 
 	public static void setFoodList(HashMap<Integer, Food> inFoodList) {
