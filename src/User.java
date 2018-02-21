@@ -35,6 +35,10 @@ public class User implements Runnable {
 		activity.start();
 	}
 
+	public ObjectOutputStream getObjectOutputStream() {
+		return out;
+	}
+	
 	public void initializeClient() {
 		// Send out playerID as a packet so the client know who he is.
 		try {
@@ -55,18 +59,18 @@ public class User implements Runnable {
 
 				Packet packet = null;
 
-				synchronized (this) {
-					// Receive packet
-					try {
-						packet = (Packet) in.readObject();
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
+				// Receive packet
+				try {
+					packet = (Packet) in.readObject();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
-				
+
 				if (packet instanceof FoodPacket) {
+					
 					// Unpack the packet
 					FoodPacket temp = (FoodPacket) packet;
+					
 					// Update FoodHandlers foodList if ID: (Receiver: FoodHandler)
 					if (temp.getId() == 0) {
 						foodList = temp.getFoodList();

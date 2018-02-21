@@ -77,21 +77,23 @@ class Canvas extends JPanel {
 	}
 
 	public void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
 
 		// Paint all the players
 		for (int i = 0; i < maxPlayers; i++) {
-			setPlayerColor(g, i);
-			g.fillOval(x[i], y[i], size[i], size[i]);
+			setPlayerColor(g2, i);
+			g2.fillOval(x[i], y[i], size[i], size[i]);
 		}
 
 		// Paint your score
 		paintScore(g);
 
 		// Paint the food
-		g.setColor(Color.red);
+		g2.setColor(Color.red);
 		for (int i = 0; i < maxFood; i++) {
-			g.fillOval(foodX[i], foodY[i], 5, 5);
+			g2.fillOval(foodX[i], foodY[i], 5, 5);
 		}
 	}
 }

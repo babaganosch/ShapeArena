@@ -22,6 +22,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Canvas canvas;
+	private Socket socket;
 
 	public static int roomSize = 600;
 	public static int maxFoods = 20;
@@ -56,8 +57,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			// Connect to the server
 			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("7777");
-			@SuppressWarnings("resource") // ---- TODO: Fix this ----
-			Socket socket = new Socket(serverIP, serverPort);
+			
+			this.socket = new Socket(serverIP, serverPort);
 			System.out.println("Connection successful.");
 
 			// Initialize the Input/Output streams

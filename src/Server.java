@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -37,8 +36,7 @@ public class Server {
 
 		// Setup FoodHandler
 		if (createFoodHandler) {
-			Socket foodSocket = new Socket("localhost", serverPort);
-			FoodHandler foodHandler = new FoodHandler(foodSocket, foodList);
+			FoodHandler foodHandler = new FoodHandler(foodList, user);
 			foodHandler.start();
 		}
 
@@ -47,14 +45,11 @@ public class Server {
 
 			Socket userSocket = serverSocket.accept();
 
-			for (int i = 0; i <= maxUsers; i++) {
+			for (int i = 0; i < maxUsers; i++) {
 				if (user[i] == null) {
 					user[i] = new User(userSocket, user, i, maxUsers);
 
-					// Don't print out FoodHandler
-					if (i != 0) {
-						System.out.println("Connection from: " + userSocket.getInetAddress() + " With a PID: " + i);
-					}
+					System.out.println("Connection from: " + userSocket.getInetAddress() + ", with a PID: " + i);
 
 					break;
 
@@ -72,13 +67,11 @@ public class Server {
 class FoodHandler extends Thread {
 
 	private static HashMap<Integer, Food> foodList;
-	private ObjectOutputStream out;
+	private User[] users;
 
-	public FoodHandler(Socket socket, HashMap<Integer, Food> inFoodList) throws IOException {
+	public FoodHandler(HashMap<Integer, Food> inFoodList, User[] users) throws IOException {
 		foodList = inFoodList;
-		this.out = new ObjectOutputStream(socket.getOutputStream());
-		this.out.flush();
-
+		this.users = users;
 	}
 
 	public static void setFoodList(HashMap<Integer, Food> inFoodList) {
@@ -89,9 +82,14 @@ class FoodHandler extends Thread {
 
 		while (true) {
 			try {
+
 				// Send out a foodPacket with ID 1 (Receiver: Clients)
-				out.writeObject(new FoodPacket(1, foodList));
-				out.flush();
+				for (User user : users) {
+					if (user != null) {
+						user.getObjectOutputStream().writeObject(new FoodPacket(1, foodList));
+						user.getObjectOutputStream().flush();
+					}
+				}
 
 			} catch (IOException e1) {
 				e1.printStackTrace();
