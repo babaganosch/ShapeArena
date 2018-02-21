@@ -7,12 +7,12 @@ import java.util.Random;
 public class Server {
 
 	// Global
-	public static int tickRate = 200;
+	public static int tickRate = 100;
 	private static int worldSize = 600;
 	private static int maxUsers = 10;
 	private static Random random = new Random();
 	private static User[] user = new User[maxUsers];
-	private static boolean createFoodHandler = true;
+	private static boolean createFoodHandler = false;
 
 	// Food related
 	public static int maxFood = 20;

@@ -38,7 +38,7 @@ public class User implements Runnable {
 	public ObjectOutputStream getObjectOutputStream() {
 		return out;
 	}
-	
+
 	public void initializeClient() {
 		// Send out playerID as a packet so the client know who he is.
 		try {
@@ -47,6 +47,10 @@ public class User implements Runnable {
 		} catch (IOException e) {
 			System.out.println("Failed to send playerID");
 		}
+	}
+
+	public Socket getSocket() {
+		return socket;
 	}
 
 	public void run() {
@@ -67,10 +71,10 @@ public class User implements Runnable {
 				}
 
 				if (packet instanceof FoodPacket) {
-					
+
 					// Unpack the packet
 					FoodPacket temp = (FoodPacket) packet;
-					
+
 					// Update FoodHandlers foodList if ID: (Receiver: FoodHandler)
 					if (temp.getId() == 0) {
 						foodList = temp.getFoodList();
@@ -80,13 +84,16 @@ public class User implements Runnable {
 
 				// Forward the packet to the other Users
 				for (int i = 0; i < maxUsers; i++) {
-					if (user[i] != null) {
+					if (user[i] != null && user[i].getSocket() != socket) {
 						user[i].out.writeObject(packet);
 						user[i].out.flush();
+						user[i].out.reset();
 					}
 				}
 
-			} catch (IOException e) {
+			} catch (
+
+			IOException e) {
 				// Disconnect
 				user[playerID] = null;
 				System.out.println("Disconnection from: " + socket.getInetAddress() + ", with a PID: " + playerID);

@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 public class Client extends JFrame implements Runnable, KeyListener {
 
 	// ------------- DEBUG --------------
-	public static boolean debug = false;
+	private boolean debug = false;
 	// ----------------------------------
 
 	// Global
@@ -24,8 +24,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private Canvas canvas;
 	private Socket socket;
 
-	public static int roomSize = 600;
-	public static int maxFoods = 20;
+	private int roomSize = 600;
+	private int maxFoods = 20;
 	private boolean left, right, down, up;
 
 	// Player related
@@ -87,6 +87,18 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		new Client();
 	}
 
+	public boolean getDebug() {
+		return debug;
+	}
+	
+	public int getRoomSize() {
+		return roomSize;
+	}
+
+	public int getMaxFoods() {
+		return maxFoods;
+	}
+	
 	public void setFoodList(HashMap<Integer, Food> foodList) {
 		this.foodList = foodList;
 	}
@@ -118,6 +130,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		} catch (Exception e) {
 			System.out.println("Error sending Coordinates.");
 		}
+		canvas.updateCoordinates(playerID, playerx, playery, score);
 	}
 
 	public void sleep(int time) {
@@ -231,9 +244,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			move();
 
 			// Send package
-			if (right || left || up || down) {
-				sendPlayerPackage();
-			}
+			sendPlayerPackage();
 
 			// Check for Food collision
 			if (score <= maxScore) {
@@ -283,8 +294,8 @@ class InputReader implements Runnable {
 
 		// Only update player if the packet was intact
 		if (playerID >= 0 && playerID <= 10) {
-			if (x >= 0 && x <= Client.roomSize) {
-				if (y >= 0 && y <= Client.roomSize) {
+			if (x >= 0 && x <= client.getRoomSize()) {
+				if (y >= 0 && y <= client.getRoomSize()) {
 					if (score >= 20 && score <= 254) {
 						client.updateCoordinates(playerID, x, y, score);
 					}
@@ -324,11 +335,11 @@ class InputReader implements Runnable {
 				// Handle packets.
 				if (packet instanceof PlayerPacket) {
 
-					handlePlayerPacket(packet, Client.debug);
+					handlePlayerPacket(packet, client.getDebug());
 
 				} else if (packet instanceof FoodPacket) {
 
-					handleFoodPacket(packet, Client.debug);
+					handleFoodPacket(packet, client.getDebug());
 
 				}
 
