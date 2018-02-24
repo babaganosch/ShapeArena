@@ -1,13 +1,4 @@
-/Canvas.class
-/Client.class
-/Food.class
-/FoodHandler.class
-/FoodPacket.class
-/InputReader.class
-/Packet.class
-/PlayerPacket.class
-/Server.class
 /User.class
-/MapPacket.class
-/PacketQueue.class
-/HighscoreHandler.class
+/ServerFrame.class
+/Server$FoodHandler.class
+/FoodHandler.class

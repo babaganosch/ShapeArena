@@ -15,6 +15,7 @@ public class User implements Runnable {
 	private ObjectOutputStream out;
 	private User[] user;
 	private int maxUsers;
+	private FoodHandler foodHandler;
 
 	// Score
 	HighscoreHandler highscoreHandler;
@@ -26,13 +27,14 @@ public class User implements Runnable {
 	// Food related
 	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public User(Socket socket, User[] user, int pid, int maxUsers, HighscoreHandler scorehandler) throws Exception {
+	public User(Socket socket, User[] user, int pid, int maxUsers, HighscoreHandler scorehandler, FoodHandler foodHandler) throws Exception {
 
 		this.user = user;
 		this.playerID = pid;
 		this.socket = socket;
 		this.maxUsers = maxUsers;
 		this.highscoreHandler = scorehandler;
+		this.foodHandler = foodHandler;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
 		this.in = new ObjectInputStream(socket.getInputStream());
@@ -96,7 +98,7 @@ public class User implements Runnable {
 					// Update FoodHandlers foodList if ID: 0 (Receiver: FoodHandler)
 					if (temp.getId() == 0) {
 						foodList = temp.getFoodList();
-						FoodHandler.setFoodList(foodList);
+						foodHandler.setFoodList(foodList);
 					}
 				}
 

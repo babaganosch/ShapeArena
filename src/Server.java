@@ -2,9 +2,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Observable;
 import java.util.Random;
 
-public class Server {
+public class Server extends Observable {
 
 	// Global
 	public static int tickRate = 100;
@@ -13,20 +14,35 @@ public class Server {
 	private static Random random = new Random();
 	private static User[] user = new User[maxUsers];
 	private static boolean createFoodHandler = false;
+	private ServerSocket serverSocket;
+	private FoodHandler foodHandler;
+	private HighscoreHandler highscoreHandler;
+	private ServerFrame serverFrame;
 
 	// Food related
 	public static int maxFood = 20;
 	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public static void main(String arg[]) throws Exception {
+	public Server() throws Exception {
+		this.serverFrame = new ServerFrame(300,300);
+		SetupServer("11100");
+		SetupObjects();
+		StartListening();
+	}
+	
+	public static void main(String[] args) throws Exception {
+		new Server();
+	}
 
+	public void SetupServer(String port) throws IOException {
 		// Setup the server
-		int serverPort = Integer.parseInt("7777");
+		int serverPort = Integer.parseInt(port);
 		System.out.println("Starting server...");
-		@SuppressWarnings("resource") // ---- TODO: Fix this ----
-		ServerSocket serverSocket = new ServerSocket(serverPort);
+		this.serverSocket = new ServerSocket(serverPort);
 		System.out.println("Server started... listens on port " + serverPort);
+	}
 
+	public void SetupObjects() throws IOException {
 		// Create the Food
 		for (int i = 0; i < maxFood; i++) {
 			int tempX = random.nextInt(worldSize);
@@ -36,13 +52,14 @@ public class Server {
 
 		// Setup FoodHandler
 		if (createFoodHandler) {
-			@SuppressWarnings("unused")
-			FoodHandler foodHandler = new FoodHandler(foodList, user);
+			this.foodHandler = new FoodHandler(foodList, user);
 		}
-		
-		// Create Highscorehandler
-		HighscoreHandler highscoreHandler = new HighscoreHandler();
 
+		// Create Highscorehandler
+		this.highscoreHandler = new HighscoreHandler();
+	}
+
+	public void StartListening() throws Exception {
 		// Start listening
 		while (true) {
 
@@ -50,7 +67,7 @@ public class Server {
 
 			for (int i = 0; i < maxUsers; i++) {
 				if (user[i] == null) {
-					user[i] = new User(userSocket, user, i, maxUsers, highscoreHandler);
+					user[i] = new User(userSocket, user, i, maxUsers, highscoreHandler, foodHandler);
 
 					System.out.println("Connection from: " + userSocket.getInetAddress() + ", with a PID: " + i);
 
@@ -63,48 +80,6 @@ public class Server {
 				}
 			}
 
-		}
-	}
-}
-
-class FoodHandler extends Thread {
-
-	private static HashMap<Integer, Food> foodList;
-	private User[] users;
-
-	public FoodHandler(HashMap<Integer, Food> inFoodList, User[] users) throws IOException {
-		foodList = inFoodList;
-		this.users = users;
-		start();
-	}
-
-	public static void setFoodList(HashMap<Integer, Food> inFoodList) {
-		foodList = inFoodList;
-	}
-
-	public void run() {
-
-		while (true) {
-			try {
-
-				// Send out a foodPacket with ID 1 (Receiver: Clients)
-				for (User user : users) {
-					if (user != null) {
-						user.getObjectOutputStream().writeObject(new FoodPacket(1, foodList));
-						user.getObjectOutputStream().flush();
-					}
-				}
-
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
-			try {
-				// Sleep for a while
-				Thread.sleep(Server.tickRate);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }
