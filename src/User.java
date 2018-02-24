@@ -3,8 +3,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Observable;
 
-public class User implements Runnable {
+public class User extends Observable implements Runnable {
 
 	// Thread
 	private Thread activity = new Thread(this);
@@ -16,6 +17,7 @@ public class User implements Runnable {
 	private User[] user;
 	private int maxUsers;
 	private FoodHandler foodHandler;
+	private ServerFrame serverFrame;
 
 	// Score
 	HighscoreHandler highscoreHandler;
@@ -27,7 +29,8 @@ public class User implements Runnable {
 	// Food related
 	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public User(Socket socket, User[] user, int pid, int maxUsers, HighscoreHandler scorehandler, FoodHandler foodHandler) throws Exception {
+	public User(Socket socket, User[] user, int pid, int maxUsers, HighscoreHandler scorehandler,
+			FoodHandler foodHandler, ServerFrame serverFrame) throws Exception {
 
 		this.user = user;
 		this.playerID = pid;
@@ -35,10 +38,13 @@ public class User implements Runnable {
 		this.maxUsers = maxUsers;
 		this.highscoreHandler = scorehandler;
 		this.foodHandler = foodHandler;
+		this.serverFrame = serverFrame;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
 		this.in = new ObjectInputStream(socket.getInputStream());
 
+		addObserver(serverFrame);
+		
 		activity.start();
 	}
 
@@ -116,6 +122,16 @@ public class User implements Runnable {
 				// Disconnect
 				user[playerID] = null;
 				System.out.println("Disconnection from: " + socket.getInetAddress() + ", with a PID: " + playerID);
+
+				String message = null;
+				for (int i = 0; i < maxUsers; i++) {
+					if (user[i] != null) {
+						message += user[i].getSocket().getInetAddress().getHostAddress() + "\n";
+					}
+				}
+
+				notifyObservers(message);
+
 				break;
 			}
 		}

@@ -13,7 +13,7 @@ public class Server extends Observable {
 	private static int maxUsers = 10;
 	private static Random random = new Random();
 	private static User[] user = new User[maxUsers];
-	private static boolean createFoodHandler = false;
+	private static boolean createFoodHandler = true;
 	private ServerSocket serverSocket;
 	private FoodHandler foodHandler;
 	private HighscoreHandler highscoreHandler;
@@ -24,12 +24,13 @@ public class Server extends Observable {
 	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
 	public Server() throws Exception {
-		this.serverFrame = new ServerFrame(300,300);
+		this.serverFrame = new ServerFrame(300, 300);
 		SetupServer("11100");
 		SetupObjects();
 		StartListening();
+		addObserver(serverFrame);
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		new Server();
 	}
@@ -64,10 +65,18 @@ public class Server extends Observable {
 		while (true) {
 
 			Socket userSocket = serverSocket.accept();
-
+			String message = null;
+			for (int i = 0; i < maxUsers; i++) {
+				if (user[i] != null) {
+					message += user[i].getSocket().getInetAddress().getHostAddress() + "\n";
+				}
+			}
+			
+			notifyObservers(message);
+			
 			for (int i = 0; i < maxUsers; i++) {
 				if (user[i] == null) {
-					user[i] = new User(userSocket, user, i, maxUsers, highscoreHandler, foodHandler);
+					user[i] = new User(userSocket, user, i, maxUsers, highscoreHandler, foodHandler, serverFrame);
 
 					System.out.println("Connection from: " + userSocket.getInetAddress() + ", with a PID: " + i);
 
