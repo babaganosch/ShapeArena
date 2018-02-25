@@ -55,7 +55,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		try {
 
 			// Connect to the server
-			String serverIP = "176.10.136.66";
+			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
