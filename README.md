@@ -25,7 +25,7 @@ Aron Bengtsson
 André Höjmark
 
 ## Pictures ##
-![alt text](https://i.gyazo.com/7116d2c1bf2a9ffd0a84bec38036aa27.png "Current state")
+![alt text](https://i.gyazo.com/6d0976a53244e0a6844a06d57f225775.png "Current state")
 ![alt text](https://i.gyazo.com/8e593c0b8689ee7fd4fd853f14142931.png "Menu")
 ![alt text](https://i.gyazo.com/c151203f22a25068a7177fa37ac90713.png "Projectiles")
 ![alt text](https://i.gyazo.com/e30c7dde7511c55d656aef630dbd5c1e.png "Ouch!")
