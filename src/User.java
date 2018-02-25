@@ -73,7 +73,7 @@ public class User extends Observable implements Runnable{
 		String message = "";
 		for(User i: user){
 			if(i != null){
-				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + " with ID: " + playerID + System.lineSeparator();
+				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + " with ID: " + i.playerID + System.lineSeparator();
 			}
 		}
 		return message;
