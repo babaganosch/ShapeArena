@@ -9,8 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 public class ServerFrame extends JFrame implements Observer {
+	
 	private JTextArea textArea;
-
 	public ServerFrame (int width, int height) {
 		
 		setTitle("Server");
@@ -25,14 +25,12 @@ public class ServerFrame extends JFrame implements Observer {
         textArea.setBackground(panelwest.getBackground());
         panelwest.add(textArea);
 		
-		
-		this.setVisible(true);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setVisible(true);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
 	public void update(Observable src, Object arg) {
 		if(src instanceof User || src instanceof Server && arg instanceof String) {
-			// System.out.println("hej" + (String)arg);
 			textArea.setText((String)arg);
 		}
 	}
