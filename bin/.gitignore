@@ -1,4 +1,12 @@
-/Main.class
+/Canvas.class
+/Client.class
+/Food.class
+/FoodHandler.class
+/FoodPacket.class
+/HighscoreHandler.class
+/InputReader.class
 /Packet.class
 /PlayerPacket.class
-/FoodPacket.class
+/Server.class
+/ServerFrame.class
+/User.class
