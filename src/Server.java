@@ -3,9 +3,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
 
-public class Server extends Observable {
+public class Server extends Observable{
 
 	// Global
 	public static int tickRate = 100;
@@ -13,26 +14,28 @@ public class Server extends Observable {
 	private static int maxUsers = 10;
 	private static Random random = new Random();
 	private static User[] user = new User[maxUsers];
-	private static boolean createFoodHandler = true;
+	private static boolean createFoodHandler = false;
 	private ServerSocket serverSocket;
 	private FoodHandler foodHandler;
 	private HighscoreHandler highscoreHandler;
-	private ServerFrame serverFrame;
+	private Observer serverFrame;
+
 
 	// Food related
 	public static int maxFood = 20;
 	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
+	public static void main(String[] args) throws Exception {
+		new Server();
+	}
+	
 	public Server() throws Exception {
-		this.serverFrame = new ServerFrame(300, 300);
+		
+		serverFrame = new ServerFrame(300, 300);
+		addObserver(serverFrame);
 		SetupServer("11100");
 		SetupObjects();
 		StartListening();
-		addObserver(serverFrame);
-	}
-
-	public static void main(String[] args) throws Exception {
-		new Server();
 	}
 
 	public void SetupServer(String port) throws IOException {
@@ -59,36 +62,41 @@ public class Server extends Observable {
 		// Create Highscorehandler
 		this.highscoreHandler = new HighscoreHandler();
 	}
+	
+	public String getConnectedUsers()
+	{
+		String message = "";
+		for(User i: user){
+			if(i != null){
+				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + System.lineSeparator();
+			}
+			
+		}
+		return message;
+	}
 
 	public void StartListening() throws Exception {
 		// Start listening
 		while (true) {
 
 			Socket userSocket = serverSocket.accept();
-			String message = null;
-			for (int i = 0; i < maxUsers; i++) {
-				if (user[i] != null) {
-					message += user[i].getSocket().getInetAddress().getHostAddress() + "\n";
-				}
-			}
 			
-			notifyObservers(message);
 			
 			for (int i = 0; i < maxUsers; i++) {
 				if (user[i] == null) {
 					user[i] = new User(userSocket, user, i, maxUsers, highscoreHandler, foodHandler, serverFrame);
-
+					setChanged();
+					notifyObservers(getConnectedUsers());
 					System.out.println("Connection from: " + userSocket.getInetAddress() + ", with a PID: " + i);
-
 					break;
-
+					
 					/**
 					 * Break the loop. After we created the client we want to go back to the
 					 * while-loop and wait for a new connection.
 					 */
 				}
 			}
-
+			
 		}
 	}
 }
