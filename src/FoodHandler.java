@@ -1,9 +1,11 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 class FoodHandler extends Thread {
 
 	private HashMap<Integer, Food> foodList;
+	private ArrayList<Packet> packetList = new ArrayList<Packet>();
 	private User[] users;
 	private Server server;
 
@@ -17,7 +19,11 @@ class FoodHandler extends Thread {
 	public void setFoodList(HashMap<Integer, Food> inFoodList) {
 		foodList = inFoodList;
 	}
-
+	
+	public synchronized void addPacket(Packet packet) {
+		packetList.add(packet);
+	}
+	
 	public void run() {
 
 		while (true) {
@@ -30,6 +36,18 @@ class FoodHandler extends Thread {
 						user.getObjectOutputStream().flush();
 					}
 				}
+				
+				// Forward packets
+				if (packetList.size() > 0) {
+					for (User user : users) {
+						if (user != null) {
+							user.getObjectOutputStream().writeObject(packetList.get(0));
+							user.getObjectOutputStream().flush();
+						}
+					}
+					packetList.remove(0);
+				}
+				
 
 			} catch (IOException e1) {
 				e1.printStackTrace();

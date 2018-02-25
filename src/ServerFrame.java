@@ -12,6 +12,7 @@ public class ServerFrame extends JFrame implements Observer {
 	
 	private JTextArea textArea;
 	private JTextArea textAreaHeader;
+	private String serverEmpty = "Server is empty.";
 	
 	public ServerFrame (int width, int height) {
 		
@@ -29,14 +30,12 @@ public class ServerFrame extends JFrame implements Observer {
 		textAreaHeader.setBackground(panelnorth.getBackground());
 		panelnorth.add(textAreaHeader);
 		
-		//textAreaHeader.setText("Server status: online/nListening on port: " + port);
-		
 		textArea = new JTextArea();
 		textArea.setEditable(false);
         textArea.setBackground(panelwest.getBackground());
         panelwest.add(textArea);
         
-        textArea.setText("Server is empty.");
+        textArea.setText(serverEmpty);
 		
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -47,7 +46,7 @@ public class ServerFrame extends JFrame implements Observer {
 			textArea.setText((String)arg);
 			
 			if (textArea.getText().equals("")) {
-				textArea.setText("Server is empty.");
+				textArea.setText(serverEmpty);
 			}
 		} else if(src instanceof Server && arg instanceof Integer) {
 			textAreaHeader.setText("Server status: online" + System.lineSeparator() + "Listening on port: " + arg);

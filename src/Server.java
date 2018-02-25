@@ -9,12 +9,12 @@ import java.util.Random;
 public class Server extends Observable{
 
 	// Global
-	private int tickRate = 100;
+	private int tickRate = 10;
 	private int worldSize = 600;
 	private int maxUsers = 10;
 	private Random random = new Random();
 	private User[] user = new User[maxUsers];
-	private boolean createFoodHandler = false;
+	private boolean createFoodHandler = true;
 	private ServerSocket serverSocket;
 	private FoodHandler foodHandler;
 	private HighscoreHandler highscoreHandler;
@@ -33,19 +33,20 @@ public class Server extends Observable{
 	
 	public Server() throws Exception {
 		SetupServer(port);
-		
-		serverFrame = new ServerFrame(300, 300);
-		addObserver(serverFrame);
-		
-		setChanged();
-		notifyObservers(Integer.parseInt(port));
-		
+		setupServerFrame();	
 		SetupObjects();
 		StartListening();
 	}
 	
 	public int getTickRate() {
 		return tickRate;
+	}
+	
+	public void setupServerFrame() {
+		serverFrame = new ServerFrame(300, 300);
+		addObserver(serverFrame);
+		setChanged();
+		notifyObservers(Integer.parseInt(port));
 	}
 	
 	public void SetupServer(String port) throws IOException {
@@ -78,7 +79,7 @@ public class Server extends Observable{
 		String message = "";
 		for(User i: user){
 			if(i != null){
-				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + System.lineSeparator();
+				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + " with ID: " + i.getId() + System.lineSeparator();
 			}
 			
 		}

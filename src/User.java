@@ -64,12 +64,16 @@ public class User extends Observable implements Runnable{
 		return socket;
 	}
 	
+	public int getId() {
+		return playerID;
+	}
+	
 	public String getConnectedUsers()
 	{
 		String message = "";
 		for(User i: user){
 			if(i != null){
-				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + System.lineSeparator();
+				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + " with ID: " + playerID + System.lineSeparator();
 			}
 		}
 		return message;
@@ -119,6 +123,11 @@ public class User extends Observable implements Runnable{
 				}
 
 				// Forward the packet to the other Users
+				if (packet != null) {
+					//System.out.println(packet);
+					foodHandler.addPacket(packet);
+				}
+				/*
 				for (int i = 0; i < maxUsers; i++) {
 					if (user[i] != null && user[i].getSocket() != socket) {
 						user[i].out.writeObject(packet);
@@ -126,7 +135,7 @@ public class User extends Observable implements Runnable{
 						user[i].out.reset();
 					}
 				}
-
+				*/
 			} catch (IOException e) {
 
 				// Disconnect

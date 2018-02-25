@@ -32,7 +32,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private int playerID;
 	private int playerx;
 	private int playery;
-	private int speed = 5;
+	private int speed = 7;
 	private int score = 20 + random.nextInt(5); // Score = size
 	private int maxScore = 200;
 
@@ -55,7 +55,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		try {
 
 			// Connect to the server
-			String serverIP = "localhost"; //"192.168.1.172";
+			String serverIP = "176.10.136.66";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -104,6 +104,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	}
 
 	public int clamp(int value, int max, int min) {
+		// Clamp value between min and max value.
 		if (value <= min) {
 			return min;
 		} else if (value >= max) {
@@ -158,9 +159,13 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public void checkFoodCollision(Boolean showDebug) {
 		Boolean collided = false;
+		// Loop through every Food and get their x and y coordinate, then check for
+		// collision.
 		for (int i = 0; i < maxFoods; i++) {
 			tempFood[i] = foodList.get(i);
+
 			if (tempFood[i] != null) {
+
 				int tempFoodX = tempFood[i].getX();
 				int tempFoodY = tempFood[i].getY();
 
@@ -247,8 +252,10 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			move();
 
 			// Send package
-			sendPlayerPackage();
-
+			if (left || right || up || down) {
+				sendPlayerPackage();
+			}
+			
 			// Check for Food collision
 			if (score <= maxScore) {
 				checkFoodCollision(debug);
@@ -261,7 +268,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			canvas.repaint();
 
 			// Loop with this delay
-			sleep(16); // 16ms = about 60 FPS
+			sleep(32); // 16ms = about 60 FPS
 		}
 	}
 }
