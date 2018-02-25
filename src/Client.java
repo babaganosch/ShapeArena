@@ -35,6 +35,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private int speed = 7;
 	private int score = 20 + random.nextInt(5); // Score = size
 	private int maxScore = 200;
+	private int shrinkTimer = 100;
+	private int initialAliveTime = 75;
+	private int aliveTimer = initialAliveTime;
 
 	// Food related
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
@@ -131,7 +134,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		} catch (Exception e) {
 			System.out.println("Error sending Coordinates.");
 		}
-		canvas.updateCoordinates(playerID, playerx, playery, score);
 	}
 
 	public void sleep(int time) {
@@ -155,6 +157,33 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		if (up == true) {
 			playery = clamp(playery - speed, roomSize - score, 0);
 		}
+	}
+
+	public void shrink() {
+		if (shrinkTimer <= 0) {
+			if (score >= 25) {
+				score--;
+			}
+			
+			if (score >= 150) {
+				shrinkTimer = 13;
+			} else if (score >= 100) {
+				shrinkTimer = 15;
+			} else if (score >= 50) {
+				shrinkTimer = 30;
+			} else {
+				shrinkTimer = 40;
+			}
+		}
+		shrinkTimer--;
+	}
+	
+	public void keepAlive() {
+		if (aliveTimer <= 0) {
+			sendPlayerPackage();
+			aliveTimer = initialAliveTime;
+		}
+		aliveTimer--;
 	}
 
 	public void checkFoodCollision(Boolean showDebug) {
@@ -255,20 +284,26 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			if (left || right || up || down) {
 				sendPlayerPackage();
 			}
-			
+
 			// Check for Food collision
 			if (score <= maxScore) {
 				checkFoodCollision(debug);
 			}
 
+			// Shrink
+			shrink();
+
 			// Paint out Food
 			paintFood(foodList);
+			
+			keepAlive();
 
 			// Update
+			canvas.updateCoordinates(playerID, playerx, playery, score);
 			canvas.repaint();
 
 			// Loop with this delay
-			sleep(32); // 16ms = about 60 FPS
+			sleep(32); // 16ms = about 60 FPS, 32 = 30 FPS
 		}
 	}
 }
