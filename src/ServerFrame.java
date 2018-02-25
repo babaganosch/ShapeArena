@@ -1,16 +1,17 @@
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 public class ServerFrame extends JFrame implements Observer {
 	
+	private static final long serialVersionUID = -3024245174916363989L;
+	
 	private JTextArea textArea;
+	
 	public ServerFrame (int width, int height) {
 		
 		setTitle("Server");

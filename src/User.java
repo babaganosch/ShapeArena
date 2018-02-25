@@ -27,7 +27,7 @@ public class User extends Observable implements Runnable{
 	private int playerID;
 
 	// Food related
-	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
+	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
 	public User(Socket socket, User[] user, int pid, int maxUsers, HighscoreHandler scorehandler,
 			FoodHandler foodHandler, Observer serverFrame) throws Exception {

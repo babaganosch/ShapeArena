@@ -5,10 +5,12 @@ class FoodHandler extends Thread {
 
 	private HashMap<Integer, Food> foodList;
 	private User[] users;
+	private Server server;
 
-	public FoodHandler(HashMap<Integer, Food> inFoodList, User[] users) throws IOException {
+	public FoodHandler(HashMap<Integer, Food> inFoodList, User[] users, Server server) throws IOException {
 		foodList = inFoodList;
 		this.users = users;
+		this.server = server;
 		start();
 	}
 
@@ -35,7 +37,7 @@ class FoodHandler extends Thread {
 
 			try {
 				// Sleep for a while
-				Thread.sleep(Server.tickRate);
+				Thread.sleep(server.getTickRate());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

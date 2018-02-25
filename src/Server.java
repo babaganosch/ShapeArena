@@ -9,12 +9,12 @@ import java.util.Random;
 public class Server extends Observable{
 
 	// Global
-	public static int tickRate = 100;
-	private static int worldSize = 600;
-	private static int maxUsers = 10;
-	private static Random random = new Random();
-	private static User[] user = new User[maxUsers];
-	private static boolean createFoodHandler = false;
+	private int tickRate = 100;
+	private int worldSize = 600;
+	private int maxUsers = 10;
+	private Random random = new Random();
+	private User[] user = new User[maxUsers];
+	private boolean createFoodHandler = false;
 	private ServerSocket serverSocket;
 	private FoodHandler foodHandler;
 	private HighscoreHandler highscoreHandler;
@@ -22,8 +22,8 @@ public class Server extends Observable{
 
 
 	// Food related
-	public static int maxFood = 20;
-	private static HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
+	private int maxFood = 20;
+	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
 	public static void main(String[] args) throws Exception {
 		new Server();
@@ -36,6 +36,10 @@ public class Server extends Observable{
 		SetupServer("11100");
 		SetupObjects();
 		StartListening();
+	}
+	
+	public int getTickRate() {
+		return tickRate;
 	}
 
 	public void SetupServer(String port) throws IOException {
@@ -56,7 +60,7 @@ public class Server extends Observable{
 
 		// Setup FoodHandler
 		if (createFoodHandler) {
-			this.foodHandler = new FoodHandler(foodList, user);
+			this.foodHandler = new FoodHandler(foodList, user, this);
 		}
 
 		// Create Highscorehandler
