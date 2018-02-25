@@ -19,6 +19,8 @@ public class Server extends Observable{
 	private FoodHandler foodHandler;
 	private HighscoreHandler highscoreHandler;
 	private Observer serverFrame;
+	
+	private String port = "11100";
 
 
 	// Food related
@@ -30,10 +32,14 @@ public class Server extends Observable{
 	}
 	
 	public Server() throws Exception {
+		SetupServer(port);
 		
 		serverFrame = new ServerFrame(300, 300);
 		addObserver(serverFrame);
-		SetupServer("11100");
+		
+		setChanged();
+		notifyObservers(Integer.parseInt(port));
+		
 		SetupObjects();
 		StartListening();
 	}
@@ -41,7 +47,7 @@ public class Server extends Observable{
 	public int getTickRate() {
 		return tickRate;
 	}
-
+	
 	public void SetupServer(String port) throws IOException {
 		// Setup the server
 		int serverPort = Integer.parseInt(port);
