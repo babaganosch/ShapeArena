@@ -161,7 +161,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public void shrink() {
 		if (shrinkTimer <= 0) {
-			if (score >= 25) {
+			if (score > 25) {
 				score--;
 			}
 			
