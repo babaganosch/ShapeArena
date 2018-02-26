@@ -69,9 +69,17 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			out.flush();
 			in = new ObjectInputStream(socket.getInputStream());
 
-			// Receive packet with playerID from User.
-			playerID = ((PlayerPacket) in.readObject()).getId();
-			canvas.setPlayerID(playerID);
+			boolean gotPlayerID = false;
+			while (!gotPlayerID) {
+				Packet packet = null;
+				// Receive packet with playerID from User.
+				packet = (Packet) in.readObject();
+				if (packet instanceof PlayerInitializationPacket) {
+					playerID = ((PlayerInitializationPacket) packet).getId();
+					canvas.setPlayerID(playerID);
+					gotPlayerID = true;
+				}
+			}
 
 			// Initialize InputReader and start its thread.
 			InputReader input = new InputReader(in, this);
@@ -83,6 +91,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			thread.start();
 		} catch (Exception e) {
 			System.out.println("Unable to start client");
+			//e.printStackTrace();
 		}
 	}
 
@@ -164,7 +173,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			if (score > 25) {
 				score--;
 			}
-			
+
 			if (score >= 150) {
 				shrinkTimer = 13;
 			} else if (score >= 100) {
@@ -177,7 +186,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		}
 		shrinkTimer--;
 	}
-	
+
 	public void keepAlive() {
 		if (aliveTimer <= 0) {
 			sendPlayerPackage();
@@ -295,7 +304,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 			// Paint out Food
 			paintFood(foodList);
-			
+
 			keepAlive();
 
 			// Update

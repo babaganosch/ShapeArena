@@ -16,8 +16,8 @@ public class User extends Observable implements Runnable{
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private User[] user;
-	private int maxUsers;
 	private FoodHandler foodHandler;
+	private boolean isReady = false;
 
 	// Score
 	HighscoreHandler highscoreHandler;
@@ -29,13 +29,12 @@ public class User extends Observable implements Runnable{
 	// Food related
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public User(Socket socket, User[] user, int pid, int maxUsers, HighscoreHandler scorehandler,
+	public User(Socket socket, User[] user, int pid, HighscoreHandler scorehandler,
 			FoodHandler foodHandler, Observer serverFrame) throws Exception {
 
 		this.user = user;
 		this.playerID = pid;
 		this.socket = socket;
-		this.maxUsers = maxUsers;
 		this.highscoreHandler = scorehandler;
 		this.foodHandler = foodHandler;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
@@ -49,15 +48,27 @@ public class User extends Observable implements Runnable{
 	public ObjectOutputStream getObjectOutputStream() {
 		return out;
 	}
+	
+	public boolean isReady() {
+		return isReady;
+	}
 
-	public void initializeClient() {
+	public synchronized void initializeClient() {
 		// Send out playerID as a packet so the client know who he is.
 		try {
-			out.writeObject(new PlayerPacket(playerID, 0, 0, 0));
+			out.writeObject(new PlayerInitializationPacket(playerID));
 			out.flush();
 		} catch (IOException e) {
 			System.out.println("Failed to send playerID");
 		}
+		
+		try {
+			Thread.sleep(32);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		isReady = true;
 	}
 
 	public Socket getSocket() {

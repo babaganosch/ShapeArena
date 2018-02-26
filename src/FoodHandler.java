@@ -19,11 +19,11 @@ class FoodHandler extends Thread {
 	public void setFoodList(HashMap<Integer, Food> inFoodList) {
 		foodList = inFoodList;
 	}
-	
+
 	public synchronized void addPacket(Packet packet) {
 		packetList.add(packet);
 	}
-	
+
 	public void run() {
 
 		while (true) {
@@ -36,18 +36,19 @@ class FoodHandler extends Thread {
 						user.getObjectOutputStream().flush();
 					}
 				}
-				
+
 				// Forward packets
 				if (packetList.size() > 0) {
 					for (User user : users) {
 						if (user != null) {
-							user.getObjectOutputStream().writeObject(packetList.get(0));
-							user.getObjectOutputStream().flush();
+							if (user.isReady()) {
+								user.getObjectOutputStream().writeObject(packetList.get(0));
+								user.getObjectOutputStream().flush();
+							}
 						}
 					}
 					packetList.remove(0);
 				}
-				
 
 			} catch (IOException e1) {
 				e1.printStackTrace();

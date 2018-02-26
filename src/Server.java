@@ -95,7 +95,7 @@ public class Server extends Observable{
 			
 			for (int i = 0; i < maxUsers; i++) {
 				if (user[i] == null) {
-					user[i] = new User(userSocket, user, i, maxUsers, highscoreHandler, foodHandler, serverFrame);
+					user[i] = new User(userSocket, user, i, highscoreHandler, foodHandler, serverFrame);
 					setChanged();
 					notifyObservers(getConnectedUsers());
 					System.out.println("Connection from: " + userSocket.getInetAddress() + ", with a PID: " + i);
