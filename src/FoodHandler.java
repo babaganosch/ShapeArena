@@ -10,7 +10,7 @@ class FoodHandler extends Thread {
 	private Server server;
 
 	public FoodHandler(HashMap<Integer, Food> inFoodList, User[] users, Server server) throws IOException {
-		foodList = inFoodList;
+		this.foodList = inFoodList;
 		this.users = users;
 		this.server = server;
 		start();
@@ -18,6 +18,11 @@ class FoodHandler extends Thread {
 
 	public void setFoodList(HashMap<Integer, Food> inFoodList) {
 		foodList = inFoodList;
+	}
+	
+	public synchronized void updateFood(Food food) {
+		foodList.put(food.getId(), food);
+		System.out.println("Adding food id: " + food.getId());
 	}
 
 	public synchronized void addPacket(Packet packet) {

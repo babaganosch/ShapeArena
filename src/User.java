@@ -27,7 +27,7 @@ public class User extends Observable implements Runnable{
 	private int playerID;
 
 	// Food related
-	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
+	//private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
 	public User(Socket socket, User[] user, int pid, HighscoreHandler scorehandler,
 			FoodHandler foodHandler, Observer serverFrame) throws Exception {
@@ -128,25 +128,19 @@ public class User extends Observable implements Runnable{
 
 					// Update FoodHandlers foodList if ID: 0 (Receiver: FoodHandler)
 					if (temp.getId() == 0) {
-						foodList = temp.getFoodList();
-						foodHandler.setFoodList(foodList);
+						Food tempFood = temp.getFood();
+						foodHandler.updateFood(tempFood);
+						//System.out.println(tempFood);
+						//foodList = temp.getFoodList();
+						//foodHandler.setFoodList(foodList);
 					}
 				}
 
 				// Forward the packet to the other Users
 				if (packet != null) {
-					//System.out.println(packet);
 					foodHandler.addPacket(packet);
 				}
-				/*
-				for (int i = 0; i < maxUsers; i++) {
-					if (user[i] != null && user[i].getSocket() != socket) {
-						user[i].out.writeObject(packet);
-						user[i].out.flush();
-						user[i].out.reset();
-					}
-				}
-				*/
+				
 			} catch (IOException e) {
 
 				// Disconnect

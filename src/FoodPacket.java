@@ -12,7 +12,7 @@ public class FoodPacket extends Packet{
 		this.foodList = foodList;
 	}
 	
-	private FoodPacket(int id, Food food) {
+	public FoodPacket(int id, Food food) {
 		super(id);
 		this.food = food;
 	}

@@ -222,15 +222,29 @@ public class Client extends JFrame implements Runnable, KeyListener {
 							// Increment score
 							score++;
 
+							// OLD
 							// Spawn a new Food somewhere else and add it to the foodList
-							foodList.put(i, new Food(i, random.nextInt(roomSize), random.nextInt(roomSize)));
-
+							//foodList.put(i, new Food(i, random.nextInt(roomSize), random.nextInt(roomSize)));
+							
+							try {
+								// Print out debug message
+								if (showDebug) {
+									System.out.println("Client " + playerID + " sending out a FoodPacket with ID: 0");
+								}
+								Food tempFood = new Food(i, random.nextInt(roomSize), random.nextInt(roomSize));
+								foodList.put(i, tempFood);
+								out.writeObject(new FoodPacket(0, tempFood));
+								out.flush();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 				}
 			}
 		}
-
+		/*
 		if (collided == true) {
 			// Send out the new foodList
 			try {
@@ -245,7 +259,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 				e.printStackTrace();
 			}
 		}
-
+		*/
 		collided = false;
 	}
 
@@ -366,7 +380,8 @@ class InputReader implements Runnable {
 		// Only update foodList if ID is 1 (Receiver: Clients)
 		if (temp.getId() == 1) {
 			tempFoodList = temp.getFoodList();
-
+			
+			//System.out.println(tempFoodList);
 			client.setFoodList(tempFoodList);
 
 		}
