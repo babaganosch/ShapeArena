@@ -32,8 +32,10 @@ class FoodHandler extends Thread {
 				// Send out a foodPacket with ID 1 (Receiver: Clients)
 				for (User user : users) {
 					if (user != null) {
-						user.getObjectOutputStream().writeObject(new FoodPacket(1, foodList));
-						user.getObjectOutputStream().flush();
+						if (user.isReady()) {
+							user.getObjectOutputStream().writeObject(new FoodPacket(1, foodList));
+							user.getObjectOutputStream().flush();
+						}
 					}
 				}
 
