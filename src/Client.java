@@ -24,7 +24,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private Canvas canvas;
 	private Socket socket;
 
-	private int roomSize = 600;
+	private int screenWidth = 720;
+	private int screenHeight = 480;
+	private int roomSize = 1000;
 	private int maxFoods = 20;
 	private boolean left, right, down, up;
 
@@ -47,12 +49,12 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 		// Setup the JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(roomSize, roomSize);
+		setSize(screenWidth, screenHeight);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		addKeyListener(this);
 		setVisible(true);
-		canvas = new Canvas();
+		canvas = new Canvas(screenWidth, screenHeight, roomSize);
 		add(canvas, BorderLayout.CENTER);
 
 		try {
@@ -131,9 +133,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	}
 
 	public void updateCanvasFood() {
-		if (foodList != null) {
-			canvas.setFood(foodList);
-		}
+		canvas.setFood(foodList);
 	}
 
 	public void sendPlayerPackage() {
@@ -200,9 +200,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		// Loop through every Food and get their x and y coordinate, then check for
 		// collision.
 		for (int i = 0; i < maxFoods; i++) {
-			if (foodList != null) {
-				tempFood[i] = foodList.get(i);
-			}
+			tempFood[i] = foodList.get(i);
 
 			if (tempFood[i] != null) {
 
@@ -234,6 +232,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 								out.writeObject(new FoodPacket(0, tempFood));
 								out.flush();
 							} catch (IOException e) {
+								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -315,6 +314,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 class InputReader implements Runnable {
 
 	public ObjectInputStream in;
+	public HashMap<Integer, Food> tempFoodList = new HashMap<Integer, Food>();
 	Client client;
 
 	public InputReader(ObjectInputStream in, Client client) {
@@ -359,8 +359,10 @@ class InputReader implements Runnable {
 
 		// Only update foodList if ID is 1 (Receiver: Clients)
 		if (temp.getId() == 1) {
-			
-			client.setFoodList(temp.getFoodList());
+			tempFoodList = temp.getFoodList();
+
+			// System.out.println(tempFoodList);
+			client.setFoodList(tempFoodList);
 
 		}
 

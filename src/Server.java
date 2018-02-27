@@ -10,7 +10,7 @@ public class Server extends Observable {
 
 	// Global
 	private int tickRate = 5;
-	private int worldSize = 600;
+	private int worldSize = 1000;
 	private int maxUsers = 10;
 	private Random random = new Random();
 	private ClientHandler[] clientHandler = new ClientHandler[maxUsers];

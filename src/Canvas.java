@@ -12,22 +12,28 @@ class Canvas extends JPanel {
 	private static final long serialVersionUID = 756982496934224900L;
 
 	// Global
-	private int maxPlayers = 10;
 	private int maxFood = 20;
+	private int screenWidth, screenHeight;
+	private Color backgroundColor = new Color(150, 150, 150);
+	private Color worldColor = new Color(200, 200, 200);
+	private int mapSize;
+	private static final int X = 0;
+	private static final int Y = 1;
+	private static final int SIZE = 2;
 
 	// Player related
-	private int[] x = new int[maxPlayers];
-	private int[] y = new int[maxPlayers];
-	private int[] size = new int[maxPlayers];
+	private HashMap<Integer, int[]> players = new HashMap<Integer, int[]>();
 	private int playerID;
 
 	// Food related
-	private int[] foodX = new int[maxFood];
-	private int[] foodY = new int[maxFood];
+	private int[][] foodPositions = new int[maxFood][2];
 
-	public Canvas() {
+	public Canvas(int screenWidth, int screenHeight, int mapSize) {
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
+		this.mapSize = mapSize;
 		setVisible(true);
-		setBackground(Color.WHITE);
+		setBackground(backgroundColor);
 	}
 
 	public void setPlayerID(int playerID) {
@@ -35,15 +41,15 @@ class Canvas extends JPanel {
 	}
 
 	public void updateCoordinates(int pid, int x, int y, int score) {
-		this.x[pid] = x;
-		this.y[pid] = y;
-		this.size[pid] = score;
+		int[] info = { x, y, score };
+		players.put(pid, info);
+
 	}
-	
+
 	public void setFood(HashMap<Integer, Food> foodList) {
 		for (Integer i : foodList.keySet()) {
-			this.foodX[i] = foodList.get(i).getX();
-			this.foodY[i] = foodList.get(i).getY();
+			this.foodPositions[i][X] = foodList.get(i).getX();
+			this.foodPositions[i][Y] = foodList.get(i).getY();
 		}
 	}
 
@@ -76,19 +82,31 @@ class Canvas extends JPanel {
 		Font newFont = currentFont.deriveFont(currentFont.getSize() * 5.0F);
 		g2.setFont(newFont);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.drawString("" + size[playerID], 70, 200);
+		g2.drawString("" + players.get(playerID)[2], 70, 200);
 	}
 
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
+		int[] player = players.get(playerID);
+		
+		// Paint playable area
+		g2.setColor(worldColor);
+		g2.fillRect(-player[X] + (screenWidth / 2) - player[SIZE] / 2, -player[Y] + (screenHeight / 2) - player[SIZE] / 2, mapSize, mapSize);
 
-		// Paint all the players
-		for (int i = 0; i < maxPlayers; i++) {
-			setPlayerColor(g2, i);
-			g2.fillOval(x[i], y[i], size[i], size[i]);
+		// Paint all other players
+		for (int i = 0; i < players.size(); i++) {
+			if (i != playerID) {
+				int[] otherPlayer = players.get(i);
+				setPlayerColor(g2, i);
+				g2.fillOval(otherPlayer[X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
+						otherPlayer[Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, otherPlayer[SIZE], otherPlayer[SIZE]);
+			}
 		}
+		// Paint your player
+		setPlayerColor(g2, playerID);
+		g2.fillOval(screenWidth / 2 - player[SIZE] / 2, screenHeight / 2 - player[SIZE] / 2, player[SIZE], player[SIZE]);
 
 		// Paint your score
 		paintScore(g);
@@ -96,7 +114,8 @@ class Canvas extends JPanel {
 		// Paint the food
 		g2.setColor(Color.red);
 		for (int i = 0; i < maxFood; i++) {
-			g2.fillOval(foodX[i], foodY[i], 5, 5);
+			g2.fillOval(foodPositions[i][X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
+					foodPositions[i][Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, 5, 5);
 		}
 	}
 }
