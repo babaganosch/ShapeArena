@@ -121,7 +121,7 @@ public class ClientHandler extends Observable implements Runnable{
 				}
 
 				if (packet instanceof FoodPacket) {
-
+					
 					// Unpack the packet
 					FoodPacket temp = (FoodPacket) packet;
 
@@ -133,7 +133,7 @@ public class ClientHandler extends Observable implements Runnable{
 				}
 
 				// Forward the packet to the other Users
-				if (packet != null) {
+				if (packet instanceof PlayerPacket) {
 					packetHandler.addPacket(packet);
 				}
 				

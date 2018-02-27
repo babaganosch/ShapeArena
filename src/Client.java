@@ -58,7 +58,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		try {
 
 			// Connect to the server
-			String serverIP = "localhost";// "176.10.136.66";
+			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -129,9 +129,11 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	public void updateCoordinates(int pid, int x, int y, int score) {
 		canvas.updateCoordinates(pid, x, y, score);
 	}
-	
+
 	public void updateCanvasFood() {
-		canvas.setFood(foodList);
+		if (foodList != null) {
+			canvas.setFood(foodList);
+		}
 	}
 
 	public void sendPlayerPackage() {
@@ -198,7 +200,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		// Loop through every Food and get their x and y coordinate, then check for
 		// collision.
 		for (int i = 0; i < maxFoods; i++) {
-			tempFood[i] = foodList.get(i);
+			if (foodList != null) {
+				tempFood[i] = foodList.get(i);
+			}
 
 			if (tempFood[i] != null) {
 
@@ -230,7 +234,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 								out.writeObject(new FoodPacket(0, tempFood));
 								out.flush();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -296,7 +299,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 			// Update canvas foodlist
 			updateCanvasFood();
-			
+
 			keepAlive();
 
 			// Update
@@ -312,7 +315,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 class InputReader implements Runnable {
 
 	public ObjectInputStream in;
-	public HashMap<Integer, Food> tempFoodList = new HashMap<Integer, Food>();
 	Client client;
 
 	public InputReader(ObjectInputStream in, Client client) {
@@ -357,10 +359,8 @@ class InputReader implements Runnable {
 
 		// Only update foodList if ID is 1 (Receiver: Clients)
 		if (temp.getId() == 1) {
-			tempFoodList = temp.getFoodList();
-
-			// System.out.println(tempFoodList);
-			client.setFoodList(tempFoodList);
+			
+			client.setFoodList(temp.getFoodList());
 
 		}
 

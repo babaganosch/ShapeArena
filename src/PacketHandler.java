@@ -29,12 +29,19 @@ class PacketHandler extends Thread {
 
 		while (true) {
 			try {
+				
+				HashMap<Integer, Food> newFoodList = new HashMap<Integer, Food>();
+				for (int i = 0; i < foodList.size(); i++) {
+					Food food = new Food(foodList.get(i).getId(), foodList.get(i).getX(), foodList.get(i).getY()); // Deep copy
+					newFoodList.put(i, food);
+				}
+				FoodPacket foodPacket = new FoodPacket(1, newFoodList);
 
 				// Send out a foodPacket with ID 1 (Receiver: Clients)
 				for (ClientHandler clientHandler : clientHandlers) {
 					if (clientHandler != null) {
 						if (clientHandler.isReady()) {
-							clientHandler.getObjectOutputStream().writeObject(new FoodPacket(1, foodList));
+							clientHandler.getObjectOutputStream().writeObject(foodPacket);
 							clientHandler.getObjectOutputStream().flush();
 						}
 					}
