@@ -58,7 +58,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		try {
 
 			// Connect to the server
-			String serverIP = "localhost";//"176.10.136.66";
+			String serverIP = "localhost";// "176.10.136.66";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -91,7 +91,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			thread.start();
 		} catch (Exception e) {
 			System.out.println("Unable to start client");
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -222,14 +222,10 @@ public class Client extends JFrame implements Runnable, KeyListener {
 							// Increment score
 							score++;
 
-							// OLD
-							// Spawn a new Food somewhere else and add it to the foodList
-							//foodList.put(i, new Food(i, random.nextInt(roomSize), random.nextInt(roomSize)));
-							
 							try {
 								// Print out debug message
 								if (showDebug) {
-									System.out.println("Client " + playerID + " sending out a FoodPacket with ID: 0");
+									System.out.println("Client " + playerID + " sending Food " + i);
 								}
 								Food tempFood = new Food(i, random.nextInt(roomSize), random.nextInt(roomSize));
 								foodList.put(i, tempFood);
@@ -244,22 +240,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 				}
 			}
 		}
-		/*
-		if (collided == true) {
-			// Send out the new foodList
-			try {
-				// Print out debug message
-				if (showDebug) {
-					System.out.println("Client " + playerID + " sending out a FoodPacket with ID: 0");
-				}
-				// Send out the packet with ID 0 (Receiver: FoodHandler)
-				out.writeObject(new FoodPacket(0, foodList));
-				out.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		*/
 		collided = false;
 	}
 
@@ -380,9 +360,10 @@ class InputReader implements Runnable {
 		// Only update foodList if ID is 1 (Receiver: Clients)
 		if (temp.getId() == 1) {
 			tempFoodList = temp.getFoodList();
-			
-			//System.out.println(tempFoodList);
+
+			// System.out.println(tempFoodList);
 			client.setFoodList(tempFoodList);
+			client.paintFood(tempFoodList);
 
 		}
 

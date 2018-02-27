@@ -15,10 +15,6 @@ class FoodHandler extends Thread {
 		this.server = server;
 		start();
 	}
-
-	public void setFoodList(HashMap<Integer, Food> inFoodList) {
-		foodList = inFoodList;
-	}
 	
 	public synchronized void updateFood(Food food) {
 		foodList.put(food.getId(), food);

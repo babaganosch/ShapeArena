@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -130,9 +129,6 @@ public class User extends Observable implements Runnable{
 					if (temp.getId() == 0) {
 						Food tempFood = temp.getFood();
 						foodHandler.updateFood(tempFood);
-						//System.out.println(tempFood);
-						//foodList = temp.getFoodList();
-						//foodHandler.setFoodList(foodList);
 					}
 				}
 
