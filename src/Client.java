@@ -111,8 +111,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		return maxFoods;
 	}
 
-	public void setFoodList(HashMap<Integer, Food> foodList) {
-		this.foodList = foodList;
+	public void setFoodList(HashMap<Integer, Food> inFoodList) {
+		this.foodList = inFoodList;
 	}
 
 	public int clamp(int value, int max, int min) {
@@ -129,11 +129,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	public void updateCoordinates(int pid, int x, int y, int score) {
 		canvas.updateCoordinates(pid, x, y, score);
 	}
-
-	public void paintFood(HashMap<Integer, Food> foodList) {
-		for (Integer i : foodList.keySet()) {
-			canvas.paintFood(foodList.get(i).getId(), foodList.get(i).getX(), foodList.get(i).getY());
-		}
+	
+	public void updateCanvasFood() {
+		canvas.setFood(foodList);
 	}
 
 	public void sendPlayerPackage() {
@@ -296,9 +294,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			// Shrink
 			shrink();
 
-			// Paint out Food
-			paintFood(foodList);
-
+			// Update canvas foodlist
+			updateCanvasFood();
+			
 			keepAlive();
 
 			// Update
@@ -363,7 +361,6 @@ class InputReader implements Runnable {
 
 			// System.out.println(tempFoodList);
 			client.setFoodList(tempFoodList);
-			client.paintFood(tempFoodList);
 
 		}
 

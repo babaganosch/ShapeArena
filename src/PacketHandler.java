@@ -17,7 +17,7 @@ class PacketHandler extends Thread {
 	}
 	
 	public synchronized void updateFood(Food food) {
-		foodList.put(food.getId(), food);
+		this.foodList.put(food.getId(), food);
 		System.out.println("Adding food id: " + food.getId());
 	}
 
