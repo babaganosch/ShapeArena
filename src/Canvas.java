@@ -3,6 +3,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 
@@ -38,10 +39,12 @@ class Canvas extends JPanel {
 		this.y[pid] = y;
 		this.size[pid] = score;
 	}
-
-	public void paintFood(int i, int foodX, int foodY) {
-		this.foodX[i] = foodX;
-		this.foodY[i] = foodY;
+	
+	public void setFood(HashMap<Integer, Food> foodList) {
+		for (Integer i : foodList.keySet()) {
+			this.foodX[i] = foodList.get(i).getX();
+			this.foodY[i] = foodList.get(i).getY();
+		}
 	}
 
 	public void setPlayerColor(Graphics g, int i) {

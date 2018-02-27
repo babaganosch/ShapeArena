@@ -58,7 +58,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		try {
 
 			// Connect to the server
-			String serverIP = "localhost";//"176.10.136.66";
+			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -91,7 +91,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			thread.start();
 		} catch (Exception e) {
 			System.out.println("Unable to start client");
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -111,8 +111,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		return maxFoods;
 	}
 
-	public void setFoodList(HashMap<Integer, Food> foodList) {
-		this.foodList = foodList;
+	public void setFoodList(HashMap<Integer, Food> inFoodList) {
+		this.foodList = inFoodList;
 	}
 
 	public int clamp(int value, int max, int min) {
@@ -130,9 +130,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		canvas.updateCoordinates(pid, x, y, score);
 	}
 
-	public void paintFood(HashMap<Integer, Food> foodList) {
-		for (Integer i : foodList.keySet()) {
-			canvas.paintFood(foodList.get(i).getId(), foodList.get(i).getX(), foodList.get(i).getY());
+	public void updateCanvasFood() {
+		if (foodList != null) {
+			canvas.setFood(foodList);
 		}
 	}
 
@@ -200,7 +200,9 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		// Loop through every Food and get their x and y coordinate, then check for
 		// collision.
 		for (int i = 0; i < maxFoods; i++) {
-			tempFood[i] = foodList.get(i);
+			if (foodList != null) {
+				tempFood[i] = foodList.get(i);
+			}
 
 			if (tempFood[i] != null) {
 
@@ -222,30 +224,23 @@ public class Client extends JFrame implements Runnable, KeyListener {
 							// Increment score
 							score++;
 
-							// Spawn a new Food somewhere else and add it to the foodList
-							foodList.put(i, new Food(i, random.nextInt(roomSize), random.nextInt(roomSize)));
-
+							try {
+								// Print out debug message
+								if (showDebug) {
+									System.out.println("Client " + playerID + " sending Food " + i);
+								}
+								Food tempFood = new Food(i, random.nextInt(roomSize), random.nextInt(roomSize));
+								foodList.put(i, tempFood);
+								out.writeObject(new FoodPacket(0, tempFood));
+								out.flush();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
 			}
 		}
-
-		if (collided == true) {
-			// Send out the new foodList
-			try {
-				// Print out debug message
-				if (showDebug) {
-					System.out.println("Client " + playerID + " sending out a FoodPacket with ID: 0");
-				}
-				// Send out the packet with ID 0 (Receiver: FoodHandler)
-				out.writeObject(new FoodPacket(0, foodList));
-				out.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
 		collided = false;
 	}
 
@@ -302,8 +297,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			// Shrink
 			shrink();
 
-			// Paint out Food
-			paintFood(foodList);
+			// Update canvas foodlist
+			updateCanvasFood();
 
 			keepAlive();
 
@@ -320,7 +315,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 class InputReader implements Runnable {
 
 	public ObjectInputStream in;
-	public HashMap<Integer, Food> tempFoodList = new HashMap<Integer, Food>();
 	Client client;
 
 	public InputReader(ObjectInputStream in, Client client) {
@@ -365,9 +359,8 @@ class InputReader implements Runnable {
 
 		// Only update foodList if ID is 1 (Receiver: Clients)
 		if (temp.getId() == 1) {
-			tempFoodList = temp.getFoodList();
-
-			client.setFoodList(tempFoodList);
+			
+			client.setFoodList(temp.getFoodList());
 
 		}
 

@@ -2,11 +2,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
-public class User extends Observable implements Runnable{
+public class ClientHandler extends Observable implements Runnable{
 
 	// Thread
 	private Thread activity = new Thread(this);
@@ -15,8 +14,8 @@ public class User extends Observable implements Runnable{
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
-	private User[] user;
-	private FoodHandler foodHandler;
+	private ClientHandler[] clientHandler;
+	private PacketHandler packetHandler;
 	private boolean isReady = false;
 
 	// Score
@@ -27,16 +26,16 @@ public class User extends Observable implements Runnable{
 	private int playerID;
 
 	// Food related
-	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
+	//private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public User(Socket socket, User[] user, int pid, HighscoreHandler scorehandler,
-			FoodHandler foodHandler, Observer serverFrame) throws Exception {
+	public ClientHandler(Socket socket, ClientHandler[] user, int pid, HighscoreHandler scorehandler,
+			PacketHandler packetHandler, Observer serverFrame) throws Exception {
 
-		this.user = user;
+		this.clientHandler = user;
 		this.playerID = pid;
 		this.socket = socket;
 		this.highscoreHandler = scorehandler;
-		this.foodHandler = foodHandler;
+		this.packetHandler = packetHandler;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
 		this.in = new ObjectInputStream(socket.getInputStream());
@@ -82,7 +81,7 @@ public class User extends Observable implements Runnable{
 	public String getConnectedUsers()
 	{
 		String message = "";
-		for(User i: user){
+		for(ClientHandler i: clientHandler){
 			if(i != null){
 				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + " with ID: " + i.playerID + System.lineSeparator();
 			}
@@ -122,35 +121,26 @@ public class User extends Observable implements Runnable{
 				}
 
 				if (packet instanceof FoodPacket) {
-
+					
 					// Unpack the packet
 					FoodPacket temp = (FoodPacket) packet;
 
-					// Update FoodHandlers foodList if ID: 0 (Receiver: FoodHandler)
+					// Update FoodHandlers foodList if ID: 0 (Receiver: PacketHandler)
 					if (temp.getId() == 0) {
-						foodList = temp.getFoodList();
-						foodHandler.setFoodList(foodList);
+						Food tempFood = temp.getFood();
+						packetHandler.updateFood(tempFood);
 					}
 				}
 
 				// Forward the packet to the other Users
-				if (packet != null) {
-					//System.out.println(packet);
-					foodHandler.addPacket(packet);
+				if (packet instanceof PlayerPacket) {
+					packetHandler.addPacket(packet);
 				}
-				/*
-				for (int i = 0; i < maxUsers; i++) {
-					if (user[i] != null && user[i].getSocket() != socket) {
-						user[i].out.writeObject(packet);
-						user[i].out.flush();
-						user[i].out.reset();
-					}
-				}
-				*/
+				
 			} catch (IOException e) {
 
 				// Disconnect
-				user[playerID] = null;
+				clientHandler[playerID] = null;
 				System.out.println("Disconnection from: " + socket.getInetAddress() + ", with a PID: " + playerID);
 				
 				setChanged();
