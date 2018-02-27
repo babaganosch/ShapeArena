@@ -2,9 +2,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 class Canvas extends JPanel {
@@ -14,13 +16,27 @@ class Canvas extends JPanel {
 	// Global
 	private int maxFood = 20;
 	private int screenWidth, screenHeight;
-	private Color backgroundColor = new Color(150, 150, 150);
-	private Color worldColor = new Color(200, 200, 200);
 	private int mapSize;
 	private static final int X = 0;
 	private static final int Y = 1;
 	private static final int SIZE = 2;
-
+	
+	// Score Frame
+	private ImageIcon img = new ImageIcon(getClass().getResource("test.png"));
+	private Image  bImg = img.getImage();
+	
+	// Colors
+	private Color cBackground = new Color(180, 180, 180);
+	private Color cWorld = new Color(205, 205, 205);
+	private Color cPlayer0 = new Color(170, 85, 85);		// Red
+	private Color cPlayer1 = new Color(120, 170, 85);		// Green
+	private Color cPlayer2 = new Color(85, 130, 170);		// Blue
+	private Color cPlayer3 = new Color(210, 220, 105);	// Yellow
+	private Color cPlayer4 = new Color(135, 95, 180);		// Purple
+	private Color cText = Color.WHITE;
+	private Color cFood = new Color(110, 47, 47);
+	
+	
 	// Player related
 	private HashMap<Integer, int[]> players = new HashMap<Integer, int[]>();
 	private int playerID;
@@ -33,7 +49,7 @@ class Canvas extends JPanel {
 		this.screenHeight = screenHeight;
 		this.mapSize = mapSize;
 		setVisible(true);
-		setBackground(backgroundColor);
+		setBackground(cBackground);
 	}
 
 	public void setPlayerID(int playerID) {
@@ -55,20 +71,20 @@ class Canvas extends JPanel {
 
 	public void setPlayerColor(Graphics g, int i) {
 		switch (i) {
+		case 0:
+			g.setColor(cPlayer0);
+			break;
 		case 1:
-			g.setColor(Color.blue);
+			g.setColor(cPlayer1);
 			break;
 		case 2:
-			g.setColor(Color.red);
+			g.setColor(cPlayer2);
 			break;
 		case 3:
-			g.setColor(Color.green);
+			g.setColor(cPlayer3);
 			break;
 		case 4:
-			g.setColor(Color.orange);
-			break;
-		case 5:
-			g.setColor(Color.lightGray);
+			g.setColor(cPlayer4);
 			break;
 		default:
 			g.setColor(Color.black);
@@ -78,11 +94,14 @@ class Canvas extends JPanel {
 
 	public void paintScore(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
+		g2.setFont(new Font("Arial", Font.PLAIN, 12));
 		Font currentFont = g2.getFont();
-		Font newFont = currentFont.deriveFont(currentFont.getSize() * 5.0F);
+		Font newFont = currentFont.deriveFont(currentFont.getSize() * 1.0F);
 		g2.setFont(newFont);
+		g2.setColor(cText);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.drawString("" + players.get(playerID)[2], 70, 200);
+		g2.drawString("player " + playerID, 17, 26);
+		g2.drawString("score  " + players.get(playerID)[SIZE], 17, 40);
 	}
 
 	public void paintComponent(Graphics g) {
@@ -92,7 +111,7 @@ class Canvas extends JPanel {
 		int[] player = players.get(playerID);
 		
 		// Paint playable area
-		g2.setColor(worldColor);
+		g2.setColor(cWorld);
 		g2.fillRect(-player[X] + (screenWidth / 2) - player[SIZE] / 2, -player[Y] + (screenHeight / 2) - player[SIZE] / 2, mapSize, mapSize);
 
 		// Paint all other players
@@ -107,12 +126,15 @@ class Canvas extends JPanel {
 		// Paint your player
 		setPlayerColor(g2, playerID);
 		g2.fillOval(screenWidth / 2 - player[SIZE] / 2, screenHeight / 2 - player[SIZE] / 2, player[SIZE], player[SIZE]);
+		
+		// Paint the score frame
+		g2.drawImage(bImg, 10, 10, this);
 
 		// Paint your score
 		paintScore(g);
 
 		// Paint the food
-		g2.setColor(Color.red);
+		g2.setColor(cFood);
 		for (int i = 0; i < maxFood; i++) {
 			g2.fillOval(foodPositions[i][X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
 					foodPositions[i][Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, 5, 5);

@@ -7,13 +7,15 @@ public class FoodPacket extends Packet{
 	private HashMap<Integer, Food> foodList;
 	private Food food;
 	
-	public FoodPacket(int id, HashMap<Integer, Food> foodList) {
-		super(id);
+	public FoodPacket(HashMap<Integer, Food> foodList) {
+		// Id 1 means the packet contains a HashMap
+		super(1);
 		this.foodList = foodList;
 	}
 	
-	public FoodPacket(int id, Food food) {
-		super(id);
+	public FoodPacket(Food food) {
+		// Id 0 means the packet contains a Food
+		super(0);
 		this.food = food;
 	}
 	

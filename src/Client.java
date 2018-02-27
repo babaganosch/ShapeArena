@@ -175,13 +175,13 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			}
 
 			if (score >= 150) {
-				shrinkTimer = 13;
+				shrinkTimer = 20;
 			} else if (score >= 100) {
-				shrinkTimer = 15;
+				shrinkTimer = 35;
 			} else if (score >= 50) {
-				shrinkTimer = 30;
-			} else {
 				shrinkTimer = 40;
+			} else {
+				shrinkTimer = 50;
 			}
 		}
 		shrinkTimer--;
@@ -227,12 +227,16 @@ public class Client extends JFrame implements Runnable, KeyListener {
 								if (showDebug) {
 									System.out.println("Client " + playerID + " sending Food " + i);
 								}
+								
+								// Create a new Food object with the same index as the one we've collided with.
+								// Add the Food object to our foodList so we don't experience any graphical delay
 								Food tempFood = new Food(i, random.nextInt(roomSize), random.nextInt(roomSize));
 								foodList.put(i, tempFood);
-								out.writeObject(new FoodPacket(0, tempFood));
+								
+								// Send the new Food object to the server
+								out.writeObject(new FoodPacket(tempFood));
 								out.flush();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}

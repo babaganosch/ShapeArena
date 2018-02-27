@@ -35,7 +35,7 @@ class PacketHandler extends Thread {
 					Food food = new Food(foodList.get(i).getId(), foodList.get(i).getX(), foodList.get(i).getY()); // Deep copy
 					newFoodList.put(i, food);
 				}
-				FoodPacket foodPacket = new FoodPacket(1, newFoodList);
+				FoodPacket foodPacket = new FoodPacket(newFoodList);
 
 				// Send out a foodPacket with ID 1 (Receiver: Clients)
 				for (ClientHandler clientHandler : clientHandlers) {
