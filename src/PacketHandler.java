@@ -2,16 +2,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-class FoodHandler extends Thread {
+class PacketHandler extends Thread {
 
 	private HashMap<Integer, Food> foodList;
 	private ArrayList<Packet> packetList = new ArrayList<Packet>();
-	private User[] users;
+	private ClientHandler[] clientHandlers;
 	private Server server;
 
-	public FoodHandler(HashMap<Integer, Food> inFoodList, User[] users, Server server) throws IOException {
+	public PacketHandler(HashMap<Integer, Food> inFoodList, ClientHandler[] users, Server server) throws IOException {
 		this.foodList = inFoodList;
-		this.users = users;
+		this.clientHandlers = users;
 		this.server = server;
 		start();
 	}
@@ -31,22 +31,22 @@ class FoodHandler extends Thread {
 			try {
 
 				// Send out a foodPacket with ID 1 (Receiver: Clients)
-				for (User user : users) {
-					if (user != null) {
-						if (user.isReady()) {
-							user.getObjectOutputStream().writeObject(new FoodPacket(1, foodList));
-							user.getObjectOutputStream().flush();
+				for (ClientHandler clientHandler : clientHandlers) {
+					if (clientHandler != null) {
+						if (clientHandler.isReady()) {
+							clientHandler.getObjectOutputStream().writeObject(new FoodPacket(1, foodList));
+							clientHandler.getObjectOutputStream().flush();
 						}
 					}
 				}
 
 				// Forward packets
 				if (packetList.size() > 0) {
-					for (User user : users) {
-						if (user != null) {
-							if (user.isReady()) {
-								user.getObjectOutputStream().writeObject(packetList.get(0));
-								user.getObjectOutputStream().flush();
+					for (ClientHandler clientHandler : clientHandlers) {
+						if (clientHandler != null) {
+							if (clientHandler.isReady()) {
+								clientHandler.getObjectOutputStream().writeObject(packetList.get(0));
+								clientHandler.getObjectOutputStream().flush();
 							}
 						}
 					}

@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 
-public class User extends Observable implements Runnable{
+public class ClientHandler extends Observable implements Runnable{
 
 	// Thread
 	private Thread activity = new Thread(this);
@@ -14,8 +14,8 @@ public class User extends Observable implements Runnable{
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
-	private User[] user;
-	private FoodHandler foodHandler;
+	private ClientHandler[] clientHandler;
+	private PacketHandler packetHandler;
 	private boolean isReady = false;
 
 	// Score
@@ -28,14 +28,14 @@ public class User extends Observable implements Runnable{
 	// Food related
 	//private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public User(Socket socket, User[] user, int pid, HighscoreHandler scorehandler,
-			FoodHandler foodHandler, Observer serverFrame) throws Exception {
+	public ClientHandler(Socket socket, ClientHandler[] user, int pid, HighscoreHandler scorehandler,
+			PacketHandler packetHandler, Observer serverFrame) throws Exception {
 
-		this.user = user;
+		this.clientHandler = user;
 		this.playerID = pid;
 		this.socket = socket;
 		this.highscoreHandler = scorehandler;
-		this.foodHandler = foodHandler;
+		this.packetHandler = packetHandler;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.out.flush();
 		this.in = new ObjectInputStream(socket.getInputStream());
@@ -81,7 +81,7 @@ public class User extends Observable implements Runnable{
 	public String getConnectedUsers()
 	{
 		String message = "";
-		for(User i: user){
+		for(ClientHandler i: clientHandler){
 			if(i != null){
 				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + " with ID: " + i.playerID + System.lineSeparator();
 			}
@@ -125,22 +125,22 @@ public class User extends Observable implements Runnable{
 					// Unpack the packet
 					FoodPacket temp = (FoodPacket) packet;
 
-					// Update FoodHandlers foodList if ID: 0 (Receiver: FoodHandler)
+					// Update FoodHandlers foodList if ID: 0 (Receiver: PacketHandler)
 					if (temp.getId() == 0) {
 						Food tempFood = temp.getFood();
-						foodHandler.updateFood(tempFood);
+						packetHandler.updateFood(tempFood);
 					}
 				}
 
 				// Forward the packet to the other Users
 				if (packet != null) {
-					foodHandler.addPacket(packet);
+					packetHandler.addPacket(packet);
 				}
 				
 			} catch (IOException e) {
 
 				// Disconnect
-				user[playerID] = null;
+				clientHandler[playerID] = null;
 				System.out.println("Disconnection from: " + socket.getInetAddress() + ", with a PID: " + playerID);
 				
 				setChanged();

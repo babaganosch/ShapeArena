@@ -42,7 +42,7 @@ public class ServerFrame extends JFrame implements Observer {
 	}
 
 	public void update(Observable src, Object arg) {
-		if(src instanceof User || src instanceof Server && arg instanceof String) {
+		if(src instanceof ClientHandler || src instanceof Server && arg instanceof String) {
 			textArea.setText((String)arg);
 			
 			if (textArea.getText().equals("")) {

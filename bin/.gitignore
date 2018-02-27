@@ -11,3 +11,5 @@
 /ServerFrame.class
 /User.class
 /PlayerInitializationPacket.class
+/PacketHandler.class
+/ClientHandler.class
