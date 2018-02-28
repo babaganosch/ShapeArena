@@ -1,14 +1,14 @@
 # Shape Arena #
 This is a project to make a game in Java for our course in DAT055, Chalmers, spring 2018.  
-Version 0.0.2
+Version 0.0.3
 
 ## Timetable ##
 1. ~~UML diagram covering the basics~~
 2. ~~Communication - ability to control two player objects in a room over internet - server and a client~~
 3. ~~Server GUI which utalizes observer~~
 4. ~~Highscore saving to harddrive~~
-5. Collision
-6. Gameplay - deepen the gameplay with more shapes and their traits, also add powerups such as 'food'
+5. ~~Collision~~
+6. ~~Gameplay - deepen the gameplay~~
 
 ## Extra ##
 * Teams
