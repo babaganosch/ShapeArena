@@ -13,18 +13,18 @@ class Canvas extends JPanel {
 
 	private static final long serialVersionUID = 756982496934224900L;
 
-	// Global
-	private int maxFood = 20;
+	// Constants
 	private int screenWidth, screenHeight;
 	private int mapSize;
+	private static final int maxFood = 20;
 	private static final int X = 0;
 	private static final int Y = 1;
 	private static final int SIZE = 2;
-	
+
 	// Score Frame
 	private ImageIcon img = new ImageIcon(getClass().getResource("test.png"));
-	private Image  bImg = img.getImage();
-	
+	private Image bImg = img.getImage();
+
 	// Colors
 	private Color cBackground = new Color(180, 180, 180);
 	private Color cWorld = new Color(205, 205, 205);
@@ -35,8 +35,7 @@ class Canvas extends JPanel {
 	private Color cPlayer4 = new Color(135, 95, 180);		// Purple
 	private Color cText = Color.WHITE;
 	private Color cFood = new Color(110, 47, 47);
-	
-	
+
 	// Player related
 	private HashMap<Integer, int[]> players = new HashMap<Integer, int[]>();
 	private int playerID;
@@ -109,10 +108,11 @@ class Canvas extends JPanel {
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
 		int[] player = players.get(playerID);
-		
+
 		// Paint playable area
 		g2.setColor(cWorld);
-		g2.fillRect(-player[X] + (screenWidth / 2) - player[SIZE] / 2, -player[Y] + (screenHeight / 2) - player[SIZE] / 2, mapSize, mapSize);
+		g2.fillRect(-player[X] + (screenWidth / 2) - player[SIZE] / 2,
+				-player[Y] + (screenHeight / 2) - player[SIZE] / 2, mapSize, mapSize);
 
 		// Paint all other players
 		for (int i = 0; i < players.size(); i++) {
@@ -120,18 +120,14 @@ class Canvas extends JPanel {
 				int[] otherPlayer = players.get(i);
 				setPlayerColor(g2, i);
 				g2.fillOval(otherPlayer[X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
-						otherPlayer[Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, otherPlayer[SIZE], otherPlayer[SIZE]);
+						otherPlayer[Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, otherPlayer[SIZE],
+						otherPlayer[SIZE]);
 			}
 		}
 		// Paint your player
 		setPlayerColor(g2, playerID);
-		g2.fillOval(screenWidth / 2 - player[SIZE] / 2, screenHeight / 2 - player[SIZE] / 2, player[SIZE], player[SIZE]);
-		
-		// Paint the score frame
-		g2.drawImage(bImg, 10, 10, this);
-
-		// Paint your score
-		paintScore(g);
+		g2.fillOval(screenWidth / 2 - player[SIZE] / 2, screenHeight / 2 - player[SIZE] / 2, player[SIZE],
+				player[SIZE]);
 
 		// Paint the food
 		g2.setColor(cFood);
@@ -139,5 +135,11 @@ class Canvas extends JPanel {
 			g2.fillOval(foodPositions[i][X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
 					foodPositions[i][Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, 5, 5);
 		}
+
+		// Paint the score frame
+		g2.drawImage(bImg, 10, 10, this);
+
+		// Paint your score
+		paintScore(g);
 	}
 }

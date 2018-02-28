@@ -23,19 +23,21 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private ObjectOutputStream out;
 	private Canvas canvas;
 	private Socket socket;
-
-	private int screenWidth = 720;
-	private int screenHeight = 480;
-	private int roomSize = 1000;
-	private int maxFoods = 20;
 	private boolean left, right, down, up;
+
+	// Constants
+	private static final int screenWidth = 720;
+	private static final int screenHeight = 480;
+	private static final int roomSize = 1000;
+	private static final int maxFoods = 20;
+	private static final int X = 0;
+	private static final int Y = 1;
 
 	// Player related
 	private int playerID;
-	private int playerx;
-	private int playery;
+	private int playerCoord[] = new int[2];
 	private int speed = 7;
-	private int score = 20 + random.nextInt(5); // Score = size
+	private int score = 15 + random.nextInt(10);
 	private int maxScore = 200;
 	private int shrinkTimer = 100;
 	private int initialAliveTime = 75;
@@ -54,6 +56,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		setLayout(new BorderLayout());
 		addKeyListener(this);
 		setVisible(true);
+		// Create the canvas
 		canvas = new Canvas(screenWidth, screenHeight, roomSize);
 		add(canvas, BorderLayout.CENTER);
 
@@ -71,10 +74,11 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			out.flush();
 			in = new ObjectInputStream(socket.getInputStream());
 
+			// Wait for a InitializationPacket from ClientHandler to initialize playerID
 			boolean gotPlayerID = false;
 			while (!gotPlayerID) {
 				Packet packet = null;
-				// Receive packet with playerID from User.
+				// Receive packet with playerID from ClientHandler.
 				packet = (Packet) in.readObject();
 				if (packet instanceof PlayerInitializationPacket) {
 					playerID = ((PlayerInitializationPacket) packet).getId();
@@ -82,6 +86,10 @@ public class Client extends JFrame implements Runnable, KeyListener {
 					gotPlayerID = true;
 				}
 			}
+			
+			//Out the player somewhere random on the map
+			playerCoord[X] = random.nextInt(roomSize);
+			playerCoord[Y] = random.nextInt(roomSize);
 
 			// Initialize InputReader and start its thread.
 			InputReader input = new InputReader(in, this);
@@ -138,7 +146,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public void sendPlayerPackage() {
 		try {
-			out.writeObject(new PlayerPacket(playerID, playerx, playery, score));
+			out.writeObject(new PlayerPacket(playerID, playerCoord[X], playerCoord[Y], score));
 			out.flush();
 		} catch (Exception e) {
 			System.out.println("Error sending Coordinates.");
@@ -155,16 +163,16 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public void move() {
 		if (right == true) {
-			playerx = clamp(playerx + speed, roomSize - score, 0);
+			playerCoord[X] = clamp(playerCoord[X] + speed, roomSize - score, 0);
 		}
 		if (left == true) {
-			playerx = clamp(playerx - speed, roomSize - score, 0);
+			playerCoord[X] = clamp(playerCoord[X] - speed, roomSize - score, 0);
 		}
 		if (down == true) {
-			playery = clamp(playery + speed, roomSize - score, 0);
+			playerCoord[Y] = clamp(playerCoord[Y] + speed, roomSize - score, 0);
 		}
 		if (up == true) {
-			playery = clamp(playery - speed, roomSize - score, 0);
+			playerCoord[Y] = clamp(playerCoord[Y] - speed, roomSize - score, 0);
 		}
 	}
 
@@ -175,13 +183,13 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			}
 
 			if (score >= 150) {
-				shrinkTimer = 20;
+				shrinkTimer = 17;
 			} else if (score >= 100) {
-				shrinkTimer = 35;
+				shrinkTimer = 32;
 			} else if (score >= 50) {
-				shrinkTimer = 40;
+				shrinkTimer = 37;
 			} else {
-				shrinkTimer = 50;
+				shrinkTimer = 45;
 			}
 		}
 		shrinkTimer--;
@@ -207,8 +215,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 				int tempFoodX = tempFood[i].getX();
 				int tempFoodY = tempFood[i].getY();
 
-				if (playerx <= tempFoodX && playerx >= (tempFoodX - score)) {
-					if (playery <= tempFoodY && playery >= (tempFoodY - score)) {
+				if (playerCoord[X] <= tempFoodX && playerCoord[X] >= (tempFoodX - score)) {
+					if (playerCoord[Y] <= tempFoodY && playerCoord[Y] >= (tempFoodY - score)) {
 						if (collided == false) {
 
 							// Print out debug message
@@ -287,30 +295,32 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			// Movement
 			move();
 
-			// Send package
+			// Send package only if we move, save bandwidth mang
 			if (left || right || up || down) {
 				sendPlayerPackage();
 			}
 
 			// Check for Food collision
-			if (score <= maxScore) {
+			if (score < maxScore) {
 				checkFoodCollision(debug);
 			}
 
 			// Shrink
 			shrink();
 
-			// Update canvas foodlist
+			// Update canvas foodList
 			updateCanvasFood();
 
+			// Update our client even if we don't move
 			keepAlive();
 
 			// Update
-			canvas.updateCoordinates(playerID, playerx, playery, score);
+			canvas.updateCoordinates(playerID, playerCoord[X], playerCoord[Y], score);
 			canvas.repaint();
 
 			// Loop with this delay
-			sleep(32); // 16ms = about 60 FPS, 32 = 30 FPS
+			// 16ms = about 60 FPS, 32 = 30 FPS
+			sleep(32);
 		}
 	}
 }
@@ -364,12 +374,9 @@ class InputReader implements Runnable {
 		// Only update foodList if ID is 1 (Receiver: Clients)
 		if (temp.getId() == 1) {
 			tempFoodList = temp.getFoodList();
-
-			// System.out.println(tempFoodList);
 			client.setFoodList(tempFoodList);
-
 		}
-
+		
 	}
 
 	public void run() {
