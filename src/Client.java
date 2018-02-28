@@ -71,7 +71,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		try {
 
 			// Connect to the server
-			String serverIP = "176.10.136.66";
+			String serverIP = "localhost";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -201,13 +201,13 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 
 			if (score >= 150) {
 				shrinkTimer = 17;
-				speed = 4;
+				speed = 2;
 			} else if (score >= 100) {
 				shrinkTimer = 32;
-				speed = 5;
+				speed = 3;
 			} else if (score >= 50) {
 				shrinkTimer = 37;
-				speed = 6;
+				speed = 5;
 			} else {
 				shrinkTimer = 45;
 				speed = 7;
@@ -383,9 +383,6 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			// Update ourself in the playerList
 			updatePlayerList(playerID, playerCoord[X], playerCoord[Y], score);
 
-			// Update our client even if we don't move
-			// keepAlive();
-
 			// Update canvas foodList
 			updateCanvasFood();
 
@@ -395,6 +392,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			// Update
 			canvas.updateCoordinates(playerID, playerCoord[X], playerCoord[Y], score);
 			canvas.setSpeed(speed);
+			canvas.setInvincibleTimer(invincibleTimer);
 			canvas.repaint();
 
 			// Loop with this delay

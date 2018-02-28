@@ -40,6 +40,7 @@ class Canvas extends JPanel {
 	private HashMap<Integer, int[]> players = new HashMap<Integer, int[]>();
 	private int playerID;
 	private int speed = 0;
+	private int invincibleTimer = 0;
 
 	// Food related
 	private int[][] foodPositions = new int[maxFood][2];
@@ -108,15 +109,21 @@ class Canvas extends JPanel {
 		g2.drawString("player", 17, 26);
 		g2.drawString("score", 17, 40);
 		g2.drawString("speed", 17, 54);
+		g2.drawString("invincible", 17, 68);
 
 		setPlayerColor(g2, playerID);
 		g2.drawString("" + playerID, 80, 26);
 		g2.drawString("" + players.get(playerID)[SIZE], 80, 40);
 		g2.drawString("" + speed, 80, 54);
+		g2.drawString("" + invincibleTimer, 80, 68);
 	}
 
 	public void setSpeed(int speed) {
 		this.speed = speed;
+	}
+	
+	public void setInvincibleTimer(int timer) {
+		this.invincibleTimer = timer;
 	}
 
 	public void paintComponent(Graphics g) {
