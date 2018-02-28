@@ -30,6 +30,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private static final int screenHeight = 480;
 	private static final int roomSize = 1000;
 	private static final int maxFoods = 20;
+	private static final int maxScore = 200;
 	private static final int X = 0;
 	private static final int Y = 1;
 
@@ -38,7 +39,6 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private int playerCoord[] = new int[2];
 	private int speed = 7;
 	private int score = 15 + random.nextInt(10);
-	private int maxScore = 200;
 	private int shrinkTimer = 100;
 	private int initialAliveTime = 75;
 	private int aliveTimer = initialAliveTime;
@@ -56,6 +56,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		setLayout(new BorderLayout());
 		addKeyListener(this);
 		setVisible(true);
+
 		// Create the canvas
 		canvas = new Canvas(screenWidth, screenHeight, roomSize);
 		add(canvas, BorderLayout.CENTER);
@@ -63,7 +64,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		try {
 
 			// Connect to the server
-			String serverIP = "localhost";
+			String serverIP = "176.10.136.66";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -86,8 +87,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 					gotPlayerID = true;
 				}
 			}
-			
-			//Out the player somewhere random on the map
+
+			// Out the player somewhere random on the map
 			playerCoord[X] = random.nextInt(roomSize);
 			playerCoord[Y] = random.nextInt(roomSize);
 
@@ -235,12 +236,13 @@ public class Client extends JFrame implements Runnable, KeyListener {
 								if (showDebug) {
 									System.out.println("Client " + playerID + " sending Food " + i);
 								}
-								
+
 								// Create a new Food object with the same index as the one we've collided with.
-								// Add the Food object to our foodList so we don't experience any graphical delay
+								// Add the Food object to our foodList so we don't experience any graphical
+								// delay
 								Food tempFood = new Food(i, random.nextInt(roomSize), random.nextInt(roomSize));
 								foodList.put(i, tempFood);
-								
+
 								// Send the new Food object to the server
 								out.writeObject(new FoodPacket(tempFood));
 								out.flush();
@@ -308,11 +310,11 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			// Shrink
 			shrink();
 
-			// Update canvas foodList
-			updateCanvasFood();
-
 			// Update our client even if we don't move
 			keepAlive();
+
+			// Update canvas foodList
+			updateCanvasFood();
 
 			// Update
 			canvas.updateCoordinates(playerID, playerCoord[X], playerCoord[Y], score);
@@ -376,7 +378,7 @@ class InputReader implements Runnable {
 			tempFoodList = temp.getFoodList();
 			client.setFoodList(tempFoodList);
 		}
-		
+
 	}
 
 	public void run() {
