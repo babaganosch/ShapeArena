@@ -22,23 +22,24 @@ class Canvas extends JPanel {
 	private static final int SIZE = 2;
 
 	// Score Frame
-	private ImageIcon img = new ImageIcon(getClass().getResource("test.png"));
-	private Image bImg = img.getImage();
+	// private ImageIcon img = new ImageIcon(getClass().getResource("test.png"));
+	// private Image bImg = img.getImage();
 
 	// Colors
 	private Color cBackground = new Color(180, 180, 180);
 	private Color cWorld = new Color(205, 205, 205);
-	private Color cPlayer0 = new Color(170, 85, 85);		// Red
-	private Color cPlayer1 = new Color(120, 170, 85);		// Green
-	private Color cPlayer2 = new Color(85, 130, 170);		// Blue
-	private Color cPlayer3 = new Color(210, 220, 105);	// Yellow
-	private Color cPlayer4 = new Color(135, 95, 180);		// Purple
+	private Color cPlayer0 = new Color(170, 85, 85); // Red
+	private Color cPlayer1 = new Color(120, 170, 85); // Green
+	private Color cPlayer2 = new Color(85, 130, 170); // Blue
+	private Color cPlayer3 = new Color(210, 220, 105); // Yellow
+	private Color cPlayer4 = new Color(135, 95, 180); // Purple
 	private Color cText = Color.WHITE;
 	private Color cFood = new Color(110, 47, 47);
 
 	// Player related
 	private HashMap<Integer, int[]> players = new HashMap<Integer, int[]>();
 	private int playerID;
+	private int speed = 0;
 
 	// Food related
 	private int[][] foodPositions = new int[maxFood][2];
@@ -53,6 +54,11 @@ class Canvas extends JPanel {
 
 	public void setPlayerID(int playerID) {
 		this.playerID = playerID;
+	}
+
+	public void setScreen(int width, int height) {
+		this.screenWidth = width;
+		this.screenHeight = height;
 	}
 
 	public void updateCoordinates(int pid, int x, int y, int score) {
@@ -99,8 +105,18 @@ class Canvas extends JPanel {
 		g2.setFont(newFont);
 		g2.setColor(cText);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.drawString("player " + playerID, 17, 26);
-		g2.drawString("score  " + players.get(playerID)[SIZE], 17, 40);
+		g2.drawString("player", 17, 26);
+		g2.drawString("score", 17, 40);
+		g2.drawString("speed", 17, 54);
+
+		setPlayerColor(g2, playerID);
+		g2.drawString("" + playerID, 80, 26);
+		g2.drawString("" + players.get(playerID)[SIZE], 80, 40);
+		g2.drawString("" + speed, 80, 54);
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
 	}
 
 	public void paintComponent(Graphics g) {
@@ -111,34 +127,44 @@ class Canvas extends JPanel {
 
 		// Paint playable area
 		g2.setColor(cWorld);
-		g2.fillRoundRect(-player[X] + (screenWidth / 2) - player[SIZE] / 2,
-				-player[Y] + (screenHeight / 2) - player[SIZE] / 2, mapSize, mapSize, 25, 25);
+		if (player != null) {
+			g2.fillRoundRect(-player[X] + (screenWidth / 2) - player[SIZE] / 2,
+					-player[Y] + (screenHeight / 2) - player[SIZE] / 2, mapSize, mapSize, 25, 25);
+		}
 
 		// Paint all other players
 		for (int i = 0; i < players.size(); i++) {
 			if (i != playerID) {
 				int[] otherPlayer = players.get(i);
 				setPlayerColor(g2, i);
-				g2.fillOval(otherPlayer[X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
-						otherPlayer[Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, otherPlayer[SIZE],
-						otherPlayer[SIZE]);
+				if (otherPlayer != null) {
+					g2.fillOval(otherPlayer[X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
+							otherPlayer[Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, otherPlayer[SIZE],
+							otherPlayer[SIZE]);
+				}
 			}
 		}
-		
+
 		// Paint your player
 		setPlayerColor(g2, playerID);
-		g2.fillOval(screenWidth / 2 - player[SIZE] / 2, screenHeight / 2 - player[SIZE] / 2, player[SIZE],
-				player[SIZE]);
+		if (player != null) {
+			g2.fillOval(screenWidth / 2 - player[SIZE] / 2, screenHeight / 2 - player[SIZE] / 2, player[SIZE],
+					player[SIZE]);
+		}
 
 		// Paint the food
 		g2.setColor(cFood);
-		for (int i = 0; i < maxFood; i++) {
-			g2.fillOval(foodPositions[i][X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
-					foodPositions[i][Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, 5, 5);
+		if (player != null) {
+			for (int i = 0; i < maxFood; i++) {
+				g2.fillOval(foodPositions[i][X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
+						foodPositions[i][Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, 5, 5);
+			}
 		}
-		
+
 		// Paint the score frame
-		g2.drawImage(bImg, 10, 10, this);
+		g2.setColor(new Color(0, 0, 0, 170));
+		g2.fillRoundRect(10, 10, 130, 80, 15, 15);
+		// g2.drawImage(bImg, 10, 10, this);
 
 		// Paint your score
 		paintScore(g);

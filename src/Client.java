@@ -1,4 +1,7 @@
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -10,7 +13,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-public class Client extends JFrame implements Runnable, KeyListener {
+public class Client extends JFrame implements Runnable, KeyListener, ComponentListener {
 
 	// ------------- DEBUG --------------
 	private boolean debug = false;
@@ -24,10 +27,12 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	private Canvas canvas;
 	private Socket socket;
 	private boolean left, right, down, up;
+	private boolean collided = false;
+	private int invincibleTimer = 0;
+	private int screenWidth = 720;
+	private int screenHeight = 480;
 
 	// Constants
-	private static final int screenWidth = 720;
-	private static final int screenHeight = 480;
 	private static final int roomSize = 1000;
 	private static final int maxFoods = 20;
 	private static final int maxScore = 200;
@@ -45,6 +50,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	// Food related
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
+	private HashMap<Integer, int[]> playerList = new HashMap<Integer, int[]>();
 	private Food[] tempFood = new Food[maxFoods];
 
 	public Client() {
@@ -56,11 +62,12 @@ public class Client extends JFrame implements Runnable, KeyListener {
 		setLayout(new BorderLayout());
 		addKeyListener(this);
 		setVisible(true);
+		addComponentListener(this);
 
 		// Create the canvas
 		canvas = new Canvas(screenWidth, screenHeight, roomSize);
 		add(canvas, BorderLayout.CENTER);
-
+		canvas.repaint();
 		try {
 
 			// Connect to the server
@@ -120,6 +127,15 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 	public int getMaxFoods() {
 		return maxFoods;
+	}
+
+	public synchronized void updatePlayerList(int inPlayerId, int inX, int inY, int inScore) {
+		int[] packet = new int[4];
+		packet[0] = inPlayerId;
+		packet[1] = inX;
+		packet[2] = inY;
+		packet[3] = inScore;
+		this.playerList.put(inPlayerId, packet);
 	}
 
 	public void setFoodList(HashMap<Integer, Food> inFoodList) {
@@ -185,12 +201,16 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 			if (score >= 150) {
 				shrinkTimer = 17;
+				speed = 4;
 			} else if (score >= 100) {
 				shrinkTimer = 32;
+				speed = 5;
 			} else if (score >= 50) {
 				shrinkTimer = 37;
+				speed = 6;
 			} else {
 				shrinkTimer = 45;
+				speed = 7;
 			}
 		}
 		shrinkTimer--;
@@ -205,7 +225,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 	}
 
 	public void checkFoodCollision(Boolean showDebug) {
-		Boolean collided = false;
+		Boolean collidedFood = false;
 		// Loop through every Food and get their x and y coordinate, then check for
 		// collision.
 		for (int i = 0; i < maxFoods; i++) {
@@ -218,7 +238,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 
 				if (playerCoord[X] <= tempFoodX && playerCoord[X] >= (tempFoodX - score)) {
 					if (playerCoord[Y] <= tempFoodY && playerCoord[Y] >= (tempFoodY - score)) {
-						if (collided == false) {
+						if (collidedFood == false) {
 
 							// Print out debug message
 							if (showDebug) {
@@ -226,7 +246,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 							}
 
 							// Make sure we don't collide again
-							collided = true;
+							collidedFood = true;
 
 							// Increment score
 							score++;
@@ -240,6 +260,7 @@ public class Client extends JFrame implements Runnable, KeyListener {
 								// Create a new Food object with the same index as the one we've collided with.
 								// Add the Food object to our foodList so we don't experience any graphical
 								// delay
+								Toolkit.getDefaultToolkit().beep();
 								Food tempFood = new Food(i, random.nextInt(roomSize), random.nextInt(roomSize));
 								foodList.put(i, tempFood);
 
@@ -254,7 +275,58 @@ public class Client extends JFrame implements Runnable, KeyListener {
 				}
 			}
 		}
-		collided = false;
+		collidedFood = false;
+	}
+
+	public void checkPlayerCollision() {
+		for (Integer i : playerList.keySet()) {
+			if (i != null) {
+				int otherPlayerId = playerList.get(i)[0];
+				int otherPlayerX = playerList.get(i)[1];
+				int otherPlayerY = playerList.get(i)[2];
+				int otherPlayerScore = playerList.get(i)[3];
+
+				if (playerID != otherPlayerId) {
+					if (playerCoord[X] <= (otherPlayerX + otherPlayerScore) && playerCoord[X] >= (otherPlayerX - score)
+							&& playerCoord[Y] <= (otherPlayerY + otherPlayerScore)
+							&& playerCoord[Y] >= (otherPlayerY - score)) {
+
+						// Other player eats us
+						if (otherPlayerScore > score) {
+							score = 25;
+							playerCoord[X] = random.nextInt(roomSize);
+							playerCoord[Y] = random.nextInt(roomSize);
+						} else {
+							// We eat other player
+							score += 20;
+						}
+
+						// We've collided
+						invincible();
+					}
+				}
+			}
+		}
+	}
+
+	public void handleCollision() {
+		// Check for collision if we're not invincible
+		if (!collided) {
+			checkPlayerCollision();
+		} else {
+			invincibleTimer--;
+		}
+
+		// Reset invincibleTimer
+		if (invincibleTimer <= 0) {
+			invincibleTimer = 0;
+			collided = false;
+		}
+	}
+
+	public void invincible() {
+		collided = true;
+		invincibleTimer = 60;
 	}
 
 	// KeyHandler:
@@ -297,10 +369,8 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			// Movement
 			move();
 
-			// Send package only if we move, save bandwidth mang
-			if (left || right || up || down) {
-				sendPlayerPackage();
-			}
+			// Update player
+			sendPlayerPackage();
 
 			// Check for Food collision
 			if (score < maxScore) {
@@ -310,20 +380,45 @@ public class Client extends JFrame implements Runnable, KeyListener {
 			// Shrink
 			shrink();
 
+			// Update ourself in the playerList
+			updatePlayerList(playerID, playerCoord[X], playerCoord[Y], score);
+
 			// Update our client even if we don't move
-			keepAlive();
+			// keepAlive();
 
 			// Update canvas foodList
 			updateCanvasFood();
 
+			// Check collision
+			handleCollision();
+
 			// Update
 			canvas.updateCoordinates(playerID, playerCoord[X], playerCoord[Y], score);
+			canvas.setSpeed(speed);
 			canvas.repaint();
 
 			// Loop with this delay
 			// 16ms = about 60 FPS, 32 = 30 FPS
 			sleep(32);
 		}
+	}
+
+	public void componentResized(ComponentEvent e) {
+		int width = this.getWidth();
+		int height = this.getHeight();
+		
+		this.screenWidth = width;
+		this.screenHeight = height;
+		canvas.setScreen(width, height);
+	}
+
+	public void componentMoved(ComponentEvent e) {
+	}
+
+	public void componentShown(ComponentEvent e) {
+	}
+
+	public void componentHidden(ComponentEvent e) {
 	}
 }
 
@@ -356,16 +451,10 @@ class InputReader implements Runnable {
 			System.out.println("score: " + score + "\n");
 		}
 
-		// Only update player if the packet was intact
-		if (playerID >= 0 && playerID <= 10) {
-			if (x >= 0 && x <= client.getRoomSize()) {
-				if (y >= 0 && y <= client.getRoomSize()) {
-					if (score >= 20 && score <= 254) {
-						client.updateCoordinates(playerID, x, y, score);
-					}
-				}
-			}
-		}
+		// Only update player from the packet
+		client.updateCoordinates(playerID, x, y, score);
+		client.updatePlayerList(playerID, x, y, score);
+
 	}
 
 	public void handleFoodPacket(Packet packet, Boolean showDebug) {
