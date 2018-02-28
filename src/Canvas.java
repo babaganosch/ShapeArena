@@ -28,10 +28,10 @@ class Canvas extends JPanel {
 	// Colors
 	private Color cBackground = new Color(180, 180, 180);
 	private Color cWorld = new Color(205, 205, 205);
-	private Color cPlayer0 = new Color(170, 85, 85); // Red
+	private Color cPlayer0 = new Color(170, 85, 85);  // Red
 	private Color cPlayer1 = new Color(120, 170, 85); // Green
 	private Color cPlayer2 = new Color(85, 130, 170); // Blue
-	private Color cPlayer3 = new Color(210, 220, 105); // Yellow
+	private Color cPlayer3 = new Color(224, 212, 75); // Yellow
 	private Color cPlayer4 = new Color(135, 95, 180); // Purple
 	private Color cText = Color.WHITE;
 	private Color cFood = new Color(110, 47, 47);
@@ -65,7 +65,6 @@ class Canvas extends JPanel {
 	public void updateCoordinates(int pid, int x, int y, int score) {
 		int[] info = { x, y, score };
 		players.put(pid, info);
-
 	}
 
 	public void setFood(HashMap<Integer, Food> foodList) {
@@ -111,17 +110,33 @@ class Canvas extends JPanel {
 		g2.drawString("speed", 17, 54);
 		g2.drawString("invincible", 17, 68);
 
+		int offset = 0;
+
+		for (Integer i : players.keySet()) {
+			g2.drawString("Player " + i, 17, 95 + offset);
+			offset += 14;
+		}
+
 		setPlayerColor(g2, playerID);
-		g2.drawString("" + playerID, 80, 26);
-		g2.drawString("" + players.get(playerID)[SIZE], 80, 40);
-		g2.drawString("" + speed, 80, 54);
-		g2.drawString("" + invincibleTimer, 80, 68);
+		g2.drawString("" + playerID, 85, 26);
+		g2.drawString("" + players.get(playerID)[SIZE], 85, 40);
+		g2.drawString("" + speed, 85, 54);
+		g2.drawString("" + invincibleTimer, 85, 68);
+
+		int offset2 = 0;
+
+		for (Integer i : players.keySet()) {
+			setPlayerColor(g2, i);
+			g2.drawString("" + players.get(i)[SIZE], 85, 95 + offset2);
+			offset2 += 14;
+		}
+
 	}
 
 	public void setSpeed(int speed) {
 		this.speed = speed;
 	}
-	
+
 	public void setInvincibleTimer(int timer) {
 		this.invincibleTimer = timer;
 	}
@@ -168,9 +183,14 @@ class Canvas extends JPanel {
 			}
 		}
 
-		// Paint the score frame
+		// Paint the information frame
 		g2.setColor(new Color(0, 0, 0, 170));
-		g2.fillRoundRect(10, 10, 130, 80, 15, 15);
+		g2.fillRoundRect(10, 10, 130, 67, 15, 15);
+
+		// Paint the score frame
+		int scoreListHeight = (players.size() * 14) + 10;
+		g2.fillRoundRect(10, 79, 130, scoreListHeight, 15, 15);
+
 		// g2.drawImage(bImg, 10, 10, this);
 
 		// Paint your score
