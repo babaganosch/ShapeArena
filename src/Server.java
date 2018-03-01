@@ -66,7 +66,7 @@ public class Server extends Observable {
 		// Setup PacketHandler
 		this.packetHandler = new PacketHandler(foodList, clientHandler, this);
 
-		// Create Highscorehandler
+		// Create HighscoreHandler
 		this.highscoreHandler = new HighscoreHandler();
 	}
 
@@ -77,7 +77,6 @@ public class Server extends Observable {
 				message += "Connected: " + i.getSocket().getInetAddress().getHostAddress() + " with ID: " + i.getId()
 						+ System.lineSeparator();
 			}
-
 		}
 		return message;
 	}
