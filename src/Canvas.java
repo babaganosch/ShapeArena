@@ -2,9 +2,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 class Canvas extends JPanel {
@@ -20,14 +22,16 @@ class Canvas extends JPanel {
 	private static final int Y = 1;
 	private static final int SIZE = 2;
 
-	// Score Frame
-	// private ImageIcon img = new ImageIcon(getClass().getResource("test.png"));
-	// private Image bImg = img.getImage();
+	// Sad face
+	private ImageIcon img = new ImageIcon(getClass().getResource("bubble.png"));
+	private Image bImg = img.getImage();
+	private boolean showSadFace = false;
+	private int showSadFaceTimer = 0;
 
 	// Colors
 	private Color cBackground = new Color(180, 180, 180);
 	private Color cWorld = new Color(205, 205, 205);
-	private Color cPlayer0 = new Color(170, 85, 85);  // Red
+	private Color cPlayer0 = new Color(170, 85, 85); // Red
 	private Color cPlayer1 = new Color(120, 170, 85); // Green
 	private Color cPlayer2 = new Color(85, 130, 170); // Blue
 	private Color cPlayer3 = new Color(224, 212, 75); // Yellow
@@ -55,7 +59,7 @@ class Canvas extends JPanel {
 	public void setPlayerID(int playerID) {
 		this.playerID = playerID;
 	}
-
+	
 	public void setScreen(int width, int height) {
 		this.screenWidth = width;
 		this.screenHeight = height;
@@ -139,6 +143,11 @@ class Canvas extends JPanel {
 	public void setInvincibleTimer(int timer) {
 		this.invincibleTimer = timer;
 	}
+	
+	public void died() {
+		showSadFace = true;
+		showSadFaceTimer = 100;
+	}
 
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -189,9 +198,15 @@ class Canvas extends JPanel {
 		// Paint the score frame
 		int scoreListHeight = (players.size() * 14) + 10;
 		g2.fillRoundRect(10, 79, 130, scoreListHeight, 15, 15);
-
-		// g2.drawImage(bImg, 10, 10, this);
-
+		if (showSadFace) {
+			g2.drawImage(bImg, screenWidth / 2 - player[SIZE] - 10, (screenHeight / 2) - player[SIZE] - 25, this);
+			showSadFaceTimer--;
+			
+			if (showSadFaceTimer <= 0) {
+				showSadFaceTimer = 0;
+				showSadFace = false;
+			}
+		}
 		// Paint your score
 		paintScore(g);
 	}

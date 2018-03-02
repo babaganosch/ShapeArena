@@ -58,6 +58,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private int score = 15 + random.nextInt(10);
 	private int shrinkTimer = 100;
 	private int aliveTimer = initialAliveTime;
+	private int growth = 0;
 
 	// Food related
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
@@ -72,13 +73,13 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		addKeyListener(this);
-		setVisible(true);
+		
 		addComponentListener(this);
 
 		// Create the canvas
 		canvas = new Canvas(screenWidth, screenHeight, roomSize);
 		add(canvas, BorderLayout.CENTER);
-		canvas.repaint();
+		
 		try {
 
 			// Connect to the server
@@ -122,6 +123,8 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			System.out.println("Unable to start client");
 			// e.printStackTrace();
 		}
+		setVisible(true);
+		repaint();
 	}
 
 	public static void main(String arg[]) {
@@ -163,7 +166,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			return value;
 		}
 	}
-	
+
 	public float clampFloat(float value, float max, float min) {
 		if (value <= min) {
 			return min;
@@ -221,10 +224,12 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		} else {
 			currentSpeed[3] = clampFloat(currentSpeed[UP] - friction, currentMaxSpeed, 0);
 		}
-		
+
 		// Move the player!
-		playerCoordinates[X] = clamp(playerCoordinates[X] + (int) currentSpeed[RIGHT] - (int) currentSpeed[LEFT], roomSize - score, 0);
-		playerCoordinates[Y] = clamp(playerCoordinates[Y] + (int) currentSpeed[DOWN] - (int) currentSpeed[UP], roomSize - score, 0);
+		playerCoordinates[X] = clamp(playerCoordinates[X] + (int) currentSpeed[RIGHT] - (int) currentSpeed[LEFT],
+				roomSize - score, 0);
+		playerCoordinates[Y] = clamp(playerCoordinates[Y] + (int) currentSpeed[DOWN] - (int) currentSpeed[UP],
+				roomSize - score, 0);
 	}
 
 	public void shrink() {
@@ -245,7 +250,8 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 				friction = lowestFriction - 0.2f;
 			} else if (score >= 50) {
 				shrinkTimer = 65;
-				currentMaxSpeed = maxSpeed - 1;;
+				currentMaxSpeed = maxSpeed - 1;
+				;
 				acceleration = maxAcceleration + 0.1f;
 				friction = lowestFriction - 0.1f;
 			} else {
@@ -256,6 +262,13 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			}
 		}
 		shrinkTimer--;
+	}
+
+	public void grow() {
+		if (growth > 0) {
+			score += 1;
+			growth -= 1;
+		}
 	}
 
 	public void keepAlive() {
@@ -337,11 +350,14 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 						// Other player eats us
 						if (otherPlayerScore >= score) {
 							score = 25;
-							playerCoordinates[X] = random.nextInt(roomSize);
-							playerCoordinates[Y] = random.nextInt(roomSize);
+							int newX = random.nextInt(roomSize - 25);
+							int newY = random.nextInt(roomSize - 25);
+							playerCoordinates[X] = newX;
+							playerCoordinates[Y] = newY;
+							canvas.died();
 						} else {
 							// We eat other player
-							score += otherPlayerScore * 0.3;
+							growth += otherPlayerScore * 0.3;
 						}
 
 						// We've collided
@@ -371,7 +387,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		collided = true;
 		invincibleTimer = 60;
 	}
-
+	
 	// KeyHandler:
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
@@ -415,7 +431,8 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			// Update player
 			if (slowDownSending <= 0) {
 				sendPlayerPackage();
-				slowDownSending = 3;;
+				slowDownSending = 2;
+				;
 			} else {
 				slowDownSending--;
 			}
@@ -427,6 +444,9 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 
 			// Shrink
 			shrink();
+
+			// Grow
+			grow();
 
 			// Update ourself in the playerList
 			updatePlayerList(playerID, playerCoordinates[X], playerCoordinates[Y], score);

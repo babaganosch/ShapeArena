@@ -137,6 +137,7 @@ public class ClientHandler extends Observable implements Runnable{
 					packetHandler.addPacket(packet);
 				}
 				
+				
 			} catch (IOException e) {
 
 				// Disconnect
