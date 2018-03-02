@@ -2,11 +2,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.util.HashMap;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 class Canvas extends JPanel {
@@ -17,6 +15,7 @@ class Canvas extends JPanel {
 	private int screenWidth, screenHeight;
 	private int mapSize;
 	private static final int maxFood = 20;
+	private static final int foodSize = 5;
 	private static final int X = 0;
 	private static final int Y = 1;
 	private static final int SIZE = 2;
@@ -179,7 +178,7 @@ class Canvas extends JPanel {
 		if (player != null) {
 			for (int i = 0; i < maxFood; i++) {
 				g2.fillOval(foodPositions[i][X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
-						foodPositions[i][Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, 5, 5);
+						foodPositions[i][Y] - player[Y] + screenHeight / 2 - player[SIZE] / 2, foodSize, foodSize);
 			}
 		}
 

@@ -58,8 +58,8 @@ public class Server extends Observable {
 	public void SetupObjects() throws IOException {
 		// Create the Food
 		for (int i = 0; i < maxFood; i++) {
-			int tempX = random.nextInt(worldSize);
-			int tempY = random.nextInt(worldSize);
+			int tempX = random.nextInt(worldSize - 5);
+			int tempY = random.nextInt(worldSize - 5);
 			foodList.put(i, new Food(i, tempX, tempY));
 		}
 

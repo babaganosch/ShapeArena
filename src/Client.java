@@ -37,16 +37,26 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private static final int roomSize = 1000;
 	private static final int maxFoods = 20;
 	private static final int maxScore = 200;
+	private static final int initialAliveTime = 75;
+	private static final float maxAcceleration = 0.45f;
+	private static final float lowestFriction = 0.3f;
 	private static final int X = 0;
 	private static final int Y = 1;
+	private static final int RIGHT = 0;
+	private static final int LEFT = 1;
+	private static final int DOWN = 2;
+	private static final int UP = 3;
+	private static final int maxSpeed = 4;
 
 	// Player related
 	private int playerID;
 	private int playerCoordinates[] = new int[2];
-	private int speed = 7;
+	private int currentMaxSpeed = maxSpeed;
+	private float acceleration = maxAcceleration;
+	private float friction = lowestFriction;
+	private float currentSpeed[] = new float[4];
 	private int score = 15 + random.nextInt(10);
 	private int shrinkTimer = 100;
-	private int initialAliveTime = 75;
 	private int aliveTimer = initialAliveTime;
 
 	// Food related
@@ -96,9 +106,9 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 				}
 			}
 
-			// Out the player somewhere random on the map
-			playerCoordinates[X] = random.nextInt(roomSize);
-			playerCoordinates[Y] = random.nextInt(roomSize);
+			// Put the player somewhere random on the map
+			playerCoordinates[X] = random.nextInt(roomSize - 25);
+			playerCoordinates[Y] = random.nextInt(roomSize - 25);
 
 			// Initialize InputReader and start its thread.
 			InputReader input = new InputReader(in, this);
@@ -153,6 +163,16 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			return value;
 		}
 	}
+	
+	public float clampFloat(float value, float max, float min) {
+		if (value <= min) {
+			return min;
+		} else if (value >= max) {
+			return max;
+		} else {
+			return value;
+		}
+	}
 
 	public void updateCoordinates(int pid, int x, int y, int score) {
 		canvas.updateCoordinates(pid, x, y, score);
@@ -180,18 +200,31 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	}
 
 	public void move() {
+		// Acceleration and friction
 		if (right == true) {
-			playerCoordinates[X] = clamp(playerCoordinates[X] + speed, roomSize - score, 0);
+			currentSpeed[0] = clampFloat(currentSpeed[RIGHT] + acceleration, currentMaxSpeed, 0);
+		} else {
+			currentSpeed[0] = clampFloat(currentSpeed[RIGHT] - friction, currentMaxSpeed, 0);
 		}
 		if (left == true) {
-			playerCoordinates[X] = clamp(playerCoordinates[X] - speed, roomSize - score, 0);
+			currentSpeed[1] = clampFloat(currentSpeed[LEFT] + acceleration, currentMaxSpeed, 0);
+		} else {
+			currentSpeed[1] = clampFloat(currentSpeed[LEFT] - friction, currentMaxSpeed, 0);
 		}
 		if (down == true) {
-			playerCoordinates[Y] = clamp(playerCoordinates[Y] + speed, roomSize - score, 0);
+			currentSpeed[2] = clampFloat(currentSpeed[DOWN] + acceleration, currentMaxSpeed, 0);
+		} else {
+			currentSpeed[2] = clampFloat(currentSpeed[DOWN] - friction, currentMaxSpeed, 0);
 		}
 		if (up == true) {
-			playerCoordinates[Y] = clamp(playerCoordinates[Y] - speed, roomSize - score, 0);
+			currentSpeed[3] = clampFloat(currentSpeed[UP] + acceleration, currentMaxSpeed, 0);
+		} else {
+			currentSpeed[3] = clampFloat(currentSpeed[UP] - friction, currentMaxSpeed, 0);
 		}
+		
+		// Move the player!
+		playerCoordinates[X] = clamp(playerCoordinates[X] + (int) currentSpeed[RIGHT] - (int) currentSpeed[LEFT], roomSize - score, 0);
+		playerCoordinates[Y] = clamp(playerCoordinates[Y] + (int) currentSpeed[DOWN] - (int) currentSpeed[UP], roomSize - score, 0);
 	}
 
 	public void shrink() {
@@ -201,17 +234,25 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			}
 
 			if (score >= 150) {
-				shrinkTimer = 17;
-				speed = 2;
+				shrinkTimer = 40;
+				currentMaxSpeed = maxSpeed - 2;
+				acceleration = maxAcceleration + 0.4f;
+				friction = lowestFriction - 0.2f;
 			} else if (score >= 100) {
-				shrinkTimer = 32;
-				speed = 3;
+				shrinkTimer = 55;
+				currentMaxSpeed = maxSpeed - 2;
+				acceleration = maxAcceleration + 0.2f;
+				friction = lowestFriction - 0.2f;
 			} else if (score >= 50) {
-				shrinkTimer = 37;
-				speed = 5;
+				shrinkTimer = 65;
+				currentMaxSpeed = maxSpeed - 1;;
+				acceleration = maxAcceleration + 0.1f;
+				friction = lowestFriction - 0.1f;
 			} else {
-				shrinkTimer = 45;
-				speed = 7;
+				shrinkTimer = 85;
+				currentMaxSpeed = maxSpeed;
+				acceleration = maxAcceleration;
+				friction = lowestFriction;
 			}
 		}
 		shrinkTimer--;
@@ -262,7 +303,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 								// Add the Food object to our foodList so we don't experience any graphical
 								// delay
 								Toolkit.getDefaultToolkit().beep();
-								Food tempFood = new Food(i, random.nextInt(roomSize), random.nextInt(roomSize));
+								Food tempFood = new Food(i, random.nextInt(roomSize - 5), random.nextInt(roomSize - 5));
 								foodList.put(i, tempFood);
 
 								// Send the new Food object to the server
@@ -294,7 +335,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 							&& playerCoordinates[Y] >= (otherPlayerY - score)) {
 
 						// Other player eats us
-						if (otherPlayerScore > score) {
+						if (otherPlayerScore >= score) {
 							score = 25;
 							playerCoordinates[X] = random.nextInt(roomSize);
 							playerCoordinates[Y] = random.nextInt(roomSize);
@@ -374,7 +415,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			// Update player
 			if (slowDownSending <= 0) {
 				sendPlayerPackage();
-				slowDownSending = 1;
+				slowDownSending = 3;;
 			} else {
 				slowDownSending--;
 			}
@@ -398,13 +439,13 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 
 			// Update
 			canvas.updateCoordinates(playerID, playerCoordinates[X], playerCoordinates[Y], score);
-			canvas.setSpeed(speed);
+			canvas.setSpeed(maxSpeed);
 			canvas.setInvincibleTimer(invincibleTimer);
 			canvas.repaint();
 
 			// Loop with this delay
 			// 16ms = about 60 FPS, 32 = 30 FPS
-			sleep(32);
+			sleep(16);
 		}
 	}
 
