@@ -67,7 +67,11 @@ class Canvas extends JPanel {
 
 	public void updateCoordinates(int pid, int x, int y, int score) {
 		int[] info = { x, y, score };
-		players.put(pid, info);
+		if (score != 0) {
+			players.put(pid, info);
+		} else {
+			players.remove(pid);
+		}
 	}
 
 	public void setFood(HashMap<Integer, Food> foodList) {
@@ -163,7 +167,7 @@ class Canvas extends JPanel {
 		}
 
 		// Paint all other players
-		for (int i = 0; i < players.size(); i++) {
+		for (Integer i : players.keySet()) {
 			if (i != playerID) {
 				int[] otherPlayer = players.get(i);
 				setPlayerColor(g2, i);

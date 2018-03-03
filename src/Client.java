@@ -39,6 +39,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private Socket socket;
 	private boolean collided = false;
 	private boolean fullScreen = false;
+	private static boolean disconnected = false;
 	private int invincibleTimer = 0;
 	private int screenWidth = 720;
 	private int screenHeight = 480;
@@ -184,6 +185,11 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			serverIP = "localhost";
 		}
 		new Client(serverIP);
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			public void run() {
+				disconnected = true;
+			}
+		}, "Shutdown-thread"));
 	}
 	public boolean getDebug() {
 		return debug;
@@ -242,8 +248,15 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 
 	public void sendPlayerPackage() {
 		try {
-			out.writeObject(new PlayerPacket(playerID, playerCoordinates[X], playerCoordinates[Y], score));
-			out.flush();
+			if (!disconnected) {
+				out.writeObject(new PlayerPacket(playerID, playerCoordinates[X], playerCoordinates[Y], score));
+				out.flush();
+			} else {
+				out.writeObject(new PlayerPacket(playerID, playerCoordinates[X], playerCoordinates[Y], 0));
+				out.flush();
+				playerList.remove(playerID);
+			}
+			
 		} catch (Exception e) {
 			System.out.println("Error sending Coordinates.");
 		}

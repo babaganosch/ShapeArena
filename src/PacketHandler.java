@@ -25,7 +25,6 @@ class PacketHandler extends Observable implements Runnable {
 	
 	public synchronized void updateFood(Food food) {
 		this.foodList.put(food.getId(), food);
-		//System.out.println("Adding food id: " + food.getId());
 	}
 
 	public synchronized void addPacket(Packet packet) {
