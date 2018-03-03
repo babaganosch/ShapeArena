@@ -19,6 +19,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -75,7 +76,8 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private Food[] tempFood = new Food[maxFoods];
 
 	public Client(String serverIP) {
-
+		
+		
 		// Setup the JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(screenWidth, screenHeight);
@@ -165,7 +167,15 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		setVisible(true);
 		repaint();
 	}
-
+	public static void main(String[] args) {	
+		JFrame ipFrame = new JFrame();
+		String serverIP = JOptionPane.showInputDialog(ipFrame, "IP adress:");
+		
+		if(serverIP == null) {
+			serverIP = "localhost";
+		}
+		new Client(serverIP);
+	}
 	public boolean getDebug() {
 		return debug;
 	}

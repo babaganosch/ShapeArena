@@ -25,10 +25,10 @@ public class Server extends Observable implements Runnable {
 	private int maxFood = 20;
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public Server(int x, int y) {
+	public Server() {
 		try {
 			SetupServer(port);
-			setupServerFrame(x, y);
+			setupServerFrame();
 			SetupObjects();
 			Thread serverThread = new Thread(this);
 			serverThread.start();
@@ -36,13 +36,15 @@ public class Server extends Observable implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
+	public static void main(String[] args) {
+		new Server();
+	}
 	public int getTickRate() {
 		return tickRate;
 	}
 
-	public void setupServerFrame(int x, int y) {
-		serverFrame = new ServerFrame(x, y);
+	public void setupServerFrame() {
+		serverFrame = new ServerFrame();
 		addObserver(serverFrame);
 		setChanged();
 		notifyObservers(Integer.parseInt(port));
