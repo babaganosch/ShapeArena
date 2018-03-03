@@ -6,6 +6,12 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
+/**
+ * This is the main server class for the Shape Arena.
+ * @author Hasse Aro
+ * @version 2018-03-xx
+ */
+
 public class Server extends Observable implements Runnable {
 
 	// Global
@@ -19,13 +25,17 @@ public class Server extends Observable implements Runnable {
 	private HighscoreHandler highscoreHandler;
 	private Observer serverFrame;
 
-	private String port = "11100";
+	private static String port = "11100";
 
 	// Food related
 	private int maxFood = 20;
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public Server() {
+	/**
+	 * Creates a new server object.
+	 * @param port Port the server listens on.
+	 */
+	public Server(String port) {
 		try {
 			SetupServer(port);
 			setupServerFrame();
@@ -36,13 +46,22 @@ public class Server extends Observable implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	
 	public static void main(String[] args) {
-		new Server();
+		new Server(port);
 	}
+	
+	/**
+	 * Returns the tickRate variable from the server
+	 * @return a int representing the tick rate
+	 */
 	public int getTickRate() {
 		return tickRate;
 	}
 
+	/**
+	 * Creates the Server Frame
+	 */
 	public void setupServerFrame() {
 		serverFrame = new ServerFrame();
 		addObserver(serverFrame);
@@ -50,6 +69,12 @@ public class Server extends Observable implements Runnable {
 		notifyObservers(Integer.parseInt(port));
 	}
 
+	/**
+	 * Starts the server and listens on the port given to it.
+	 * Else throws IOException
+	 * @param port The port the server listens on.
+	 * @throws IOException The exception if it failed to start the server.
+	 */
 	public void SetupServer(String port) throws IOException {
 		// Setup the server
 		int serverPort = Integer.parseInt(port);
@@ -57,7 +82,12 @@ public class Server extends Observable implements Runnable {
 		this.serverSocket = new ServerSocket(serverPort);
 		System.out.println("Server started... listens on port " + serverPort);
 	}
-
+	
+	/**
+	 * Starts the Packet Handler and the Highscore Handler.
+	 * Also creates the initial Food objects.
+	 * @throws IOException Throws exception if something went wrong.
+	 */
 	public void SetupObjects() throws IOException {
 		// Create the Food
 		for (int i = 0; i < maxFood; i++) {
@@ -73,6 +103,10 @@ public class Server extends Observable implements Runnable {
 		this.highscoreHandler = new HighscoreHandler();
 	}
 
+	/**
+	 * Returns info about the connected clients.
+	 * @return Returns a string containing information about every connected client to the server.
+	 */
 	public String getConnectedUsers() {
 		String message = "";
 		for (ClientHandler i : clientHandler) {

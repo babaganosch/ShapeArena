@@ -191,6 +191,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			}
 		}, "Shutdown-thread"));
 	}
+	
 	public boolean getDebug() {
 		return debug;
 	}
