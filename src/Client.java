@@ -73,6 +73,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		addKeyListener(this);
+		setVisible(true);
 		
 		addComponentListener(this);
 
@@ -83,7 +84,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		try {
 
 			// Connect to the server
-			String serverIP = "localhost";
+			String serverIP = "localhost";//"176.10.136.66";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -205,24 +206,24 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	public void move() {
 		// Acceleration and friction
 		if (right == true) {
-			currentSpeed[0] = clampFloat(currentSpeed[RIGHT] + acceleration, currentMaxSpeed, 0);
+			currentSpeed[RIGHT] = clampFloat(currentSpeed[RIGHT] + acceleration, currentMaxSpeed, 0);
 		} else {
-			currentSpeed[0] = clampFloat(currentSpeed[RIGHT] - friction, currentMaxSpeed, 0);
+			currentSpeed[RIGHT] = clampFloat(currentSpeed[RIGHT] - friction, currentMaxSpeed, 0);
 		}
 		if (left == true) {
-			currentSpeed[1] = clampFloat(currentSpeed[LEFT] + acceleration, currentMaxSpeed, 0);
+			currentSpeed[LEFT] = clampFloat(currentSpeed[LEFT] + acceleration, currentMaxSpeed, 0);
 		} else {
-			currentSpeed[1] = clampFloat(currentSpeed[LEFT] - friction, currentMaxSpeed, 0);
+			currentSpeed[LEFT] = clampFloat(currentSpeed[LEFT] - friction, currentMaxSpeed, 0);
 		}
 		if (down == true) {
-			currentSpeed[2] = clampFloat(currentSpeed[DOWN] + acceleration, currentMaxSpeed, 0);
+			currentSpeed[DOWN] = clampFloat(currentSpeed[DOWN] + acceleration, currentMaxSpeed, 0);
 		} else {
-			currentSpeed[2] = clampFloat(currentSpeed[DOWN] - friction, currentMaxSpeed, 0);
+			currentSpeed[DOWN] = clampFloat(currentSpeed[DOWN] - friction, currentMaxSpeed, 0);
 		}
 		if (up == true) {
-			currentSpeed[3] = clampFloat(currentSpeed[UP] + acceleration, currentMaxSpeed, 0);
+			currentSpeed[UP] = clampFloat(currentSpeed[UP] + acceleration, currentMaxSpeed, 0);
 		} else {
-			currentSpeed[3] = clampFloat(currentSpeed[UP] - friction, currentMaxSpeed, 0);
+			currentSpeed[UP] = clampFloat(currentSpeed[UP] - friction, currentMaxSpeed, 0);
 		}
 
 		// Move the player!
@@ -431,7 +432,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			// Update player
 			if (slowDownSending <= 0) {
 				sendPlayerPackage();
-				slowDownSending = 2;
+				slowDownSending = 1;
 				;
 			} else {
 				slowDownSending--;

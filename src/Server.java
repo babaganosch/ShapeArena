@@ -9,7 +9,7 @@ import java.util.Random;
 public class Server extends Observable {
 
 	// Global
-	private int tickRate = 5;
+	private int tickRate = 3;
 	private int worldSize = 1000;
 	private int maxUsers = 10;
 	private Random random = new Random();

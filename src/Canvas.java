@@ -31,11 +31,11 @@ class Canvas extends JPanel {
 	// Colors
 	private Color cBackground = new Color(180, 180, 180);
 	private Color cWorld = new Color(205, 205, 205);
-	private Color cPlayer0 = new Color(170, 85, 85); // Red
-	private Color cPlayer1 = new Color(120, 170, 85); // Green
-	private Color cPlayer2 = new Color(85, 130, 170); // Blue
-	private Color cPlayer3 = new Color(224, 212, 75); // Yellow
-	private Color cPlayer4 = new Color(135, 95, 180); // Purple
+	private Color cPlayer0 = new Color(170, 85, 85); 		// Red
+	private Color cPlayer1 = new Color(120, 170, 85); 	// Green
+	private Color cPlayer2 = new Color(85, 130, 170); 	// Blue
+	private Color cPlayer3 = new Color(224, 212, 75); 	// Yellow
+	private Color cPlayer4 = new Color(135, 95, 180); 	// Purple
 	private Color cText = Color.WHITE;
 	private Color cFood = new Color(110, 47, 47);
 
@@ -59,7 +59,7 @@ class Canvas extends JPanel {
 	public void setPlayerID(int playerID) {
 		this.playerID = playerID;
 	}
-	
+
 	public void setScreen(int width, int height) {
 		this.screenWidth = width;
 		this.screenHeight = height;
@@ -143,7 +143,7 @@ class Canvas extends JPanel {
 	public void setInvincibleTimer(int timer) {
 		this.invincibleTimer = timer;
 	}
-	
+
 	public void died() {
 		showSadFace = true;
 		showSadFaceTimer = 100;
@@ -201,7 +201,7 @@ class Canvas extends JPanel {
 		if (showSadFace) {
 			g2.drawImage(bImg, screenWidth / 2 - player[SIZE] - 10, (screenHeight / 2) - player[SIZE] - 25, this);
 			showSadFaceTimer--;
-			
+
 			if (showSadFaceTimer <= 0) {
 				showSadFaceTimer = 0;
 				showSadFace = false;
