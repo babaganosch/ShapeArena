@@ -80,6 +80,9 @@ class PacketHandler extends Observable implements Runnable {
 				notifyTimer--;
 			}
 			
+			if (packetList.size() > 100) {
+				packetList = new ArrayList<Packet>();
+			}
 
 			try {
 				// Sleep for a while
@@ -87,6 +90,7 @@ class PacketHandler extends Observable implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
 		}
 	}
 }

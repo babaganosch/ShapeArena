@@ -60,6 +60,7 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 				close.setForeground(Color.DARK_GRAY);
 			}
 		});
+		
 		topBar.add(close, BorderLayout.EAST);
 		topBar.setBackground(foregroundColor);
 		

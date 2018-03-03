@@ -69,6 +69,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private int shrinkTimer = 100;
 	private int aliveTimer = initialAliveTime;
 	private int growth = 0;
+	private boolean adjustPosition;
 
 	// Food related
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
@@ -150,6 +151,14 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			// Put the player somewhere random on the map
 			playerCoordinates[X] = random.nextInt(roomSize - 25);
 			playerCoordinates[Y] = random.nextInt(roomSize - 25);
+			
+			// Initialization of adjustPosition depends on the start value of score being even or odd,
+		    // to correctly synchronize adjusting the player position when shrinking
+			if (score % 2 == 0) {
+				adjustPosition = true;
+			} else {
+				adjustPosition = false;
+			}
 
 			// Initialize InputReader and start its thread.
 			InputReader input = new InputReader(in, this);
@@ -213,6 +222,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	}
 
 	public float clampFloat(float value, float max, float min) {
+		// Clamp value between min and max value.
 		if (value <= min) {
 			return min;
 		} else if (value >= max) {
@@ -281,6 +291,15 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		if (shrinkTimer <= 0) {
 			if (score > 25) {
 				score--;
+				
+				if (adjustPosition) {
+					playerCoordinates[X] += 1;
+					playerCoordinates[Y] += 1;
+					adjustPosition = false;
+				} else {
+					adjustPosition = true;
+				}
+				
 			}
 
 			if (score >= 150) {
@@ -313,6 +332,11 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		if (growth > 0) {
 			score += 1;
 			growth -= 1;
+		}
+		if (score % 2 == 0) {
+			adjustPosition = true;
+		} else {
+			adjustPosition = false;
 		}
 	}
 
@@ -350,6 +374,13 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 
 							// Increment score
 							score++;
+							
+							// Change adjustPosition
+							if (adjustPosition) {
+								adjustPosition = false;
+							} else {
+								adjustPosition = true;
+							}
 
 							try {
 								// Print out debug message
