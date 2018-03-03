@@ -36,6 +36,7 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 		setTitle("Server");
 		setSize(300, 300);
 		setLayout(new BorderLayout());
+		setUndecorated(true);
 		
 		topBar = new JPanel(new BorderLayout());
 		topBar.addMouseListener(this);

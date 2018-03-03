@@ -551,6 +551,10 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	}
 
 	public void mousePressed(MouseEvent e) {
+		if ((JPanel) e.getSource() == topBar) {
+			lastX = e.getXOnScreen();
+			lastY = e.getYOnScreen();
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) {
