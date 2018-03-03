@@ -53,7 +53,7 @@ public class Server extends Observable implements Runnable {
 	
 	/**
 	 * Returns the tickRate variable from the server
-	 * @return a int representing the tick rate
+	 * @return Returns an int representing the tick rate
 	 */
 	public int getTickRate() {
 		return tickRate;
