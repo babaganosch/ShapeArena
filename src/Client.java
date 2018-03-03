@@ -1,9 +1,15 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,8 +18,11 @@ import java.util.HashMap;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
-public class Client extends JFrame implements Runnable, KeyListener, ComponentListener {
+public class Client extends JFrame implements Runnable, KeyListener, ComponentListener, MouseListener, MouseMotionListener {
 
 	// ------------- DEBUG --------------
 	private boolean debug = false;
@@ -25,12 +34,16 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Canvas canvas;
+	private JPanel topBar;
 	private Socket socket;
 	private boolean collided = false;
+	private boolean fullScreen = false;
 	private int invincibleTimer = 0;
 	private int screenWidth = 720;
 	private int screenHeight = 480;
 	private int slowDownSending = 2;
+	private int lastX, lastY;
+	private Color foregroundColor = new Color(249, 65, 32);
 	private boolean left, right, down, up;
 
 	// Constants
@@ -61,7 +74,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private HashMap<Integer, int[]> playerList = new HashMap<Integer, int[]>();
 	private Food[] tempFood = new Food[maxFoods];
 
-	public Client() {
+	public Client(String serverIP) {
 
 		// Setup the JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -69,7 +82,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		addKeyListener(this);
-		setVisible(true);
+		setUndecorated(true);
 		
 		addComponentListener(this);
 
@@ -77,10 +90,38 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		canvas = new Canvas(screenWidth, screenHeight, roomSize);
 		add(canvas, BorderLayout.CENTER);
 		
+		canvas.repaint();
+		
+		//Create the top bar for moving the frame around etc.
+	    topBar = new JPanel(new BorderLayout());
+	    topBar.addMouseListener(this);
+	    topBar.addMouseMotionListener(this);
+
+	    JLabel close = new JLabel("×");
+	    close.setBorder(new EmptyBorder(0, 0, 0, 20));
+	    close.setFont(new Font("Arial", Font.BOLD, 20));
+	    close.addMouseListener(new MouseAdapter() {
+	      public void mouseClicked(MouseEvent e) {
+	        System.exit(0);
+	      }
+
+	      public void mouseEntered(MouseEvent e) {
+	        close.setForeground(Color.WHITE);
+	      }
+
+	      public void mouseExited(MouseEvent e) {
+	        close.setForeground(Color.DARK_GRAY);
+	      }
+	    });
+
+	    topBar.setBackground(foregroundColor);
+	    topBar.add(close, BorderLayout.EAST);
+	    this.add(topBar, BorderLayout.NORTH);
+		
 		try {
 
 			// Connect to the server
-			String serverIP = "localhost";//"176.10.136.66";
+			//serverIP = "localhost";//"176.10.136.66";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -120,12 +161,9 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			System.out.println("Unable to start client");
 			// e.printStackTrace();
 		}
+		
 		setVisible(true);
 		repaint();
-	}
-
-	public static void main(String arg[]) {
-		new Client();
 	}
 
 	public boolean getDebug() {
@@ -399,6 +437,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			down = true;
 		}
+		
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -413,6 +452,17 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			down = false;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_F11) {
+			if (fullScreen) {
+				setExtendedState(JFrame.NORMAL);
+				topBar.setVisible(true);
+				fullScreen = false;
+			} else {
+				setExtendedState(JFrame.MAXIMIZED_BOTH);
+				topBar.setVisible(false);
+				fullScreen = true;
+			}
 		}
 	}
 
@@ -482,6 +532,34 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	}
 
 	public void componentHidden(ComponentEvent e) {
+	}
+	
+	public void mouseDragged(MouseEvent e) {
+		if ((JPanel) e.getSource() == topBar) {
+			int x = e.getXOnScreen();
+			int y = e.getYOnScreen();
+			setLocation(getLocationOnScreen().x + x - lastX, getLocationOnScreen().y + y - lastY);
+			lastX = x;
+			lastY = y;
+		}
+	}
+
+	public void mouseMoved(MouseEvent e) {
+	}
+
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	public void mousePressed(MouseEvent e) {
+	}
+
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	public void mouseExited(MouseEvent e) {
 	}
 }
 

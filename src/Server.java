@@ -6,7 +6,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
-public class Server extends Observable {
+public class Server extends Observable implements Runnable {
 
 	// Global
 	private int tickRate = 2;
@@ -25,23 +25,24 @@ public class Server extends Observable {
 	private int maxFood = 20;
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 
-	public static void main(String[] args) throws Exception {
-		new Server();
-	}
-
-	public Server() throws Exception {
-		SetupServer(port);
-		setupServerFrame();
-		SetupObjects();
-		StartListening();
+	public Server(int x, int y) {
+		try {
+			SetupServer(port);
+			setupServerFrame(x, y);
+			SetupObjects();
+			Thread serverThread = new Thread(this);
+			serverThread.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public int getTickRate() {
 		return tickRate;
 	}
 
-	public void setupServerFrame() {
-		serverFrame = new ServerFrame(300, 300);
+	public void setupServerFrame(int x, int y) {
+		serverFrame = new ServerFrame(x, y);
 		addObserver(serverFrame);
 		setChanged();
 		notifyObservers(Integer.parseInt(port));
@@ -81,15 +82,25 @@ public class Server extends Observable {
 		return message;
 	}
 
-	public void StartListening() throws Exception {
+	public void run() {
 		// Start listening
 		while (true) {
 
-			Socket userSocket = serverSocket.accept();
+			Socket userSocket = null;
+			try {
+				userSocket = serverSocket.accept();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			for (int i = 0; i < maxUsers; i++) {
 				if (clientHandler[i] == null) {
-					clientHandler[i] = new ClientHandler(userSocket, clientHandler, i, highscoreHandler, packetHandler, serverFrame);
+					try {
+						clientHandler[i] = new ClientHandler(userSocket, clientHandler, i, highscoreHandler, packetHandler, serverFrame);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
 					setChanged();
 					notifyObservers(getConnectedUsers());
 					System.out.println("Connection from: " + userSocket.getInetAddress() + ", with a PID: " + i);
