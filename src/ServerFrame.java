@@ -16,6 +16,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * This is the Server Frame, a GUI for the server.
+ * It acts as a Observer for Server, ClientHandler and PacketHandler.
+ * @author Hasse Aro
+ * @version 2018-03-xx
+ */
 public class ServerFrame extends JFrame implements Observer, MouseListener, MouseMotionListener {
 
 	private static final long serialVersionUID = -3024245174916363989L;
@@ -32,6 +38,9 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 
 	private int lastX, lastY;
 
+	/**
+	 * Creates a new ServerFrame object.
+	 */
 	public ServerFrame() {
 
 		setTitle("Server");

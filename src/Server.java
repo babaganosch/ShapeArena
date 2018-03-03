@@ -8,10 +8,10 @@ import java.util.Random;
 
 /**
  * This is the main server class for the Shape Arena.
+ * Observed by ServerFrame.
  * @author Hasse Aro
  * @version 2018-03-xx
  */
-
 public class Server extends Observable implements Runnable {
 
 	// Global
