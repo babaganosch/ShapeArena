@@ -31,11 +31,11 @@ class Canvas extends JPanel {
 	// Colors
 	private Color cBackground = new Color(180, 180, 180);
 	private Color cWorld = new Color(205, 205, 205);
-	private Color cPlayer0 = new Color(170, 85, 85); 		// Red
-	private Color cPlayer1 = new Color(120, 170, 85); 	// Green
-	private Color cPlayer2 = new Color(85, 130, 170); 	// Blue
-	private Color cPlayer3 = new Color(224, 212, 75); 	// Yellow
-	private Color cPlayer4 = new Color(135, 95, 180); 	// Purple
+	private Color cPlayer0 = new Color(170, 85, 85); // Red
+	private Color cPlayer1 = new Color(120, 170, 85); // Green
+	private Color cPlayer2 = new Color(85, 130, 170); // Blue
+	private Color cPlayer3 = new Color(224, 212, 75); // Yellow
+	private Color cPlayer4 = new Color(135, 95, 180); // Purple
 	private Color cText = Color.WHITE;
 	private Color cFood = new Color(110, 47, 47);
 
@@ -108,16 +108,17 @@ class Canvas extends JPanel {
 		g2.setFont(newFont);
 		g2.setColor(cText);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		
 		g2.drawString("player", 17, 26);
 		g2.drawString("score", 17, 40);
 		g2.drawString("speed", 17, 54);
 		g2.drawString("invincible", 17, 68);
-
-		int offset = 0;
-
+		
+		int offset1 = 0;
 		for (Integer i : players.keySet()) {
-			g2.drawString("Player " + i, 17, 95 + offset);
-			offset += 14;
+			g2.drawString("Player " + i, 17, 95 + offset1);
+			offset1 += 14;
 		}
 
 		setPlayerColor(g2, playerID);
@@ -127,7 +128,6 @@ class Canvas extends JPanel {
 		g2.drawString("" + invincibleTimer, 85, 68);
 
 		int offset2 = 0;
-
 		for (Integer i : players.keySet()) {
 			setPlayerColor(g2, i);
 			g2.drawString("" + players.get(i)[SIZE], 85, 95 + offset2);

@@ -1,19 +1,26 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
-class PacketHandler extends Thread {
+class PacketHandler extends Observable implements Runnable {
 
+	// Thread
+	private Thread activity = new Thread(this);
+	
 	private HashMap<Integer, Food> foodList;
 	private ArrayList<Packet> packetList = new ArrayList<Packet>();
 	private ClientHandler[] clientHandlers;
 	private Server server;
+	private int notifyTimer = 70;
 
-	public PacketHandler(HashMap<Integer, Food> inFoodList, ClientHandler[] users, Server server) throws IOException {
+	public PacketHandler(HashMap<Integer, Food> inFoodList, ClientHandler[] users, Server server, Observer serverFrame) throws IOException {
 		this.foodList = inFoodList;
 		this.clientHandlers = users;
 		this.server = server;
-		start();
+		addObserver(serverFrame);
+		activity.start();
 	}
 	
 	public synchronized void updateFood(Food food) {
@@ -63,6 +70,16 @@ class PacketHandler extends Thread {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			
+			// Notify the server about the server bloat
+			if (notifyTimer <= 0) {
+				setChanged();
+				notifyObservers((Integer) packetList.size());
+				notifyTimer = 70;
+			} else {
+				notifyTimer--;
+			}
+			
 
 			try {
 				// Sleep for a while

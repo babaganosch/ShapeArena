@@ -26,12 +26,12 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private ObjectOutputStream out;
 	private Canvas canvas;
 	private Socket socket;
-	private boolean left, right, down, up;
 	private boolean collided = false;
 	private int invincibleTimer = 0;
 	private int screenWidth = 720;
 	private int screenHeight = 480;
 	private int slowDownSending = 2;
+	private boolean left, right, down, up;
 
 	// Constants
 	private static final int roomSize = 1000;
@@ -40,12 +40,8 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private static final int initialAliveTime = 75;
 	private static final float maxAcceleration = 0.45f;
 	private static final float lowestFriction = 0.3f;
-	private static final int X = 0;
-	private static final int Y = 1;
-	private static final int RIGHT = 0;
-	private static final int LEFT = 1;
-	private static final int DOWN = 2;
-	private static final int UP = 3;
+	private static final int X = 0, Y = 1;
+	private static final int RIGHT = 0, LEFT = 1, DOWN = 2, UP = 3;
 	private static final int maxSpeed = 4;
 
 	// Player related
@@ -432,7 +428,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			// Update player
 			if (slowDownSending <= 0) {
 				sendPlayerPackage();
-				slowDownSending = 1;
+				slowDownSending = 2;
 				;
 			} else {
 				slowDownSending--;
