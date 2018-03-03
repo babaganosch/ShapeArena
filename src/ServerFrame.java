@@ -62,6 +62,11 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 		});
 		topBar.add(close, BorderLayout.EAST);
 		topBar.setBackground(foregroundColor);
+		
+		JLabel status = new JLabel("Server status: Online");
+		status.setBorder(new EmptyBorder(0, 10, 0, 0));
+		topBar.add(status, BorderLayout.CENTER);
+		
 		this.add(topBar, BorderLayout.NORTH);
 
 		JPanel centerPanel = new JPanel();
@@ -110,7 +115,7 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 				textAreaConnections.setText("Server is empty.");
 			}
 		} else if (src instanceof Server && arg instanceof Integer) {
-			textFieldFooter.setText("Server status: online, " + "Listening on port: " + arg);
+			textFieldFooter.setText("Listening on port: " + arg);
 		} else if (src instanceof PacketHandler && arg instanceof Integer) {
 			if ((int) arg < 10) {
 				textFieldBloat.setText("Server packet bloat: " + arg);
