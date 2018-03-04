@@ -210,11 +210,17 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	}
 
 	public synchronized void updatePlayerList(int inPlayerId, int inX, int inY, int inScore) {
-		int[] packet = new int[4];
-		packet[0] = inPlayerId;
-		packet[1] = inX;
-		packet[2] = inY;
-		packet[3] = inScore;
+		int[] packet = new int[3];
+		packet[0] = inX;
+		packet[1] = inY;
+		packet[2] = inScore;
+		
+		if (inScore != 0) {
+			players.put(inPlayerId, packet);
+		} else {
+			players.remove(inPlayerId);
+		}
+		
 		this.playerList.put(inPlayerId, packet);
 	}
 
@@ -243,11 +249,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			return value;
 		}
 	}
-
-	public void updateCoordinates(int pid, int x, int y, int score) {
-		canvas.updateCoordinates(pid, x, y, score);
-	}
-
+	
 	public void updateCanvasFood() {
 		canvas.setFood(foodList);
 	}
@@ -565,7 +567,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			handleCollision();
 
 			// Update
-			canvas.updateCoordinates(playerID, playerCoordinates[X], playerCoordinates[Y], score);
+			canvas.updatePlayerList(playerList);
 			canvas.setSpeed(maxSpeed);
 			canvas.setInvincibleTimer(invincibleTimer);
 			canvas.repaint();
@@ -657,7 +659,6 @@ class InputReader implements Runnable {
 		}
 
 		// Only update player from the packet
-		client.updateCoordinates(playerID, x, y, score);
 		client.updatePlayerList(playerID, x, y, score);
 
 	}
