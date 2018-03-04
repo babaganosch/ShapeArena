@@ -91,6 +91,9 @@ public class HighscoreHandler extends Thread {
 		writer.close();
 	}
 	
+	/**
+	 * Every second checks if current highscore is higher than stored highscore if it is then it updates the highscore.
+	 */
 	public void run() {
 		while (true) {
 			
