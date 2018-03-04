@@ -9,6 +9,12 @@ import java.util.HashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+/**
+ * This is the Canvas, a GUI for the Client.
+ * @author Hasse Aro
+ * @version 2018-03-xx
+ */
+
 class Canvas extends JPanel {
 
 	private static final long serialVersionUID = 756982496934224900L;
@@ -40,7 +46,7 @@ class Canvas extends JPanel {
 	private Color cFood = new Color(110, 47, 47);
 
 	// Player related
-	private HashMap<Integer, int[]> players = new HashMap<Integer, int[]>();
+	private HashMap<Integer, int[]> playerList = new HashMap<Integer, int[]>();
 	private int playerID;
 	private int speed = 0;
 	private int invincibleTimer = 0;
@@ -64,22 +70,35 @@ class Canvas extends JPanel {
 	}
 	
 	/**
-	 * Creates a new canvas object.
-	 * @param playerID The width of the canvas.
+	 * Sets the ID of the main player to be drawn out.
+	 * @param playerID The ID of the player.
 	 */
 	public void setPlayerID(int playerID) {
 		this.playerID = playerID;
 	}
-
+	
+	/**
+	 * Updates the width and height for the calculations in canvas.
+	 * @param width The updated width.
+	 * @param height The updated height.
+	 */
 	public void setScreen(int width, int height) {
 		this.screenWidth = width;
 		this.screenHeight = height;
 	}
-
+	
+	/**
+	 * Sets the list of players.
+	 * @param playerList The new list of players to be set.
+	 */
 	public void updatePlayerList(HashMap<Integer, int[]> playerList) {
-		this.players = playerList;
+		this.playerList = playerList;
 	}
-
+	
+	/**
+	 * Sets the list of food objects.
+	 * @param foodList The new list of food objects to be set.
+	 */
 	public void setFood(HashMap<Integer, Food> foodList) {
 		for (Integer i : foodList.keySet()) {
 			this.foodPositions[i][X] = foodList.get(i).getX();
@@ -87,6 +106,11 @@ class Canvas extends JPanel {
 		}
 	}
 
+	/**
+	 * Sets a color to a specific player based on their ID.
+	 * @param i The ID of the player.
+	 * @param g The graphics object.
+	 */
 	public void setPlayerColor(Graphics g, int i) {
 		switch (i) {
 		case 0:
@@ -109,8 +133,11 @@ class Canvas extends JPanel {
 			break;
 		}
 	}
-
-	public void paintScore(Graphics g) {
+	/**
+	 * Draws info about the current game, including scores and ID.
+	 * @param g The graphics object.
+	 */
+	public void paintInfo(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setFont(new Font("Arial", Font.PLAIN, 12));
 		Font currentFont = g2.getFont();
@@ -126,34 +153,45 @@ class Canvas extends JPanel {
 		g2.drawString("invincible", 17, 68);
 		
 		int offset1 = 0;
-		for (Integer i : players.keySet()) {
+		for (Integer i : playerList.keySet()) {
 			g2.drawString("Player " + i, 17, 95 + offset1);
 			offset1 += 14;
 		}
 
 		setPlayerColor(g2, playerID);
 		g2.drawString("" + playerID, 85, 26);
-		g2.drawString("" + players.get(playerID)[SIZE], 85, 40);
+		g2.drawString("" + playerList.get(playerID)[SIZE], 85, 40);
 		g2.drawString("" + speed, 85, 54);
 		g2.drawString("" + invincibleTimer, 85, 68);
 
 		int offset2 = 0;
-		for (Integer i : players.keySet()) {
+		for (Integer i : playerList.keySet()) {
 			setPlayerColor(g2, i);
-			g2.drawString("" + players.get(i)[SIZE], 85, 95 + offset2);
+			g2.drawString("" + playerList.get(i)[SIZE], 85, 95 + offset2);
 			offset2 += 14;
 		}
 
 	}
-
+	
+	/**
+	 * Sets the speed of the player.
+	 * @param speed The new speed.
+	 */
 	public void setSpeed(int speed) {
 		this.speed = speed;
 	}
 
+	/**
+	 * Sets the ammount of time left to be invincible.
+	 * @param timer The ammount of time to be invincible.
+	 */
 	public void setInvincibleTimer(int timer) {
 		this.invincibleTimer = timer;
 	}
-
+	
+	/**
+	 * Informs the canvas that the player just died.
+	 */
 	public void died() {
 		showSadFace = true;
 		showSadFaceTimer = 100;
@@ -163,7 +201,7 @@ class Canvas extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
-		int[] player = players.get(playerID);
+		int[] player = playerList.get(playerID);
 
 		// Paint playable area
 		g2.setColor(cWorld);
@@ -173,9 +211,9 @@ class Canvas extends JPanel {
 		}
 
 		// Paint all other players
-		for (Integer i : players.keySet()) {
+		for (Integer i : playerList.keySet()) {
 			if (i != playerID) {
-				int[] otherPlayer = players.get(i);
+				int[] otherPlayer = playerList.get(i);
 				setPlayerColor(g2, i);
 				if (otherPlayer != null) {
 					g2.fillOval(otherPlayer[X] - player[X] + screenWidth / 2 - player[SIZE] / 2,
@@ -206,7 +244,7 @@ class Canvas extends JPanel {
 		g2.fillRoundRect(10, 10, 130, 67, 15, 15);
 
 		// Paint the score frame
-		int scoreListHeight = (players.size() * 14) + 10;
+		int scoreListHeight = (playerList.size() * 14) + 10;
 		g2.fillRoundRect(10, 79, 130, scoreListHeight, 15, 15);
 		if (showSadFace) {
 			g2.drawImage(bImg, screenWidth / 2 - player[SIZE] - 10, (screenHeight / 2) - player[SIZE] - 25, this);
@@ -218,6 +256,6 @@ class Canvas extends JPanel {
 			}
 		}
 		// Paint your score
-		paintScore(g);
+		paintInfo(g);
 	}
 }
