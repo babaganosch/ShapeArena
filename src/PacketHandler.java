@@ -9,6 +9,7 @@ import java.util.Observer;
  * This class acts as a output machine for the server, receiving packets from ClientHandlers and
  * forwarding that packet to all the Clients.
  * It also keeps a HashMap containing all the Food objects updated and sends that to every Client also.
+ * The PacketHandler is observed by the ServerFrame.
  * @author Hasse Aro
  * @version 2018-03-xx
  */
