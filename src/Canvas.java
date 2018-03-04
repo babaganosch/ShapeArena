@@ -182,8 +182,8 @@ class Canvas extends JPanel {
 	}
 
 	/**
-	 * Sets the ammount of time left to be invincible.
-	 * @param timer The ammount of time to be invincible.
+	 * Sets the amount of time left to be invincible.
+	 * @param timer The amount of time to be invincible.
 	 */
 	public void setInvincibleTimer(int timer) {
 		this.invincibleTimer = timer;

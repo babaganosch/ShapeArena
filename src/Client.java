@@ -1,7 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -59,7 +58,6 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private static final int roomSize = 1000;
 	private static final int maxFoods = 20;
 	private static final int maxScore = 200;
-	private static final int initialAliveTime = 75;
 	private static final float maxAcceleration = 0.45f;
 	private static final float lowestFriction = 0.3f;
 	private static final int X = 0, Y = 1;
@@ -75,7 +73,6 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private float currentSpeed[] = new float[4];
 	private int score = 15 + random.nextInt(10);
 	private int shrinkTimer = 100;
-	private int aliveTimer = initialAliveTime;
 	private int growth = 0;
 	private boolean adjustPosition;
 
@@ -84,6 +81,12 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private HashMap<Integer, int[]> playerList = new HashMap<Integer, int[]>();
 	private Food[] tempFood = new Food[maxFoods];
 
+	/**
+	 * Creates the Client object and tries to connect to the IP it's given.
+	 * This is where all the initialization gets done for the player before
+	 * we enter the server.
+	 * @param serverIP The IP the Client will try to connect to.
+	 */
 	public Client(String serverIP) {
 		
 		
@@ -184,6 +187,12 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		setVisible(true);
 		repaint();
 	}
+	
+	/**
+	 * First creates the connection IP prompt, then creates the Client and give
+	 * it the IP we've entered.
+	 * @param args Not used.
+	 */
 	public static void main(String[] args) {	
 		JFrame ipFrame = new JFrame();
 		String serverIP = JOptionPane.showInputDialog(ipFrame, "IP adress:");
@@ -199,18 +208,37 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}, "Shutdown-thread"));
 	}
 	
+	/**
+	 * Getter for the debug boolean
+	 * @return Returns either true or false whether debug is true or false.
+	 */
 	public boolean getDebug() {
 		return debug;
 	}
 
+	/**
+	 * Getter for the roomSize variable.
+	 * @return Returns an int representing the current room size of the map.
+	 */
 	public int getRoomSize() {
 		return roomSize;
 	}
 
+	/**
+	 * Getter for the maxFoods variable.
+	 * @return Returns an int representing how many Food objects the server should have.
+	 */
 	public int getMaxFoods() {
 		return maxFoods;
 	}
 
+	/**
+	 * Updates the HashMap playerList with a player.
+	 * @param inPlayerId The unique ID of the player.
+	 * @param inX The X coordinate of the player.
+	 * @param inY The Y coordinate of the player.
+	 * @param inScore The score of the player.
+	 */
 	public synchronized void updatePlayerList(int inPlayerId, int inX, int inY, int inScore) {
 		int[] info = new int[3];
 		info[0] = inX;
@@ -223,10 +251,21 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 	}
 
+	/**
+	 * Updates the HashMap foodList with a new HashMap.
+	 * @param inFoodList The new HashMap.
+	 */
 	public void setFoodList(HashMap<Integer, Food> inFoodList) {
 		this.foodList = inFoodList;
 	}
 
+	/**
+	 * Clamps the input value between a minimum value and a maximum value.
+	 * @param value The value we would like to clamp.
+	 * @param max The maximum value.
+	 * @param min The minimum value.
+	 * @return Returns an int of the clamped value.
+	 */
 	public int clamp(int value, int max, int min) {
 		// Clamp value between min and max value.
 		if (value <= min) {
@@ -238,6 +277,13 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 	}
 
+	/**
+	 * Clamps the input value between a minimum value and a maximum value.
+	 * @param value The value we would like to clamp.
+	 * @param max The maximum value.
+	 * @param min The minimum value.
+	 * @return Returns an float of the clamped value.
+	 */
 	public float clampFloat(float value, float max, float min) {
 		// Clamp value between min and max value.
 		if (value <= min) {
@@ -249,10 +295,18 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 	}
 	
+	/**
+	 * Updates the canvas foodList with the clients foodList.
+	 */
 	public void updateCanvasFood() {
 		canvas.setFood(foodList);
 	}
 
+	/**
+	 * Sends out a PlayerPacket on the output stream containing information about
+	 * our player, such as playerID, X coordinate, Y coordinate and Score.
+	 * If we're disconnecting, send out a packet with 0 score.
+	 */
 	public void sendPlayerPackage() {
 		try {
 			if (!disconnected) {
@@ -269,6 +323,10 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 	}
 
+	/**
+	 * Puts the thread in sleep for a given time.
+	 * @param time How long the thread should sleep.
+	 */
 	public void sleep(int time) {
 		try {
 			Thread.sleep(time);
@@ -277,6 +335,11 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 	}
 
+	/**
+	 * The movement of the player. First it checks what direction we should be moving
+	 * and accelerates or deaccelerates in that direction.
+	 * Finally it moves the player.
+	 */
 	public void move() {
 		// Acceleration and friction
 		if (right == true) {
@@ -307,6 +370,11 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 				roomSize - score, 0);
 	}
 
+	/**
+	 * Keeps the player shrinking if the player have a score larger than 25.
+	 * Corrects the players position when it shrinks and also changes the
+	 * max speed, acceleration and friction of the player depending on score.
+	 */
 	public void shrink() {
 		if (shrinkTimer <= 0) {
 			if (score > 25) {
@@ -348,6 +416,10 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		shrinkTimer--;
 	}
 
+	/**
+	 * Grows smooth if the player is supposed to grow more than one point of score.
+	 * Also corrects the position.
+	 */
 	public void grow() {
 		if (growth > 0) {
 			score += 1;
@@ -360,14 +432,13 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 	}
 
-	public void keepAlive() {
-		if (aliveTimer <= 0) {
-			sendPlayerPackage();
-			aliveTimer = initialAliveTime;
-		}
-		aliveTimer--;
-	}
-
+	/**
+	 * Checks for player collision with Food objects from the foodList.
+	 * If the player eats a Food object, create a new Food with the same index
+	 * as the old and add it to the foodList. Then send out the new Food object
+	 * on the output stream.
+	 * @param showDebug Shows debug messages if this boolean is true.
+	 */
 	public void checkFoodCollision(Boolean showDebug) {
 		Boolean collidedFood = false;
 		// Loop through every Food and get their x and y coordinate, then check for
@@ -411,7 +482,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 								// Create a new Food object with the same index as the one we've collided with.
 								// Add the Food object to our foodList so we don't experience any graphical
 								// delay
-								Toolkit.getDefaultToolkit().beep();
+								//Toolkit.getDefaultToolkit().beep();
 								Food tempFood = new Food(i, random.nextInt(roomSize - 5), random.nextInt(roomSize - 5));
 								foodList.put(i, tempFood);
 
@@ -429,6 +500,16 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		collidedFood = false;
 	}
 
+	/**
+	 * Checks for player collision with an other player.
+	 * All collision in Shape Arena is handled client side. If the player collides
+	 * with an other player the method checks which player has the highest score. If
+	 * you have the higher score you gain 30% of the other players score. If you have
+	 * the lower score you reset your own score to 25, and also teleports to a random
+	 * location on the map.
+	 * When the player have collided we gain invincibility for a while, to prevent 
+	 * the player from eating the other player more than once.
+	 */
 	public void checkPlayerCollision() {
 		for (Integer i : playerList.keySet()) {
 			if (i != null) {
@@ -464,6 +545,9 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 	}
 
+	/**
+	 * Handles the invincibility timer. If it is not 0, don't check for player collision.
+	 */
 	public void handleCollision() {
 		// Check for collision if we're not invincible
 		if (!collided) {
@@ -479,6 +563,9 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		}
 	}
 
+	/**
+	 * Turns the player invincible.
+	 */
 	public void invincible() {
 		collided = true;
 		invincibleTimer = 60;
@@ -628,17 +715,34 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	}
 }
 
+/**
+ * This class handles all the reading from the input stream. This is 
+ * where we receive all the information from the server.
+ * @author Hasse Aro
+ * @version 2018-03-xx
+ */
 class InputReader implements Runnable {
 
 	public ObjectInputStream in;
 	public HashMap<Integer, Food> tempFoodList = new HashMap<Integer, Food>();
 	Client client;
 
+	/**
+	 * Creates the InputReader.
+	 * @param in The Object Input Stream it should listen on.
+	 * @param client The Client which it should give the information to.
+	 */
 	public InputReader(ObjectInputStream in, Client client) {
 		this.in = in;
 		this.client = client;
 	}
 
+	/**
+	 * Unpack the packet we've received as a PlayerPacket and give
+	 * the information to the Client.
+	 * @param packet The packet to handle.
+	 * @param showDebug Print debug messages if this boolean is true.
+	 */
 	public void handlePlayerPacket(Packet packet, Boolean showDebug) {
 
 		// Handle the packet
@@ -662,6 +766,12 @@ class InputReader implements Runnable {
 
 	}
 
+	/**
+	 * Unpack the packet we've received as a FoodPacket and give
+	 * the information to the Client.
+	 * @param packet The packet to handle.
+	 * @param showDebug Print debug messages if this boolean is true.
+	 */
 	public void handleFoodPacket(Packet packet, Boolean showDebug) {
 
 		// Unpack the packet
