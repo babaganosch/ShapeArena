@@ -14,7 +14,6 @@ import javax.swing.JPanel;
  * @author Hasse Aro
  * @version 2018-03-xx
  */
-
 class Canvas extends JPanel {
 
 	private static final long serialVersionUID = 756982496934224900L;
