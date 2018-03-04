@@ -56,7 +56,10 @@ class PacketHandler extends Observable implements Runnable {
 		packetList.add(packet);
 	}
 
-
+	/**
+	 * Constantly sends packets from packetlist and a deep copied list of the foodobjects to all users, clears the packetlist if it gets too full and notifies the observer 
+	 * with packetlist size.
+	*/
 	public void run() {
 
 		while (true) {
