@@ -23,8 +23,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 /**
- * This is the main server class for the Shape Arena.
- * Observed by ServerFrame.
+ * This is the main Client class, the interface between the player and
+ * the game. When you start the client you'll be prompted to enter an
+ * IP address. If you press Cancel you will connect to localhost, else you
+ * will connect to what you have entered.
  * @author Hasse Aro
  * @version 2018-03-xx
  */
