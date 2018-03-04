@@ -43,16 +43,14 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private Canvas canvas;
 	private JPanel topBar;
 	private Socket socket;
-	private boolean collided = false;
-	private boolean fullScreen = false;
-	private static boolean disconnected = false;
-	private int invincibleTimer = 0;
+	private Color foregroundColor = new Color(249, 65, 32);
 	private int screenWidth = 720;
 	private int screenHeight = 480;
 	private int slowDownSending = 2;
 	private int lastX, lastY;
-	private Color foregroundColor = new Color(249, 65, 32);
-	private boolean left, right, down, up;
+	private boolean fullScreen = false;
+	private boolean[] direction = new boolean[4];
+	private static boolean disconnected = false;
 
 	// Constants
 	private static final int roomSize = 1000;
@@ -68,13 +66,15 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private int playerID;
 	private int playerCoordinates[] = new int[2];
 	private int currentMaxSpeed = maxSpeed;
-	private float acceleration = maxAcceleration;
-	private float friction = lowestFriction;
-	private float currentSpeed[] = new float[4];
+	private int invincibleTimer = 0;
 	private int score = 15 + random.nextInt(10);
 	private int shrinkTimer = 100;
 	private int growth = 0;
+	private float acceleration = maxAcceleration;
+	private float friction = lowestFriction;
+	private float currentSpeed[] = new float[4];
 	private boolean adjustPosition;
+	private boolean collided = false;
 
 	// Food related
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
@@ -135,7 +135,6 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 		try {
 
 			// Connect to the server
-			//serverIP = "localhost";//"176.10.136.66";
 			int serverPort = Integer.parseInt("11100");
 
 			this.socket = new Socket(serverIP, serverPort);
@@ -181,7 +180,6 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			thread.start();
 		} catch (Exception e) {
 			System.out.println("Unable to start client");
-			// e.printStackTrace();
 		}
 		
 		setVisible(true);
@@ -342,22 +340,22 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	 */
 	public void move() {
 		// Acceleration and friction
-		if (right == true) {
+		if (direction[RIGHT] == true) {
 			currentSpeed[RIGHT] = clampFloat(currentSpeed[RIGHT] + acceleration, currentMaxSpeed, 0);
 		} else {
 			currentSpeed[RIGHT] = clampFloat(currentSpeed[RIGHT] - friction, currentMaxSpeed, 0);
 		}
-		if (left == true) {
+		if (direction[LEFT] == true) {
 			currentSpeed[LEFT] = clampFloat(currentSpeed[LEFT] + acceleration, currentMaxSpeed, 0);
 		} else {
 			currentSpeed[LEFT] = clampFloat(currentSpeed[LEFT] - friction, currentMaxSpeed, 0);
 		}
-		if (down == true) {
+		if (direction[DOWN] == true) {
 			currentSpeed[DOWN] = clampFloat(currentSpeed[DOWN] + acceleration, currentMaxSpeed, 0);
 		} else {
 			currentSpeed[DOWN] = clampFloat(currentSpeed[DOWN] - friction, currentMaxSpeed, 0);
 		}
-		if (up == true) {
+		if (direction[UP] == true) {
 			currentSpeed[UP] = clampFloat(currentSpeed[UP] + acceleration, currentMaxSpeed, 0);
 		} else {
 			currentSpeed[UP] = clampFloat(currentSpeed[UP] - friction, currentMaxSpeed, 0);
@@ -574,34 +572,34 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	// KeyHandler:
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-			left = true;
+			direction[LEFT] = true;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-			up = true;
+			direction[UP] = true;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-			right = true;
+			direction[RIGHT] = true;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-			down = true;
+			direction[DOWN] = true;
 		}
 		
 	}
 
 	public void keyReleased(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-			left = false;
+			direction[LEFT] = false;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-			up = false;
+			direction[UP] = false;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-			right = false;
+			direction[RIGHT] = false;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-			down = false;
+			direction[DOWN] = false;
 		}
-		if (e.getKeyCode() == KeyEvent.VK_F11) {
+		if (e.getKeyCode() == KeyEvent.VK_F) {
 			if (fullScreen) {
 				setExtendedState(JFrame.NORMAL);
 				topBar.setVisible(true);
@@ -627,7 +625,6 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 			if (slowDownSending <= 0) {
 				sendPlayerPackage();
 				slowDownSending = 2;
-				;
 			} else {
 				slowDownSending--;
 			}
@@ -654,7 +651,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 
 			// Update
 			canvas.updatePlayerList(playerList);
-			canvas.setSpeed(maxSpeed);
+			canvas.setSpeed(currentMaxSpeed);
 			canvas.setInvincibleTimer(invincibleTimer);
 			canvas.repaint();
 

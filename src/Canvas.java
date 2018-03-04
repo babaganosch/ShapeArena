@@ -53,7 +53,6 @@ public class Canvas extends JPanel {
 	// Food related
 	private int[][] foodPositions = new int[maxFood][2];
 	
-	
 	/**
 	 * Creates a new canvas object.
 	 * @param screenWidth The width of the canvas.
@@ -132,6 +131,7 @@ public class Canvas extends JPanel {
 			break;
 		}
 	}
+	
 	/**
 	 * Draws info about the current game, including scores and ID.
 	 * @param g The graphics object.
@@ -254,6 +254,7 @@ public class Canvas extends JPanel {
 				showSadFace = false;
 			}
 		}
+		
 		// Paint your score
 		paintInfo(g);
 	}
