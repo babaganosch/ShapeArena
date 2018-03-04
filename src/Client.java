@@ -430,10 +430,10 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	public void checkPlayerCollision() {
 		for (Integer i : playerList.keySet()) {
 			if (i != null) {
-				int otherPlayerId = playerList.get(i)[0];
-				int otherPlayerX = playerList.get(i)[1];
-				int otherPlayerY = playerList.get(i)[2];
-				int otherPlayerScore = playerList.get(i)[3];
+				int otherPlayerId = i;
+				int otherPlayerX = playerList.get(i)[0];
+				int otherPlayerY = playerList.get(i)[1];
+				int otherPlayerScore = playerList.get(i)[2];
 
 				if (playerID != otherPlayerId) {
 					if (playerCoordinates[X] <= (otherPlayerX + otherPlayerScore)

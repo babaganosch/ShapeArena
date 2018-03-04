@@ -77,7 +77,7 @@ class Canvas extends JPanel {
 	}
 
 	public void updatePlayerList(HashMap<Integer, int[]> playerList) {
-		this.updatePlayerList(playerList);
+		this.players = playerList;
 	}
 
 	public void setFood(HashMap<Integer, Food> foodList) {
