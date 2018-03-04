@@ -33,7 +33,7 @@ public class Server extends Observable implements Runnable {
 
 	/**
 	 * Creates a new server object.
-	 * @param port Port the server listens on.
+	 * @param port Port the server listens to.
 	 */
 	public Server(String port) {
 		try {
@@ -70,9 +70,9 @@ public class Server extends Observable implements Runnable {
 	}
 
 	/**
-	 * Starts the server and listens on the port given to it.
+	 * Starts the server and listens to the port given to it.
 	 * Else throws IOException
-	 * @param port The port the server listens on.
+	 * @param port The port the server listens to.
 	 * @throws IOException The exception if it failed to start the server.
 	 */
 	public void SetupServer(String port) throws IOException {
