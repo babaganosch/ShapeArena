@@ -130,7 +130,6 @@ public class ClientHandler extends Observable implements Runnable{
 		return message;
 	}
 	
-
 	public void run() {
 
 		// Tell the client what playerID it is.
