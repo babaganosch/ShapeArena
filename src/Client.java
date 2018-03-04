@@ -22,7 +22,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
+/**
+ * This is the main server class for the Shape Arena.
+ * Observed by ServerFrame.
+ * @author Hasse Aro
+ * @version 2018-03-xx
+ */
 public class Client extends JFrame implements Runnable, KeyListener, ComponentListener, MouseListener, MouseMotionListener {
 
 	// ------------- DEBUG --------------

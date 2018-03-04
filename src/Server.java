@@ -119,9 +119,8 @@ public class Server extends Observable implements Runnable {
 	}
 
 	/**
-	 * Handles client connections to the server by contantly listening for new connections and creates a new clienthandler thread for each new player aslong as the server 
+	 * Handles client connections to the server by contantly listening for new connections and creates a new ClientHandler thread for each new player aslong as the server 
 	 * isn't full. When a new player joins, the server notifies the observers with all the connected players.
-	 * 
 	 */
 	public void run() {
 		// Start listening
