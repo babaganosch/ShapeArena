@@ -23,7 +23,15 @@ class PacketHandler extends Observable implements Runnable {
 	private Server server;
 	private int notifyTimer = 70;
 
-	public PacketHandler(HashMap<Integer, Food> inFoodList, ClientHandler[] users, Server server, Observer serverFrame) throws IOException {
+	/**
+	 * Constructs a packethandler that adds references and starts the packethandler.
+	 * 
+	 * @param inFoodList is a reference to the foodlist.
+	 * @param users is a reference to the array of connected clientHandlers.
+	 * @param server is a reference to the server.
+	 * @param serverFrame is a reference to the server's frame.
+	 */
+	public PacketHandler(HashMap<Integer, Food> inFoodList, ClientHandler[] users, Server server, Observer serverFrame){
 		this.foodList = inFoodList;
 		this.clientHandlers = users;
 		this.server = server;
@@ -47,6 +55,7 @@ class PacketHandler extends Observable implements Runnable {
 	public synchronized void addPacket(Packet packet) {
 		packetList.add(packet);
 	}
+
 
 	public void run() {
 
