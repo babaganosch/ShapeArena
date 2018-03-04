@@ -47,7 +47,14 @@ class Canvas extends JPanel {
 
 	// Food related
 	private int[][] foodPositions = new int[maxFood][2];
-
+	
+	
+	/**
+	 * Creates a new canvas object.
+	 * @param screenWidth The width of the canvas.
+	 * @param screenHeight The height of the canvas.
+	 * @param mapSize The width and height of the map.
+	 */
 	public Canvas(int screenWidth, int screenHeight, int mapSize) {
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
@@ -55,7 +62,11 @@ class Canvas extends JPanel {
 		setVisible(true);
 		setBackground(cBackground);
 	}
-
+	
+	/**
+	 * Creates a new canvas object.
+	 * @param playerID The width of the canvas.
+	 */
 	public void setPlayerID(int playerID) {
 		this.playerID = playerID;
 	}
@@ -65,13 +76,8 @@ class Canvas extends JPanel {
 		this.screenHeight = height;
 	}
 
-	public void updateCoordinates(int pid, int x, int y, int score) {
-		int[] info = { x, y, score };
-		if (score != 0) {
-			players.put(pid, info);
-		} else {
-			players.remove(pid);
-		}
+	public void updatePlayerList(HashMap<Integer, int[]> playerList) {
+		this.updatePlayerList(playerList);
 	}
 
 	public void setFood(HashMap<Integer, Food> foodList) {

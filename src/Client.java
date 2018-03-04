@@ -210,18 +210,15 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	}
 
 	public synchronized void updatePlayerList(int inPlayerId, int inX, int inY, int inScore) {
-		int[] packet = new int[3];
-		packet[0] = inX;
-		packet[1] = inY;
-		packet[2] = inScore;
-		
+		int[] info = new int[3];
+		info[0] = inX;
+		info[1] = inY;
+		info[2] = inScore;
 		if (inScore != 0) {
-			players.put(inPlayerId, packet);
+			playerList.put(inPlayerId, info);
 		} else {
-			players.remove(inPlayerId);
+			playerList.remove(inPlayerId);
 		}
-		
-		this.playerList.put(inPlayerId, packet);
 	}
 
 	public void setFoodList(HashMap<Integer, Food> inFoodList) {
