@@ -4,16 +4,30 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/**
+ * This is the HighscoreHandler class.
+ * Responisble for writing a new highscore to a local file on the server.
+ * @author Hasse Aro
+ * @version 2018-03-xx
+ */
 public class HighscoreHandler extends Thread {
 
 	private int topScore;
 	private File storedFile;
 
+	/**
+	 * Creates a HighscoreHandler object.
+	 */
 	public HighscoreHandler() {
 		this.topScore = 0;
 		start();
 	}
 
+	/**
+	 * Updates the topScore variable if what has been received
+	 * being more than what's stored.
+	 * @param inScore The score to update with.
+	 */
 	public synchronized void setTopScore(int inScore) {
 		// If score in to method is higher then stored score, update it
 		if (inScore > this.topScore) {
@@ -21,17 +35,31 @@ public class HighscoreHandler extends Thread {
 		}
 	}
 
+	/**
+	 * Returns the top score of the server.
+	 * @return Returns the topScore variable.
+	 */
 	public int getTopScore() {
 		// Take my money!!
 		return topScore;
 	}
 
+	/**
+	 * Opens the file highscore.txt and creates it
+	 * if it doesn't exist.
+	 * @throws IOException Throws the IOException if something went wrong.
+	 */
 	public void openFile() throws IOException {
 		// Create the file highscore.txt
 		storedFile = new File("highscore.txt");
 		storedFile.createNewFile();
 	}
 	
+	/**
+	 * Returns the stored highscore from a file.
+	 * @return Returns the score from the highscore.txt
+	 * @throws FileNotFoundException Throws exception if it can't open the file.
+	 */
 	public int getStoredHighscore() throws FileNotFoundException {
 		
 		// Create scanner and scan through our highscore.txt
@@ -48,6 +76,11 @@ public class HighscoreHandler extends Thread {
 		return maxHighscore;
 	}
 
+	/**
+	 * Prints a new highscore to the file.
+	 * @param newHighscore The score we would like to print to the file.
+	 * @throws FileNotFoundException	Throws exception if we can't find the file.
+	 */
 	public void updateStoredHighscore(int newHighscore) throws FileNotFoundException {
 		
 		// Open up a PrintWriter so we can write to the file
