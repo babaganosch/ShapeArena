@@ -116,7 +116,14 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 
 		setVisible(true);
 	}
-
+	
+	/**
+	 * Updates the textAreaConnections with connected clients and textFieldBloat with how many messagaes that are waiting to be sent and textFieldFooter with the current
+	 * port the server listens on.
+	 * 
+	 * @param src is the observable instance that sent information to the observer.
+	 * @param arg is the argument that the observable instance sent to the observer.
+	 */
 	public void update(Observable src, Object arg) {
 		if (src instanceof ClientHandler || src instanceof Server && arg instanceof String) {
 			textAreaConnections.setText((String) arg);
@@ -132,7 +139,6 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 			} else {
 				textFieldBloat.setText("Server packet bloat: " + arg + "  WARNING !!");
 			}
-
 		}
 	}
 
