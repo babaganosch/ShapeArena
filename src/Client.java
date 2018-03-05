@@ -115,6 +115,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	    JLabel close = new JLabel("×");
 	    close.setBorder(new EmptyBorder(0, 0, 0, 20));
 	    close.setFont(new Font("Arial", Font.BOLD, 20));
+	    close.setForeground(Color.DARK_GRAY);
 	    close.addMouseListener(new MouseAdapter() {
 	      public void mouseClicked(MouseEvent e) {
 	        System.exit(0);
