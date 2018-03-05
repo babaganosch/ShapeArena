@@ -111,20 +111,12 @@ public class Client extends JFrame
 		topBar.addMouseListener(this);
 		topBar.addMouseMotionListener(this);
 
-		JLabel close = new JLabel("Ã—");
+		JLabel close = new JLabel("×");
 		close.setBorder(new EmptyBorder(0, 0, 0, 10));
 		close.setFont(new Font("Arial", Font.BOLD, 20));
 		close.setForeground(Color.GRAY);
 		close.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				try {
-					in.close();
-					out.close();
-					socket.close();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				
+			public void mouseClicked(MouseEvent e) {			
 				System.exit(0);
 			}
 
