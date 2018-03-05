@@ -32,7 +32,7 @@ import javax.swing.border.EmptyBorder;
  * @version 2018-03-xx
  */
 public class Client extends JFrame
-		implements Runnable, KeyListener, ComponentListener, MouseListener, MouseMotionListener {
+		implements Runnable, KeyListener, ComponentListener, MouseListener, MouseMotionListener, ClientConstants {
 
 	// ------------- DEBUG --------------
 	private boolean debug = false;
@@ -49,32 +49,14 @@ public class Client extends JFrame
 	// Changed the color-theme to a less shrieking color, left the old color-codes
 	// though.
 	private Color topBarColor = new Color(50, 45, 45); // (249, 65, 32) <- Orange
-	private int screenWidth = 720;
-	private int screenHeight = 480;
-	private int slowDownSending = 2;
-	private int lastX, lastY;
+	
 	private boolean fullScreen = false;
 	private boolean[] direction = new boolean[4];
 	private static boolean disconnected = false;
 
-	// Constants
-	private static final int roomSize = 1000;
-	private static final int maxFoods = 20;
-	private static final int maxScore = 200;
-	private static final float maxAcceleration = 0.45f;
-	private static final float lowestFriction = 0.3f;
-	private static final int X = 0, Y = 1;
-	private static final int RIGHT = 0, LEFT = 1, DOWN = 2, UP = 3;
-	private static final int maxSpeed = 4;
-
-	// Player related
-	private int playerID;
+	private int intArray[] = new int[11];
+	
 	private int playerCoordinates[] = new int[2];
-	private int currentMaxSpeed = maxSpeed;
-	private int invincibleTimer = 0;
-	private int score = 15 + random.nextInt(10);
-	private int shrinkTimer = 100;
-	private int growth = 0;
 	private float acceleration = maxAcceleration;
 	private float friction = lowestFriction;
 	private float currentSpeed[] = new float[4];
@@ -95,10 +77,20 @@ public class Client extends JFrame
 	 *            The IP the Client will try to connect to.
 	 */
 	public Client(String serverIP) {
+		
+		// Initialize intArray
+		intArray[currentMaxSpeed] = maxSpeed;
+		intArray[invincibilityTimer] = 0;
+		intArray[score] = 15 + random.nextInt(10);
+		intArray[shrinkTimer] = 100;
+		intArray[growth] = 0;
+		intArray[screenWidth] = 720;
+		intArray[screenHeight] = 480;
+		intArray[slowDownSending] = 2;
 
 		// Setup the JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(screenWidth, screenHeight);
+		setSize(intArray[screenWidth], intArray[screenHeight]);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		addKeyListener(this);
@@ -107,7 +99,7 @@ public class Client extends JFrame
 		addComponentListener(this);
 
 		// Create the canvas
-		canvas = new Canvas(screenWidth, screenHeight, roomSize);
+		canvas = new Canvas(intArray[screenWidth], intArray[screenHeight], roomSize);
 		add(canvas, BorderLayout.CENTER);
 
 		canvas.repaint();
@@ -118,7 +110,7 @@ public class Client extends JFrame
 		topBar.addMouseMotionListener(this);
 
 		JLabel close = new JLabel("×");
-		close.setBorder(new EmptyBorder(0, 0, 0, 20));
+		close.setBorder(new EmptyBorder(0, 0, 0, 10));
 		close.setFont(new Font("Arial", Font.BOLD, 20));
 		close.setForeground(Color.DARK_GRAY);
 		close.addMouseListener(new MouseAdapter() {
@@ -159,8 +151,8 @@ public class Client extends JFrame
 				// Receive packet with playerID from ClientHandler.
 				packet = (Packet) in.readObject();
 				if (packet instanceof PlayerInitializationPacket) {
-					playerID = ((PlayerInitializationPacket) packet).getId();
-					canvas.setPlayerID(playerID);
+					intArray[playerID] = ((PlayerInitializationPacket) packet).getId();
+					canvas.setPlayerID(intArray[playerID]);
 					gotPlayerID = true;
 				}
 			}
@@ -172,7 +164,7 @@ public class Client extends JFrame
 			// Initialization of adjustPosition depends on the start value of score being
 			// even or odd,
 			// to correctly synchronize adjusting the player position when shrinking
-			if (score % 2 == 0) {
+			if (intArray[score] % 2 == 0) {
 				adjustPosition = true;
 			} else {
 				adjustPosition = false;
@@ -337,12 +329,12 @@ public class Client extends JFrame
 	public void sendPlayerPackage() {
 		try {
 			if (!disconnected) {
-				out.writeObject(new PlayerPacket(playerID, playerCoordinates[X], playerCoordinates[Y], score));
+				out.writeObject(new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y], intArray[score]));
 				out.flush();
 			} else {
-				out.writeObject(new PlayerPacket(playerID, playerCoordinates[X], playerCoordinates[Y], 0));
+				out.writeObject(new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y], 0));
 				out.flush();
-				playerList.remove(playerID);
+				playerList.remove(intArray[playerID]);
 			}
 
 		} catch (Exception e) {
@@ -372,31 +364,31 @@ public class Client extends JFrame
 	public void move() {
 		// Acceleration and friction
 		if (direction[RIGHT] == true) {
-			currentSpeed[RIGHT] = clampFloat(currentSpeed[RIGHT] + acceleration, currentMaxSpeed, 0);
+			currentSpeed[RIGHT] = clampFloat(currentSpeed[RIGHT] + acceleration, intArray[currentMaxSpeed], 0);
 		} else {
-			currentSpeed[RIGHT] = clampFloat(currentSpeed[RIGHT] - friction, currentMaxSpeed, 0);
+			currentSpeed[RIGHT] = clampFloat(currentSpeed[RIGHT] - friction, intArray[currentMaxSpeed], 0);
 		}
 		if (direction[LEFT] == true) {
-			currentSpeed[LEFT] = clampFloat(currentSpeed[LEFT] + acceleration, currentMaxSpeed, 0);
+			currentSpeed[LEFT] = clampFloat(currentSpeed[LEFT] + acceleration, intArray[currentMaxSpeed], 0);
 		} else {
-			currentSpeed[LEFT] = clampFloat(currentSpeed[LEFT] - friction, currentMaxSpeed, 0);
+			currentSpeed[LEFT] = clampFloat(currentSpeed[LEFT] - friction, intArray[currentMaxSpeed], 0);
 		}
 		if (direction[DOWN] == true) {
-			currentSpeed[DOWN] = clampFloat(currentSpeed[DOWN] + acceleration, currentMaxSpeed, 0);
+			currentSpeed[DOWN] = clampFloat(currentSpeed[DOWN] + acceleration, intArray[currentMaxSpeed], 0);
 		} else {
-			currentSpeed[DOWN] = clampFloat(currentSpeed[DOWN] - friction, currentMaxSpeed, 0);
+			currentSpeed[DOWN] = clampFloat(currentSpeed[DOWN] - friction, intArray[currentMaxSpeed], 0);
 		}
 		if (direction[UP] == true) {
-			currentSpeed[UP] = clampFloat(currentSpeed[UP] + acceleration, currentMaxSpeed, 0);
+			currentSpeed[UP] = clampFloat(currentSpeed[UP] + acceleration, intArray[currentMaxSpeed], 0);
 		} else {
-			currentSpeed[UP] = clampFloat(currentSpeed[UP] - friction, currentMaxSpeed, 0);
+			currentSpeed[UP] = clampFloat(currentSpeed[UP] - friction, intArray[currentMaxSpeed], 0);
 		}
 
 		// Move the player!
 		playerCoordinates[X] = clamp(playerCoordinates[X] + (int) currentSpeed[RIGHT] - (int) currentSpeed[LEFT],
-				roomSize - score, 0);
+				roomSize - intArray[score], 0);
 		playerCoordinates[Y] = clamp(playerCoordinates[Y] + (int) currentSpeed[DOWN] - (int) currentSpeed[UP],
-				roomSize - score, 0);
+				roomSize - intArray[score], 0);
 	}
 
 	/**
@@ -405,9 +397,9 @@ public class Client extends JFrame
 	 * acceleration and friction of the player depending on score.
 	 */
 	public void shrink() {
-		if (shrinkTimer <= 0) {
-			if (score > 25) {
-				score--;
+		if (intArray[shrinkTimer] <= 0) {
+			if (intArray[score] > 25) {
+				intArray[score]--;
 
 				if (adjustPosition) {
 					playerCoordinates[X] += 1;
@@ -419,30 +411,29 @@ public class Client extends JFrame
 
 			}
 
-			if (score >= 150) {
-				shrinkTimer = 40;
-				currentMaxSpeed = maxSpeed - 2;
+			if (intArray[score] >= 150) {
+				intArray[shrinkTimer] = 40;
+				intArray[currentMaxSpeed] = maxSpeed - 2;
 				acceleration = maxAcceleration + 0.4f;
 				friction = lowestFriction - 0.2f;
-			} else if (score >= 100) {
-				shrinkTimer = 55;
-				currentMaxSpeed = maxSpeed - 2;
+			} else if (intArray[score] >= 100) {
+				intArray[shrinkTimer] = 55;
+				intArray[currentMaxSpeed] = maxSpeed - 2;
 				acceleration = maxAcceleration + 0.2f;
 				friction = lowestFriction - 0.2f;
-			} else if (score >= 50) {
-				shrinkTimer = 65;
-				currentMaxSpeed = maxSpeed - 1;
-				;
+			} else if (intArray[score] >= 50) {
+				intArray[shrinkTimer] = 65;
+				intArray[currentMaxSpeed] = maxSpeed - 1;
 				acceleration = maxAcceleration + 0.1f;
 				friction = lowestFriction - 0.1f;
 			} else {
-				shrinkTimer = 85;
-				currentMaxSpeed = maxSpeed;
+				intArray[shrinkTimer] = 85;
+				intArray[currentMaxSpeed] = maxSpeed;
 				acceleration = maxAcceleration;
 				friction = lowestFriction;
 			}
 		}
-		shrinkTimer--;
+		intArray[shrinkTimer]--;
 	}
 
 	/**
@@ -450,11 +441,11 @@ public class Client extends JFrame
 	 * Also corrects the position.
 	 */
 	public void grow() {
-		if (growth > 0) {
-			score += 1;
-			growth -= 1;
+		if (intArray[growth] > 0) {
+			intArray[score] += 1;
+			intArray[growth] -= 1;
 		}
-		if (score % 2 == 0) {
+		if (intArray[score] % 2 == 0) {
 			adjustPosition = true;
 		} else {
 			adjustPosition = false;
@@ -482,20 +473,20 @@ public class Client extends JFrame
 				int tempFoodX = tempFood[i].getX();
 				int tempFoodY = tempFood[i].getY();
 
-				if (playerCoordinates[X] <= tempFoodX && playerCoordinates[X] >= (tempFoodX - score)) {
-					if (playerCoordinates[Y] <= tempFoodY && playerCoordinates[Y] >= (tempFoodY - score)) {
+				if (playerCoordinates[X] <= tempFoodX && playerCoordinates[X] >= (tempFoodX - intArray[score])) {
+					if (playerCoordinates[Y] <= tempFoodY && playerCoordinates[Y] >= (tempFoodY - intArray[score])) {
 						if (collidedFood == false) {
 
 							// Print out debug message
 							if (showDebug) {
-								System.out.println("Client " + playerID + " collided with food index " + i);
+								System.out.println("Client " + intArray[playerID] + " collided with food index " + i);
 							}
 
 							// Make sure we don't collide again
 							collidedFood = true;
 
 							// Increment score
-							score++;
+							intArray[score]++;
 
 							// Change adjustPosition
 							if (adjustPosition) {
@@ -507,7 +498,7 @@ public class Client extends JFrame
 							try {
 								// Print out debug message
 								if (showDebug) {
-									System.out.println("Client " + playerID + " sending Food " + i);
+									System.out.println("Client " + intArray[playerID] + " sending Food " + i);
 								}
 
 								// Create a new Food object with the same index as the one we've collided with.
@@ -548,15 +539,15 @@ public class Client extends JFrame
 				int otherPlayerY = playerList.get(i)[1];
 				int otherPlayerScore = playerList.get(i)[2];
 
-				if (playerID != otherPlayerId) {
+				if (intArray[playerID] != otherPlayerId) {
 					if (playerCoordinates[X] <= (otherPlayerX + otherPlayerScore)
-							&& playerCoordinates[X] >= (otherPlayerX - score)
+							&& playerCoordinates[X] >= (otherPlayerX - intArray[score])
 							&& playerCoordinates[Y] <= (otherPlayerY + otherPlayerScore)
-							&& playerCoordinates[Y] >= (otherPlayerY - score)) {
+							&& playerCoordinates[Y] >= (otherPlayerY - intArray[score])) {
 
 						// Other player eats us
-						if (otherPlayerScore >= score) {
-							score = 25;
+						if (otherPlayerScore >= intArray[score]) {
+							intArray[score] = 25;
 							int newX = random.nextInt(roomSize - 25);
 							int newY = random.nextInt(roomSize - 25);
 							playerCoordinates[X] = newX;
@@ -564,7 +555,7 @@ public class Client extends JFrame
 							canvas.died();
 						} else {
 							// We eat other player
-							growth += otherPlayerScore * 0.3;
+							intArray[growth] += otherPlayerScore * 0.3;
 						}
 
 						// We've collided
@@ -584,12 +575,12 @@ public class Client extends JFrame
 		if (!collided) {
 			checkPlayerCollision();
 		} else {
-			invincibleTimer--;
+			intArray[invincibilityTimer]--;
 		}
 
 		// Reset invincibleTimer
-		if (invincibleTimer <= 0) {
-			invincibleTimer = 0;
+		if (intArray[invincibilityTimer] <= 0) {
+			intArray[invincibilityTimer] = 0;
 			collided = false;
 		}
 	}
@@ -599,7 +590,7 @@ public class Client extends JFrame
 	 */
 	public void invincible() {
 		collided = true;
-		invincibleTimer = 60;
+		intArray[invincibilityTimer] = 60;
 	}
 
 	// KeyHandler:
@@ -655,15 +646,15 @@ public class Client extends JFrame
 			move();
 
 			// Update player
-			if (slowDownSending <= 0) {
+			if (intArray[slowDownSending] <= 0) {
 				sendPlayerPackage();
-				slowDownSending = 2;
+				intArray[slowDownSending] = 2;
 			} else {
-				slowDownSending--;
+				intArray[slowDownSending]--;
 			}
 
 			// Check for Food collision
-			if (score < maxScore) {
+			if (intArray[score] < maxScore) {
 				checkFoodCollision(debug);
 			}
 
@@ -674,7 +665,7 @@ public class Client extends JFrame
 			grow();
 
 			// Update ourself in the playerList
-			updatePlayerList(playerID, playerCoordinates[X], playerCoordinates[Y], score);
+			updatePlayerList(intArray[playerID], playerCoordinates[X], playerCoordinates[Y], intArray[score]);
 
 			// Update canvas foodList
 			updateCanvasFood();
@@ -684,8 +675,8 @@ public class Client extends JFrame
 
 			// Update
 			canvas.updatePlayerList(playerList);
-			canvas.setSpeed(currentMaxSpeed);
-			canvas.setInvincibleTimer(invincibleTimer);
+			canvas.setSpeed(intArray[currentMaxSpeed]);
+			canvas.setInvincibleTimer(intArray[invincibilityTimer]);
 			canvas.repaint();
 
 			// Loop with this delay
@@ -698,8 +689,8 @@ public class Client extends JFrame
 		int width = this.getWidth();
 		int height = this.getHeight();
 
-		this.screenWidth = width;
-		this.screenHeight = height;
+		this.intArray[screenWidth] = width;
+		this.intArray[screenHeight] = height;
 		canvas.setScreen(width, height);
 	}
 
@@ -716,9 +707,9 @@ public class Client extends JFrame
 		if ((JPanel) e.getSource() == topBar) {
 			int x = e.getXOnScreen();
 			int y = e.getYOnScreen();
-			setLocation(getLocationOnScreen().x + x - lastX, getLocationOnScreen().y + y - lastY);
-			lastX = x;
-			lastY = y;
+			setLocation(getLocationOnScreen().x + x - intArray[lastX], getLocationOnScreen().y + y - intArray[lastY]);
+			intArray[lastX] = x;
+			intArray[lastY] = y;
 		}
 	}
 
@@ -730,8 +721,8 @@ public class Client extends JFrame
 
 	public void mousePressed(MouseEvent e) {
 		if ((JPanel) e.getSource() == topBar) {
-			lastX = e.getXOnScreen();
-			lastY = e.getYOnScreen();
+			intArray[lastX] = e.getXOnScreen();
+			intArray[lastY] = e.getYOnScreen();
 		}
 	}
 
