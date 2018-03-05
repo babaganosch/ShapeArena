@@ -15,8 +15,8 @@ import packets.Food;
 
 /**
  * This is the Canvas, a GUI for the Client.
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author Oskar Lenschow
+ * @version 2018-03-05
  */
 public class Canvas extends JPanel {
 

@@ -4,8 +4,8 @@ import java.io.Serializable;
 /**
  * This is the Food class.
  * Each object of this class represents a Food Object in the world.
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author Daniel Detlefsen
+ * @version 2018-03-05
  */
 public class Food extends Packet implements Serializable {
 	

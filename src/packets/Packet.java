@@ -4,8 +4,8 @@ import java.io.Serializable;
 /**
  * This is the Packet class.
  * This is a abstract class being the foundation for any type of packet.
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author Daniel Detlefsen
+ * @version 2018-03-05
  */
 public abstract class Packet implements Serializable {
 	

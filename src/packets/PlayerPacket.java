@@ -3,8 +3,8 @@ package packets;
  * This is the PlayerPacket class.
  * This object is used as a packet sent over a Object Stream containing
  * information about a player, such as playerID, x, y and score.
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author Daniel Detlefsen
+ * @version 2018-03-05
  */
 public class PlayerPacket extends Packet {
 

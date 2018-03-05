@@ -13,8 +13,8 @@ import packets.Packet;
  * forwarding that packet to all the Clients.
  * It also keeps a HashMap containing all the Food objects updated and sends that to every Client also.
  * The PacketHandler is observed by the ServerFrame.
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author Oskar Lenschow
+ * @version 2018-03-05
  */
 class PacketHandler extends Observable implements Runnable {
 

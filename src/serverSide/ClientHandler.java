@@ -17,8 +17,8 @@ import packets.PlayerPacket;
  * side to handle all the writing and reading on the Object Streams to and from
  * the Client. The ClientHandler is observed by the ServerFrame.
  * 
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author Lars Andersson
+ * @version 2018-03-05
  */
 public class ClientHandler extends Observable implements Runnable {
 

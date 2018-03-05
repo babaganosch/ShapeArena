@@ -1,5 +1,9 @@
 package clientSide;
-
+/**
+ * Constants and Indexes for Client class.
+ * @author Lars Andersson
+ * @version 2018-03-05
+ */
 public interface ClientConstants {
 
 	// Constants

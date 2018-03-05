@@ -20,8 +20,8 @@ import javax.swing.border.EmptyBorder;
 /**
  * This is the Server Frame, a GUI for the server.
  * It acts as a Observer for Server, ClientHandler and PacketHandler.
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author André Höjmark
+ * @version 2018-03-05
  */
 public class ServerFrame extends JFrame implements Observer, MouseListener, MouseMotionListener {
 

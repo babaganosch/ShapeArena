@@ -733,8 +733,8 @@ public class Client extends JFrame
  * This class handles all the reading from the input stream. This is where we
  * receive all the information from the server.
  * 
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author Lars Andersson
+ * @version 2018-03-05
  */
 class InputReader implements Runnable {
 

@@ -8,8 +8,8 @@ import java.util.Scanner;
 /**
  * This is the HighscoreHandler class.
  * Responisble for writing a new highscore to a local file on the server.
- * @author Hasse Aro
- * @version 2018-03-xx
+ * @author Aron Bengtsson
+ * @version 2018-03-05
  */
 public class HighscoreHandler extends Thread {
 
