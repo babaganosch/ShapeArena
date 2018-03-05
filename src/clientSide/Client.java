@@ -117,6 +117,14 @@ public class Client extends JFrame
 		close.setForeground(Color.GRAY);
 		close.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
+				try {
+					in.close();
+					out.close();
+					socket.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
 				System.exit(0);
 			}
 
@@ -181,9 +189,9 @@ public class Client extends JFrame
 			Thread thread = new Thread(this);
 			thread.start();
 		} catch (Exception e) {
-			System.out.println("Unable to start client");
+			JOptionPane.showMessageDialog(null, "Could not connect to server");
+			System.exit(0);
 		}
-
 		setVisible(true);
 		repaint();
 	}

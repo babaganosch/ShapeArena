@@ -43,8 +43,14 @@ public class Canvas extends JPanel {
 	private Color cPlayer0 = new Color(170, 85, 85); // Red
 	private Color cPlayer1 = new Color(120, 170, 85); // Green
 	private Color cPlayer2 = new Color(85, 130, 170); // Blue
-	private Color cPlayer3 = new Color(224, 212, 75); // Yellow
+	private Color cPlayer3 = new Color(255, 212, 26); // Yellow
 	private Color cPlayer4 = new Color(135, 95, 180); // Purple
+	private Color cPlayer5 = new Color(67, 171, 145); //Turquoise
+	private Color cPlayer6 = new Color(255, 170, 100); //Orange
+	private Color cPlayer7 = new Color(192, 251, 0); //Lime
+	private Color cPlayer8 = new Color(242, 134, 229); //Pink
+	private Color cPlayer9 = new Color(15, 15, 15); //Dark Gray
+	
 	private Color cText = Color.WHITE;
 	private Color cFood = new Color(110, 47, 47);
 
@@ -129,6 +135,21 @@ public class Canvas extends JPanel {
 			break;
 		case 4:
 			g.setColor(cPlayer4);
+			break;
+		case 5:
+			g.setColor(cPlayer5);
+			break;
+		case 6:
+			g.setColor(cPlayer6);
+			break;
+		case 7:
+			g.setColor(cPlayer7);
+			break;
+		case 8:
+			g.setColor(cPlayer8);
+			break;
+		case 9:
+			g.setColor(cPlayer9);
 			break;
 		default:
 			g.setColor(Color.black);
