@@ -11,7 +11,7 @@ Version 1.0.0
 6. ~~Gameplay - deepen the gameplay~~
 
 ## Download ##
-Server: https://tinyurl.com/ShapeArenaServer
+Server: https://tinyurl.com/ShapeArenaServer  
 Client: https://tinyurl.com/ShapeArenaClient
 
 ## Todo ##
