@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
@@ -29,7 +28,7 @@ public class Server extends Observable implements Runnable {
 
 	// Food related
 	private int maxFood = 20;
-	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
+	
 
 	/**
 	 * Creates a new server object.
@@ -89,15 +88,17 @@ public class Server extends Observable implements Runnable {
 	 * @throws IOException Throws exception if something went wrong.
 	 */
 	public void SetupObjects() throws IOException {
+		Food[] foodList = new Food[maxFood];
+		
 		// Create the Food
 		for (int i = 0; i < maxFood; i++) {
 			int tempX = random.nextInt(worldSize - 5);
 			int tempY = random.nextInt(worldSize - 5);
-			foodList.put(i, new Food(i, tempX, tempY));
+			foodList[i] = new Food(i, tempX, tempY);
 		}
 
 		// Setup PacketHandler
-		this.packetHandler = new PacketHandler(foodList, clientHandler, this, serverFrame);
+		this.packetHandler = new PacketHandler(foodList, clientHandler, serverFrame);
 
 		// Create HighscoreHandler
 		this.highscoreHandler = new HighscoreHandler();
@@ -119,7 +120,7 @@ public class Server extends Observable implements Runnable {
 	}
 
 	/**
-	 * Handles client connections to the server by contantly listening for new connections and creates a new ClientHandler thread for each new player aslong as the server 
+	 * Handles client connections to the server by constantly listening for new connections and creates a new ClientHandler thread for each new player aslong as the server 
 	 * isn't full. When a new player joins, the server notifies the observers with all the connected players.
 	 */
 	public void run() {

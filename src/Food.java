@@ -6,10 +6,9 @@ import java.io.Serializable;
  * @author Hasse Aro
  * @version 2018-03-xx
  */
-public class Food implements Serializable {
+public class Food extends Packet implements Serializable {
 	
 	private static final long serialVersionUID = -8986608731006981204L;
-	private int id;
 	private int x;
 	private int y;
 	
@@ -20,17 +19,9 @@ public class Food implements Serializable {
 	 * @param y The Y coordinate of the Food object.
 	 */
 	public Food(int id, int x, int y) {
-		this.id = id;
+		super(id);
 		this.x = x;
 		this.y = y;
-	}
-	
-	/**
-	 * Getter for the index of the Food object.
-	 * @return Returns the index of the Food object.
-	 */
-	public int getId() {
-		return this.id;
 	}
 	
 	/**
