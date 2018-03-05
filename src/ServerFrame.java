@@ -31,8 +31,9 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 	private JTextField textFieldBloat;
 	private JPanel topBar;
 
-	private Color backgroundColor = new Color(50, 50, 50);
-	private Color foregroundColor = new Color(249, 65, 32);
+	// Changed the color-theme to a less shrieking color, left the old color-codes though.
+	private Color backgroundColor = new Color(70, 70, 70); // (50, 50, 50) <- Dark Gray
+	private Color topBarColor = new Color(50, 45, 45); // (249, 65, 32) <- Orange
 	private Color textColor = new Color(205, 205, 205);
 	private Font font = new Font("Arial", Font.BOLD, 12);
 
@@ -71,9 +72,10 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 		});
 		
 		topBar.add(close, BorderLayout.EAST);
-		topBar.setBackground(foregroundColor);
+		topBar.setBackground(topBarColor);
 		
 		JLabel status = new JLabel("Server status: Online");
+		status.setForeground(Color.white);
 		status.setBorder(new EmptyBorder(0, 10, 0, 0));
 		topBar.add(status, BorderLayout.CENTER);
 		

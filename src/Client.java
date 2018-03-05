@@ -43,7 +43,8 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	private Canvas canvas;
 	private JPanel topBar;
 	private Socket socket;
-	private Color foregroundColor = new Color(249, 65, 32);
+	// Changed the color-theme to a less shrieking color, left the old color-codes though.
+	private Color topBarColor = new Color(50, 45, 45); // (249, 65, 32) <- Orange
 	private int screenWidth = 720;
 	private int screenHeight = 480;
 	private int slowDownSending = 2;
@@ -128,7 +129,7 @@ public class Client extends JFrame implements Runnable, KeyListener, ComponentLi
 	      }
 	    });
 
-	    topBar.setBackground(foregroundColor);
+	    topBar.setBackground(topBarColor);
 	    topBar.add(close, BorderLayout.EAST);
 	    this.add(topBar, BorderLayout.NORTH);
 		
