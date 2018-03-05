@@ -638,10 +638,12 @@ public class Client extends JFrame
 				setExtendedState(JFrame.NORMAL);
 				topBar.setVisible(true);
 				fullScreen = false;
+				canvas.setScreen(intArray[screenWidth], intArray[screenHeight]);
 			} else {
 				setExtendedState(JFrame.MAXIMIZED_BOTH);
 				topBar.setVisible(false);
 				fullScreen = true;
+				canvas.setScreen(this.getWidth(), this.getHeight());
 			}
 		}
 	}
