@@ -1,8 +1,8 @@
+package clientSide;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -22,6 +22,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import packets.Food;
+import packets.Packet;
+import packets.PlayerInitializationPacket;
+import packets.PlayerPacket;
+
 /**
  * This is the main Client class, the interface between the player and the game.
  * When you start the client you'll be prompted to enter an IP address. If you
@@ -32,7 +37,7 @@ import javax.swing.border.EmptyBorder;
  * @version 2018-03-xx
  */
 public class Client extends JFrame
-		implements Runnable, KeyListener, ComponentListener, MouseListener, MouseMotionListener, ClientConstants {
+		implements Runnable, KeyListener, MouseListener, MouseMotionListener, ClientConstants {
 
 	// ------------- DEBUG --------------
 	private boolean debug = false;
@@ -66,7 +71,6 @@ public class Client extends JFrame
 	// Food related
 	private HashMap<Integer, Food> foodList = new HashMap<Integer, Food>();
 	private HashMap<Integer, int[]> playerList = new HashMap<Integer, int[]>();
-	private Food[] tempFood = new Food[maxFoods];
 
 	/**
 	 * Creates the Client object and tries to connect to the IP it's given. This is
@@ -96,8 +100,6 @@ public class Client extends JFrame
 		addKeyListener(this);
 		setUndecorated(true);
 
-		addComponentListener(this);
-
 		// Create the canvas
 		canvas = new Canvas(intArray[screenWidth], intArray[screenHeight], roomSize);
 		add(canvas, BorderLayout.CENTER);
@@ -112,7 +114,7 @@ public class Client extends JFrame
 		JLabel close = new JLabel("×");
 		close.setBorder(new EmptyBorder(0, 0, 0, 10));
 		close.setFont(new Font("Arial", Font.BOLD, 20));
-		close.setForeground(Color.DARK_GRAY);
+		close.setForeground(Color.GRAY);
 		close.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				System.exit(0);
@@ -123,7 +125,7 @@ public class Client extends JFrame
 			}
 
 			public void mouseExited(MouseEvent e) {
-				close.setForeground(Color.DARK_GRAY);
+				close.setForeground(Color.GRAY);
 			}
 		});
 
@@ -465,13 +467,13 @@ public class Client extends JFrame
 		Boolean collidedFood = false;
 		// Loop through every Food and get their x and y coordinate, then check for
 		// collision.
-		for (int i = 0; i < maxFoods; i++) {
-			tempFood[i] = foodList.get(i);
+		for (int i = 0; i < foodList.size(); i++) {
+			Food tempFood = foodList.get(i);
 
-			if (tempFood[i] != null) {
+			if (tempFood != null) {
 
-				int tempFoodX = tempFood[i].getX();
-				int tempFoodY = tempFood[i].getY();
+				int tempFoodX = tempFood.getX();
+				int tempFoodY = tempFood.getY();
 
 				if (playerCoordinates[X] <= tempFoodX && playerCoordinates[X] >= (tempFoodX - intArray[score])) {
 					if (playerCoordinates[Y] <= tempFoodY && playerCoordinates[Y] >= (tempFoodY - intArray[score])) {
@@ -505,7 +507,7 @@ public class Client extends JFrame
 								// Add the Food object to our foodList so we don't experience any graphical
 								// delay
 								// Toolkit.getDefaultToolkit().beep();
-								Food tempFood = new Food(i, random.nextInt(roomSize - 5), random.nextInt(roomSize - 5));
+								tempFood = new Food(i, random.nextInt(roomSize - 5), random.nextInt(roomSize - 5));
 								foodList.put(i, tempFood);
 
 								// Send the new Food object to the server
@@ -684,25 +686,6 @@ public class Client extends JFrame
 			sleep(16);
 		}
 	}
-
-	public void componentResized(ComponentEvent e) {
-		int width = this.getWidth();
-		int height = this.getHeight();
-
-		this.intArray[screenWidth] = width;
-		this.intArray[screenHeight] = height;
-		canvas.setScreen(width, height);
-	}
-
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	public void componentShown(ComponentEvent e) {
-	}
-
-	public void componentHidden(ComponentEvent e) {
-	}
-
 	public void mouseDragged(MouseEvent e) {
 		if ((JPanel) e.getSource() == topBar) {
 			int x = e.getXOnScreen();

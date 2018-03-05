@@ -1,9 +1,15 @@
+package serverSide;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
+
+import packets.Food;
+import packets.Packet;
+import packets.PlayerInitializationPacket;
+import packets.PlayerPacket;
 
 /**
  * This is the ClientHandler class. There should be a ClientHandler for every

@@ -1,3 +1,5 @@
+package clientSide;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -8,6 +10,8 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
+import packets.Food;
 
 /**
  * This is the Canvas, a GUI for the Client.

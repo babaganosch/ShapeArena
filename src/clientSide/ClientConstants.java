@@ -1,3 +1,4 @@
+package clientSide;
 
 public interface ClientConstants {
 

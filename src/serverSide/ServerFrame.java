@@ -1,3 +1,4 @@
+package serverSide;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -57,7 +58,7 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 		JLabel close = new JLabel("×");
 		close.setBorder(new EmptyBorder(0, 0, 0, 10));
 		close.setFont(new Font("Arial", Font.BOLD, 20));
-		close.setForeground(Color.DARK_GRAY);
+		close.setForeground(Color.GRAY);
 		close.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				System.exit(0);
@@ -68,7 +69,7 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 			}
 
 			public void mouseExited(MouseEvent e) {
-				close.setForeground(Color.DARK_GRAY);
+				close.setForeground(Color.GRAY);
 			}
 		});
 		

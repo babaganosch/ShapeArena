@@ -1,8 +1,11 @@
+package serverSide;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
+
+import packets.Food;
+import packets.Packet;
 
 /**
  * This is the Packet Handler class.
@@ -21,7 +24,7 @@ class PacketHandler extends Observable implements Runnable {
 	private Packet[] foodList;
 	private ArrayList<Packet> packetList = new ArrayList<Packet>();
 	private ClientHandler[] clientHandlers;
-	private int notifyTimer = 70, tickrate = 2;
+	private int notifyTimer = 70, tickrate = 1, counter = 0;
 
 	/**
 	 * Constructs a packethandler that adds references and starts the packethandler.
@@ -63,19 +66,23 @@ class PacketHandler extends Observable implements Runnable {
 		while (true) {
 			try {
 				// Send out the list of Food (Receiver: Clients)
-				Food[] newFoodList = new Food[foodList.length];
-				for(int i = 0; i < foodList.length; i++) {
-					newFoodList[i] = (Food) foodList[i];
-				}
-				for (ClientHandler clientHandler : clientHandlers) {
-					if (clientHandler != null) {
-						if (clientHandler.isReady()) {
-							clientHandler.getObjectOutputStream().writeObject(newFoodList);
-							clientHandler.getObjectOutputStream().flush();
+				if(counter >= 10) {
+					Food[] newFoodList = new Food[foodList.length];
+					for(int i = 0; i < foodList.length; i++) {
+						newFoodList[i] = (Food) foodList[i];
+					}
+					for (ClientHandler clientHandler : clientHandlers) {
+						if (clientHandler != null) {
+							if (clientHandler.isReady()) {
+								clientHandler.getObjectOutputStream().writeObject(newFoodList);
+								clientHandler.getObjectOutputStream().flush();
+							}
 						}
 					}
+					counter = 0;
+				}else{
+					counter++;
 				}
-
 				// Forward packets
 				if (packetList.size() > 0) {
 					for (ClientHandler clientHandler : clientHandlers) {
@@ -105,7 +112,7 @@ class PacketHandler extends Observable implements Runnable {
 			if (packetList.size() > 100) {
 				packetList = new ArrayList<Packet>();
 			}
-
+			
 			try {
 				// Sleep for a while
 				Thread.sleep(tickrate);

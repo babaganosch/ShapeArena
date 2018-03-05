@@ -1,9 +1,12 @@
+package serverSide;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
+
+import packets.Food;
 
 /**
  * This is the main server class for the Shape Arena.
@@ -14,7 +17,6 @@ import java.util.Random;
 public class Server extends Observable implements Runnable {
 
 	// Global
-	private int tickRate = 2;
 	private int worldSize = 1000;
 	private int maxUsers = 10;
 	private Random random = new Random();
@@ -48,14 +50,6 @@ public class Server extends Observable implements Runnable {
 	
 	public static void main(String[] args) {
 		new Server(port);
-	}
-	
-	/**
-	 * Returns the tickRate variable from the server
-	 * @return Returns an int representing the tick rate
-	 */
-	public int getTickRate() {
-		return tickRate;
 	}
 
 	/**

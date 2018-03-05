@@ -1,3 +1,4 @@
+package packets;
 /**
  * This is the PlayerInitializationPacket class.
  * This object is used as a packet sent over a Object Stream containing
