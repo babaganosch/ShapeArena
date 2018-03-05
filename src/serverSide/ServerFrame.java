@@ -55,7 +55,7 @@ public class ServerFrame extends JFrame implements Observer, MouseListener, Mous
 		topBar.addMouseListener(this);
 		topBar.addMouseMotionListener(this);
 
-		JLabel close = new JLabel("×");
+		JLabel close = new JLabel("Ã—");
 		close.setBorder(new EmptyBorder(0, 0, 0, 10));
 		close.setFont(new Font("Arial", Font.BOLD, 20));
 		close.setForeground(Color.GRAY);
