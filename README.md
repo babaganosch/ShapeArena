@@ -1,6 +1,6 @@
 # Shape Arena #
 This is a project to make a game in Java for our course in DAT055, Chalmers, spring 2018.  
-Version 0.0.3
+Version 1.0.0
 
 ## Timetable ##
 1. ~~UML diagram covering the basics~~
@@ -10,7 +10,11 @@ Version 0.0.3
 5. ~~Collision~~
 6. ~~Gameplay - deepen the gameplay~~
 
-## Extra ##
+## Download ##
+Server: https://tinyurl.com/ShapeArenaServer  
+Client: https://tinyurl.com/ShapeArenaClient
+
+## Todo ##
 * Teams
 * Sprites or special shapes
 * Environmental objects
