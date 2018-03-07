@@ -54,13 +54,13 @@ public class Client extends JFrame
 	// Changed the color-theme to a less shrieking color, left the old color-codes
 	// though.
 	private Color topBarColor = new Color(50, 45, 45); // (249, 65, 32) <- Orange
-	
+
 	private boolean fullScreen = false;
 	private boolean[] direction = new boolean[4];
 	private static boolean disconnected = false;
 
 	private int intArray[] = new int[11];
-	
+
 	private int playerCoordinates[] = new int[2];
 	private float acceleration = maxAcceleration;
 	private float friction = lowestFriction;
@@ -81,7 +81,7 @@ public class Client extends JFrame
 	 *            The IP the Client will try to connect to.
 	 */
 	public Client(String serverIP) {
-		
+
 		// Initialize intArray
 		intArray[currentMaxSpeed] = maxSpeed;
 		intArray[invincibilityTimer] = 0;
@@ -124,7 +124,7 @@ public class Client extends JFrame
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				
+
 				System.exit(0);
 			}
 
@@ -339,7 +339,8 @@ public class Client extends JFrame
 	public void sendPlayerPackage() {
 		try {
 			if (!disconnected) {
-				out.writeObject(new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y], intArray[score]));
+				out.writeObject(new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y],
+						intArray[score]));
 				out.flush();
 			} else {
 				out.writeObject(new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y], 0));
@@ -521,6 +522,8 @@ public class Client extends JFrame
 								// Send the new Food object to the server
 								out.writeObject(tempFood);
 								out.flush();
+								
+								invincible();
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -584,6 +587,12 @@ public class Client extends JFrame
 		// Check for collision if we're not invincible
 		if (!collided) {
 			checkPlayerCollision();
+
+			// Check for Food collision
+			if (intArray[score] < maxScore) {
+				checkFoodCollision(debug);
+			}
+
 		} else {
 			intArray[invincibilityTimer]--;
 		}
@@ -600,7 +609,7 @@ public class Client extends JFrame
 	 */
 	public void invincible() {
 		collided = true;
-		intArray[invincibilityTimer] = 60;
+		intArray[invincibilityTimer] = 15;
 	}
 
 	// KeyHandler:
@@ -665,11 +674,6 @@ public class Client extends JFrame
 				intArray[slowDownSending]--;
 			}
 
-			// Check for Food collision
-			if (intArray[score] < maxScore) {
-				checkFoodCollision(debug);
-			}
-
 			// Shrink
 			shrink();
 
@@ -696,6 +700,7 @@ public class Client extends JFrame
 			sleep(16);
 		}
 	}
+
 	public void mouseDragged(MouseEvent e) {
 		if ((JPanel) e.getSource() == topBar) {
 			int x = e.getXOnScreen();
@@ -799,7 +804,7 @@ class InputReader implements Runnable {
 
 		// Unpack the packet
 		Food[] temp = (Food[]) packet;
-		
+
 		for (int i = 0; i < temp.length; i++) {
 			client.getFoodList().put(temp[i].getId(), temp[i]);
 		}
