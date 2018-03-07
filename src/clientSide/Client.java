@@ -415,22 +415,22 @@ public class Client extends JFrame
 			}
 
 			if (intArray[score] >= 150) {
-				intArray[shrinkTimer] = 40;
+				intArray[shrinkTimer] = 20;
 				intArray[currentMaxSpeed] = maxSpeed - 2;
 				acceleration = maxAcceleration + 0.4f;
 				friction = lowestFriction - 0.2f;
 			} else if (intArray[score] >= 100) {
-				intArray[shrinkTimer] = 55;
+				intArray[shrinkTimer] = 40;
 				intArray[currentMaxSpeed] = maxSpeed - 2;
 				acceleration = maxAcceleration + 0.2f;
 				friction = lowestFriction - 0.2f;
 			} else if (intArray[score] >= 50) {
-				intArray[shrinkTimer] = 65;
+				intArray[shrinkTimer] = 60;
 				intArray[currentMaxSpeed] = maxSpeed - 1;
 				acceleration = maxAcceleration + 0.1f;
 				friction = lowestFriction - 0.1f;
 			} else {
-				intArray[shrinkTimer] = 85;
+				intArray[shrinkTimer] = 75;
 				intArray[currentMaxSpeed] = maxSpeed;
 				acceleration = maxAcceleration;
 				friction = lowestFriction;
@@ -560,7 +560,9 @@ public class Client extends JFrame
 							canvas.died();
 						} else {
 							// We eat other player
-							intArray[growth] += otherPlayerScore * 0.3;
+							if (intArray[score] < 250) {
+								intArray[growth] += otherPlayerScore * 0.3;
+							}
 						}
 
 						// We've collided
