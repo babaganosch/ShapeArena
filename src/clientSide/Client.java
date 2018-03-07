@@ -515,7 +515,7 @@ public class Client extends JFrame
 								out.writeObject(tempFood);
 								out.flush();
 								
-								invincible();
+								invincible(5);
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -566,7 +566,7 @@ public class Client extends JFrame
 						}
 
 						// We've collided
-						invincible();
+						invincible(10);
 					}
 				}
 			}
@@ -600,10 +600,11 @@ public class Client extends JFrame
 
 	/**
 	 * Turns the player invincible.
+	 * @param frames Decides how many frames the player will be invincible
 	 */
-	public void invincible() {
+	public void invincible(int frames) {
 		collided = true;
-		intArray[invincibilityTimer] = 5;
+		intArray[invincibilityTimer] = frames;
 	}
 
 	// KeyHandler:
