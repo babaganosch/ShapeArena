@@ -57,7 +57,7 @@ public class Client extends JFrame
 
 	private boolean fullScreen = false;
 	private boolean[] direction = new boolean[4];
-	private static boolean disconnected = false;
+	private boolean disconnected = false;
 
 	private int intArray[] = new int[11];
 
@@ -116,8 +116,8 @@ public class Client extends JFrame
 		close.setFont(new Font("Arial", Font.BOLD, 20));
 		close.setForeground(Color.GRAY);
 		close.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {		
-				System.exit(0);
+			public void mouseClicked(MouseEvent e) {
+				disconnected = true;
 			}
 
 			public void mouseEntered(MouseEvent e) {
@@ -203,11 +203,6 @@ public class Client extends JFrame
 			serverIP = "localhost";
 		}
 		new Client(serverIP);
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			public void run() {
-				disconnected = true;
-			}
-		}, "Shutdown-thread"));
 	}
 
 	/**
@@ -322,9 +317,10 @@ public class Client extends JFrame
 	public void updateCanvasFood() {
 		canvas.setFood(foodList);
 	}
-	
+
 	/**
 	 * Returns the player ID
+	 * 
 	 * @return Returns the player ID as an int
 	 */
 	public int getPlayerId() {
@@ -338,15 +334,10 @@ public class Client extends JFrame
 	 */
 	public void sendPlayerPackage() {
 		try {
-			if (!disconnected) {
-				out.writeObject(new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y],
-						intArray[score]));
-				out.flush();
-			} else {
-				out.writeObject(new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y], 0));
-				out.flush();
-				playerList.remove(intArray[playerID]);
-			}
+
+			out.writeObject(
+					new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y], intArray[score]));
+			out.flush();
 
 		} catch (Exception e) {
 			System.out.println("Error sending Coordinates.");
@@ -522,7 +513,7 @@ public class Client extends JFrame
 								// Send the new Food object to the server
 								out.writeObject(tempFood);
 								out.flush();
-								
+
 								invincible(5);
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -608,7 +599,9 @@ public class Client extends JFrame
 
 	/**
 	 * Turns the player invincible.
-	 * @param frames Decides how many frames the player will be invincible
+	 * 
+	 * @param frames
+	 *            Decides how many frames the player will be invincible
 	 */
 	public void invincible(int frames) {
 		collided = true;
@@ -664,7 +657,7 @@ public class Client extends JFrame
 	}
 
 	public void run() {
-		while (true) {
+		while (!disconnected) {
 
 			// Movement
 			move();
@@ -702,8 +695,23 @@ public class Client extends JFrame
 			// 16ms = about 60 FPS, 32 = 30 FPS
 			sleep(16);
 		}
+		shutdown();
 	}
 
+	/**
+	 * Shuts down the client and tells the server.
+	 */
+	public void shutdown() {
+		
+			try {
+				out.writeObject(new PlayerPacket(intArray[playerID], playerCoordinates[X], playerCoordinates[Y], 0));
+				out.flush();
+				System.exit(0);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+	}
 	public void mouseDragged(MouseEvent e) {
 		if ((JPanel) e.getSource() == topBar) {
 			int x = e.getXOnScreen();
@@ -747,7 +755,7 @@ public class Client extends JFrame
 class InputReader implements Runnable {
 
 	public ObjectInputStream in;
-	Client client;
+	private Client client;
 
 	/**
 	 * Creates the InputReader.
