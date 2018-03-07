@@ -34,7 +34,7 @@ import packets.PlayerPacket;
  * have entered.
  * 
  * @author Lars Andersson
- * @version 2018-03-05
+ * @version 2018-03-07
  */
 public class Client extends JFrame
 		implements Runnable, KeyListener, MouseListener, MouseMotionListener, ClientConstants {
@@ -321,6 +321,14 @@ public class Client extends JFrame
 	 */
 	public void updateCanvasFood() {
 		canvas.setFood(foodList);
+	}
+	
+	/**
+	 * Returns the player ID
+	 * @return Returns the player ID as an int
+	 */
+	public int getPlayerId() {
+		return intArray[playerID];
 	}
 
 	/**
@@ -781,8 +789,10 @@ class InputReader implements Runnable {
 			System.out.println("score: " + score + "\n");
 		}
 
-		// Only update player from the packet
-		client.updatePlayerList(playerID, x, y, score);
+		if (playerID != client.getPlayerId()) {
+			// Only update player from the packet
+			client.updatePlayerList(playerID, x, y, score);
+		}
 
 	}
 
