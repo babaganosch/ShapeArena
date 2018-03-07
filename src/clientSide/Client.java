@@ -116,19 +116,7 @@ public class Client extends JFrame
 		close.setFont(new Font("Arial", Font.BOLD, 20));
 		close.setForeground(Color.GRAY);
 		close.addMouseListener(new MouseAdapter() {
-<<<<<<< HEAD
-			public void mouseClicked(MouseEvent e) {
-				try {
-					in.close();
-					out.close();
-					socket.close();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-
-=======
-			public void mouseClicked(MouseEvent e) {			
->>>>>>> 4df41298a1aee06a57b9a09fb851b9ee6fc2d8a3
+			public void mouseClicked(MouseEvent e) {		
 				System.exit(0);
 			}
 
