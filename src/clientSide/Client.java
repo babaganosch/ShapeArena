@@ -601,7 +601,7 @@ public class Client extends JFrame
 	 */
 	public void invincible() {
 		collided = true;
-		intArray[invincibilityTimer] = 15;
+		intArray[invincibilityTimer] = 5;
 	}
 
 	// KeyHandler:
