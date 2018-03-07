@@ -259,9 +259,6 @@ public class Client extends JFrame
 
 	/**
 	 * Updates the HashMap foodList with a new HashMap.
-	 * 
-	 * @param inFoodList
-	 *            The new HashMap.
 	 */
 	public HashMap<Integer, Food> getFoodList() {
 		return foodList;
@@ -712,6 +709,7 @@ public class Client extends JFrame
 			}
 		
 	}
+	
 	public void mouseDragged(MouseEvent e) {
 		if ((JPanel) e.getSource() == topBar) {
 			int x = e.getXOnScreen();
